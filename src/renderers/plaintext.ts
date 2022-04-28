@@ -1,4 +1,4 @@
-import type { AstType, Function, Node } from '../types';
+import type { AstType, Function, Node, NodeType } from '../types';
 import type Variable from '../ast/variable';
 
 const maxLength = (a: number, b: number) => Math.max(a, b);
@@ -33,7 +33,7 @@ function* renderFunction(a: Function) {
 }
 
 function* renderNode(a: Node) {
-  switch (a.type) {
+  switch (a.type as NodeType) {
     case 'document': {
       if (a.attributes.frontmatter.length) {
         yield `---\n${a.attributes.frontmatter}\n---\n`;
