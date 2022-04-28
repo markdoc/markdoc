@@ -13,70 +13,70 @@ function* renderTableRow(items: Array<string>) {
   yield `| ${items.join(' | ')} |\n`;
 }
 
-function* renderVariable(a: Variable) {
+function* renderVariable(v: Variable) {
   yield '{% ';
   yield '$';
-  yield a.path.join('.');
+  yield v.path.join('.');
   yield ' %}';
 }
 
-function* renderFunction(a: Function) {
+function* renderFunction(f: Function) {
   yield '{% ';
   yield '';
-  yield a.name;
+  yield f.name;
   yield '(';
-  yield Object.values(a.parameters)
+  yield Object.values(f.parameters)
     .map((value) => JSON.stringify(value))
     .join(', ');
   yield ')';
   yield ' %}';
 }
 
-function* renderNode(a: Node) {
-  switch (a.type as NodeType) {
+function* renderNode(n: Node) {
+  switch (n.type as NodeType) {
     case 'document': {
-      if (a.attributes.frontmatter.length) {
-        yield `---\n${a.attributes.frontmatter}\n---\n`;
-        yield* renderChildren(a);
+      if (n.attributes.frontmatter.length) {
+        yield `---\n${n.attributes.frontmatter}\n---\n`;
+        yield* renderChildren(n);
       }
       break;
     }
     case 'heading': {
       yield '\n';
-      yield '#'.repeat(a.attributes.level || 1);
+      yield '#'.repeat(n.attributes.level || 1);
       yield ' ';
-      yield* renderChildren(a);
+      yield* renderChildren(n);
       yield '\n';
       // TODO look at annotations here
       break;
     }
     case 'paragraph': {
       yield '\n';
-      yield* renderChildren(a);
+      yield* renderChildren(n);
       yield '\n';
       break;
     }
     case 'inline': {
-      yield* renderChildren(a);
+      yield* renderChildren(n);
       break;
     }
     case 'link': {
       yield '[';
-      yield* render(a.attributes.href);
+      yield* render(n.attributes.href);
       yield ']';
       yield '(';
-      yield* renderChildren(a);
+      yield* renderChildren(n);
       yield ')';
       break;
     }
     case 'text': {
-      yield* render(a.attributes.content);
+      yield* render(n.attributes.content);
       break;
     }
     case 'blockquote': {
       yield '\n';
       yield '> ';
-      yield* renderChildren(a.children[0]);
+      yield* renderChildren(n.children[0]);
       yield '\n';
       break;
     }
@@ -87,19 +87,19 @@ function* renderNode(a: Node) {
     case 'image': {
       yield '!';
       yield '[';
-      yield* render(a.attributes.alt);
+      yield* render(n.attributes.alt);
       yield ']';
       yield '(';
-      yield* render(a.attributes.src);
+      yield* render(n.attributes.src);
       yield ')';
       break;
     }
     case 'fence': {
       yield '\n';
       yield '```';
-      yield (a.attributes.language || '').toLowerCase();
+      yield (n.attributes.language || '').toLowerCase();
       yield '\n';
-      yield* renderChildren(a);
+      yield* renderChildren(n);
       yield '```';
       yield '\n';
       break;
@@ -107,47 +107,47 @@ function* renderNode(a: Node) {
     case 'tag': {
       yield '\n';
       yield '{% ';
-      yield a.tag;
+      yield n.tag;
       yield ' ';
-      yield Object.entries(a.attributes)
+      yield Object.entries(n.attributes)
         .map(([key, value]) => `${key}=${JSON.stringify(value)}`)
         .join(' ');
       yield ' %}';
       yield '\n';
-      yield* renderChildren(a);
+      yield* renderChildren(n);
       yield '\n';
       yield '{% /';
-      yield a.tag;
+      yield n.tag;
       yield ' %}';
       yield '\n';
       break;
     }
     case 'list': {
       yield '\n';
-      yield* renderChildren(a);
+      yield* renderChildren(n);
       break;
     }
     case 'item': {
       yield '- ';
-      yield* renderChildren(a);
+      yield* renderChildren(n);
       yield '\n';
       break;
     }
     case 'strong': {
       yield '**';
-      yield* renderChildren(a);
+      yield* renderChildren(n);
       yield '**';
       break;
     }
     case 'em': {
       yield '_';
-      yield* renderChildren(a);
+      yield* renderChildren(n);
       yield '_';
       break;
     }
     case 'code': {
       yield '`';
-      yield* render(a.attributes.content);
+      yield* render(n.attributes.content);
       yield '`';
       break;
     }
@@ -161,7 +161,7 @@ function* renderNode(a: Node) {
     }
     case 'table': {
       yield '\n';
-      const table = [...renderChildren(a)] as unknown as string[][];
+      const table = [...renderChildren(n)] as unknown as string[][];
       const [head, ...rows] = table;
 
       const max = table
@@ -176,22 +176,22 @@ function* renderNode(a: Node) {
       break;
     }
     case 'thead': {
-      const [head] = [...renderChildren(a)];
+      const [head] = [...renderChildren(n)];
       yield head;
       break;
     }
     case 'tr': {
-      yield [...renderChildren(a)];
+      yield [...renderChildren(n)];
       break;
     }
     case 'tbody':
     case 'td':
     case 'th': {
-      yield* renderChildren(a);
+      yield* renderChildren(n);
       break;
     }
     default: {
-      throw new Error(`Unimplemented: "${a.type}"`);
+      throw new Error(`Unimplemented: "${n.type}"`);
     }
   }
 }
