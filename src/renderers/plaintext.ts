@@ -1,7 +1,7 @@
 import type { AstType, Function, Node, NodeType } from '../types';
 import type Variable from '../ast/variable';
 
-const maxLength = (a: number, b: number) => Math.max(a, b);
+const max = (a: number, b: number) => Math.max(a, b);
 
 function* renderChildren(a: Node) {
   for (const child of a.children) {
@@ -164,14 +164,14 @@ function* renderNode(n: Node) {
       const table = [...renderChildren(n)] as unknown as string[][];
       const [head, ...rows] = table;
 
-      const max = table
-        .map((arr) => arr.map((s) => s.length).reduce(maxLength))
-        .reduce(maxLength);
+      const ml = table
+        .map((arr) => arr.map((s) => s.length).reduce(max))
+        .reduce(max);
 
-      yield* renderTableRow(head.map((h) => h + ' '.repeat(max - h.length)));
-      yield* renderTableRow(head.map(() => '-'.repeat(max)));
+      yield* renderTableRow(head.map((h) => h + ' '.repeat(ml - h.length)));
+      yield* renderTableRow(head.map(() => '-'.repeat(ml)));
       for (const row of rows) {
-        yield* renderTableRow(row.map((r) => r + ' '.repeat(max - r.length)));
+        yield* renderTableRow(row.map((r) => r + ' '.repeat(ml - r.length)));
       }
       break;
     }
