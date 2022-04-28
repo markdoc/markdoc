@@ -1,69 +1,26 @@
-const Markdoc = require('../../dist');
+import type { AstType, Function, Node } from '../types';
+import type Variable from '../ast/variable';
 
-//
-const source = `---
-title: What is Markdoc?
----
+const maxLength = (a: number, b: number) => Math.max(a, b);
 
-# {% $markdoc.frontmatter.title %} {% #overview %}
-
-Markdoc is a **Markdown**-based \`syntax\` and _toolchain_ for creating custom documentation sites. Stripe created Markdoc to power [our public docs](http://stripe.com/docs).
-
-> Blockquote
-
----
-
-![Alt](/image)
-
-{% callout a="check" b={e: 5} c=8 d=[1, 2, 3] %}
-Markdoc is open-source—check out it's [source](http://github.com/markdoc/markdoc) to see how it works.
-{% /callout %}
-
-\`\`\`js
-Code!
-\`\`\`
-
-## How is {% markdoc("test", 1) %} different? {% .classname %}
-
-foo\\
-baz
-
-Soft 
- break
-Markdoc uses a fully declarative approach to composition and flow control, where other solutions…[read more](/docs/overview)
-
-## Next steps
-- [Install Markdoc](/docs/getting-started)
-- [Try it out online](/sandbox)
-
-| Syntax      | Description |
-| ------ | ---- |
-| Header      | Title  |
-| Paragraph        | Text        |
-`;
-
-const ast = Markdoc.parse(source);
-
-const maxLength = (a, b) => Math.max(a, b);
-
-function* renderChildren(a) {
+function* renderChildren(a: Node) {
   for (const child of a.children) {
     yield* render(child);
   }
 }
 
-function* renderTableRow(items) {
+function* renderTableRow(items: Array<string>) {
   yield `| ${items.join(' | ')} |\n`;
 }
 
-function* renderVariable(a) {
+function* renderVariable(a: Variable) {
   yield '{% ';
   yield '$';
   yield a.path.join('.');
   yield ' %}';
 }
 
-function* renderFunction(a) {
+function* renderFunction(a: Function) {
   yield '{% ';
   yield '';
   yield a.name;
@@ -75,7 +32,7 @@ function* renderFunction(a) {
   yield ' %}';
 }
 
-function* renderNode(a) {
+function* renderNode(a: Node) {
   switch (a.type) {
     case 'document': {
       if (a.attributes.frontmatter.length) {
@@ -117,7 +74,8 @@ function* renderNode(a) {
       break;
     }
     case 'blockquote': {
-      yield '\n> ';
+      yield '\n';
+      yield '> ';
       yield* renderChildren(a.children[0]);
       yield '\n';
       break;
@@ -165,6 +123,7 @@ function* renderNode(a) {
       break;
     }
     case 'list': {
+      yield '\n';
       yield* renderChildren(a);
       break;
     }
@@ -202,7 +161,7 @@ function* renderNode(a) {
     }
     case 'table': {
       yield '\n';
-      const table = [...renderChildren(a)];
+      const table = [...renderChildren(a)] as unknown as string[][];
       const [head, ...rows] = table;
 
       const max = table
@@ -237,7 +196,9 @@ function* renderNode(a) {
   }
 }
 
-function* render(a) {
+export function* render(
+  a: AstType | string | boolean | number
+): Generator<string, void, unknown> {
   switch (typeof a) {
     case 'boolean':
     case 'number':
@@ -248,14 +209,14 @@ function* render(a) {
     case 'object': {
       switch (a.$$mdtype) {
         case 'Function': {
-          yield* renderFunction(a);
+          yield* renderFunction(a as Function);
           break;
         }
         case 'Node':
-          yield* renderNode(a);
+          yield* renderNode(a as Node);
           break;
         case 'Variable': {
-          yield* renderVariable(a);
+          yield* renderVariable(a as Variable);
           break;
         }
         default:
@@ -263,10 +224,9 @@ function* render(a) {
       }
       break;
     }
-    default:
-      throw new Error(`Unimplemented: "${a.$$mdtype}"`);
   }
 }
 
-const d = [...render(ast)].join('');
-console.log(d);
+export default function TODO(a: AstType | string | boolean | number) {
+  return [...render(a)].join('');
+}
