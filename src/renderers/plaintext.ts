@@ -124,13 +124,14 @@ function* renderNode(n: Node) {
     }
     case 'list': {
       yield '\n';
-      yield* renderChildren(n);
+      yield [...renderChildren(n)]
+        .map((i) => `${n.attributes.ordered ? '1.' : '-'} ${i}`)
+        .join('\n');
+      yield '\n';
       break;
     }
     case 'item': {
-      yield '- ';
-      yield* renderChildren(n);
-      yield '\n';
+      yield [...renderChildren(n)].join('');
       break;
     }
     case 'strong': {

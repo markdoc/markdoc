@@ -36,6 +36,10 @@ Markdoc uses a fully declarative approach to composition and flow control, where
 - [Install Markdoc](/docs/getting-started)
 - [Try it out online](/sandbox)
 
+1. One
+2. Two
+3. Three
+
 | Syntax      | Description |
 | ------ | ---- |
 | Header      | Title  |
@@ -79,6 +83,10 @@ Markdoc uses a fully declarative approach to composition and flow control, where
 
 - [/docs/getting-started](Install Markdoc)
 - [/sandbox](Try it out online)
+
+1. One
+1. Two
+1. Three
 
 | Syntax      | Description |
 | ----------- | ----------- |
