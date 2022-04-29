@@ -124,9 +124,9 @@ function* renderNode(n: Node) {
     }
     case 'list': {
       yield '\n';
-      for (const item of n.children) {
-        yield n.attributes.ordered ? '1. ' : '- ';
-        yield* render(item);
+      for (let i = 0; i < n.children.length; i++) {
+        yield n.attributes.ordered ? `${i + 1}. ` : '- ';
+        yield* render(n.children[i]);
         yield '\n';
       }
       break;

@@ -85,8 +85,8 @@ Markdoc uses a fully declarative approach to composition and flow control, where
 - [/sandbox](Try it out online)
 
 1. One
-1. Two
-1. Three
+2. Two
+3. Three
 
 | Syntax      | Description |
 | ----------- | ----------- |
