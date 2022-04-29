@@ -37,8 +37,8 @@ function* renderNode(n: Node) {
     case 'document': {
       if (n.attributes.frontmatter.length) {
         yield `---\n${n.attributes.frontmatter}\n---\n`;
-        yield* renderChildren(n);
       }
+      yield* renderChildren(n);
       break;
     }
     case 'heading': {
@@ -131,6 +131,7 @@ function* renderNode(n: Node) {
       break;
     }
     case 'item': {
+      // TODO avoid this join
       yield [...renderChildren(n)].join('');
       break;
     }
