@@ -124,15 +124,16 @@ function* renderNode(n: Node) {
     }
     case 'list': {
       yield '\n';
-      yield [...renderChildren(n)]
-        .map((i) => `${n.attributes.ordered ? '1.' : '-'} ${i}`)
-        .join('\n');
-      yield '\n';
+      for (const item of n.children) {
+        yield n.attributes.ordered ? '1. ' : '- ';
+        yield* render(item);
+        yield '\n';
+      }
       break;
     }
     case 'item': {
       // TODO avoid this join
-      yield [...renderChildren(n)].join('');
+      yield* renderChildren(n);
       break;
     }
     case 'strong': {
