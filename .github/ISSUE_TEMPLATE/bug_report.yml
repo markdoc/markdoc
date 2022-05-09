@@ -1,0 +1,37 @@
+name: Bug report
+description: Create a report to help us fix Markdoc bugs
+labels: ["bug"]
+# title: ''
+# assignees:
+body:
+  - type: markdown
+    attributes:
+      value: Thanks for taking the time to fill out this bug report!
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: Also tell us, what did you expect to happen?
+      placeholder: When I did this…
+    validations:
+      required: true
+  - type: textarea
+    id: to-reproduce
+    attributes:
+      label: To reproduce
+      description: Please share steps to reproduce the error or a broken test case.
+      placeholder: |
+        1. Create this Markdoc file
+        2. …
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Version
+      description: What version of `markdoc` are you running?
+  - type: textarea
+    id: additional
+    attributes:
+      label: Additional context
+      description: Add any other context about the problem here, including screenshots if applicable.

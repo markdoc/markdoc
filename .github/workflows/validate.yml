@@ -1,0 +1,21 @@
+name: CI
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: 16.x
+      - name: npm install, build, and test
+        run: |
+          npm ci
+          npm run build
+          npm run prettier:check
+          npm run lint
+          npm run type:check
+          npm run test
+          npm run marktest

@@ -1,0 +1,63 @@
+{
+  "name": "@markdoc/markdoc",
+  "author": "Ryan Paul",
+  "version": "0.1.0",
+  "description": "A text markup language for documentation",
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
+  "files": [
+    "index.ts",
+    "**/*.d.ts",
+    "src",
+    "dist"
+  ],
+  "sideEffects": false,
+  "license": "MIT",
+  "scripts": {
+    "test": "node -r ts-eager/register ./node_modules/.bin/jasmine",
+    "marktest": "node -r ts-eager/register ${INSPECT:+--inspect-brk} spec/marktest/index.ts spec/marktest/tests.yaml",
+    "build": "npm run build:common && npm run build:types",
+    "build:common": "node build.js",
+    "build:types": "tsc --emitDeclarationOnly --outDir dist",
+    "lint": "eslint .",
+    "grammar": "pegjs -o src/grammar/tag.js src/grammar/tag.pegjs && prettier --write src/grammar/tag.js",
+    "prettier": "prettier --write index.ts src spec",
+    "prettier:check": "prettier --check index.ts src spec",
+    "type:check": "tsc --noEmit",
+    "typedoc": "typedoc index.ts --includeVersion --readme none --excludePrivate --excludeExternals --excludeInternal --sort source-order --out types",
+    "postinstall": "patch-package"
+  },
+  "engines": {
+    "node": ">=14.7.0"
+  },
+  "devDependencies": {
+    "@types/jasmine": "^3.10.2",
+    "@types/markdown-it": "^12.2.3",
+    "@types/node": "^16.11.12",
+    "@types/react": "^17.0.38",
+    "@typescript-eslint/eslint-plugin": "^5.12.0",
+    "@typescript-eslint/parser": "^5.12.0",
+    "deep-assert": "0.3.0",
+    "diff": "^4.0.2",
+    "esbuild": "0.13.3",
+    "eslint": "^8.9.0",
+    "jasmine": "3.5.0",
+    "markdown-it": "12.3.2",
+    "patch-package": "^6.4.7",
+    "pegjs": "0.11.0-master.b7b87ea",
+    "prettier": "^2.5.1",
+    "ts-eager": "2.0.2",
+    "typedoc": "^0.22.13",
+    "typescript": "^4.5.4",
+    "yaml-js": "^0.2.3"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/markdoc/markdoc.git"
+  },
+  "bugs": {
+    "url": "https://github.com/markdoc/markdoc/issues"
+  },
+  "homepage": "https://markdoc.io"
+}

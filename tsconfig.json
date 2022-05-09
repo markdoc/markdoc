@@ -1,0 +1,14 @@
+{
+  "compilerOptions": {
+    "strict": true,
+    "target": "ES2021",
+    "lib": ["ES2021"],
+    "allowJs": true,
+    "allowSyntheticDefaultImports": true,
+    "declaration": true,
+    "declarationMap": true,
+    "moduleResolution": "node"
+  },
+  "include": ["**/*.ts", "**/*.d.ts"],
+  "exclude": ["dist", "spec", "**/*.test.ts"]
+}

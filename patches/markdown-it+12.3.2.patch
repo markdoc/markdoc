@@ -1,0 +1,216 @@
+diff --git a/node_modules/markdown-it/lib/rules_block/blockquote.js b/node_modules/markdown-it/lib/rules_block/blockquote.js
+index a02699a..400f67b 100644
+--- a/node_modules/markdown-it/lib/rules_block/blockquote.js
++++ b/node_modules/markdown-it/lib/rules_block/blockquote.js
+@@ -31,7 +31,7 @@ module.exports = function blockquote(state, startLine, endLine, silent) {
+       max = state.eMarks[startLine];
+ 
+   // if it's indented more than 3 spaces, it should be a code block
+-  if (state.sCount[startLine] - state.blkIndent >= 4) { return false; }
++  if (!state.md.options.allowIndentation && state.sCount[startLine] - state.blkIndent >= 4) { return false; }
+ 
+   // check the block quote marker
+   if (state.src.charCodeAt(pos++) !== 0x3E/* > */) { return false; }
+diff --git a/node_modules/markdown-it/lib/rules_block/code.js b/node_modules/markdown-it/lib/rules_block/code.js
+index 018e019..e6bf920 100644
+--- a/node_modules/markdown-it/lib/rules_block/code.js
++++ b/node_modules/markdown-it/lib/rules_block/code.js
+@@ -4,6 +4,8 @@
+ 
+ 
+ module.exports = function code(state, startLine, endLine/*, silent*/) {
++  if (state.md.options.allowIndentation) { return false; }
++
+   var nextLine, last, token;
+ 
+   if (state.sCount[startLine] - state.blkIndent < 4) { return false; }
+diff --git a/node_modules/markdown-it/lib/rules_block/fence.js b/node_modules/markdown-it/lib/rules_block/fence.js
+index 44f1538..f726fb5 100644
+--- a/node_modules/markdown-it/lib/rules_block/fence.js
++++ b/node_modules/markdown-it/lib/rules_block/fence.js
+@@ -10,7 +10,7 @@ module.exports = function fence(state, startLine, endLine, silent) {
+       max = state.eMarks[startLine];
+ 
+   // if it's indented more than 3 spaces, it should be a code block
+-  if (state.sCount[startLine] - state.blkIndent >= 4) { return false; }
++  if (!state.md.options.allowIndentation && state.sCount[startLine] - state.blkIndent >= 4) { return false; }
+ 
+   if (pos + 3 > max) { return false; }
+ 
+@@ -63,7 +63,7 @@ module.exports = function fence(state, startLine, endLine, silent) {
+ 
+     if (state.src.charCodeAt(pos) !== marker) { continue; }
+ 
+-    if (state.sCount[nextLine] - state.blkIndent >= 4) {
++    if (!state.md.options.allowIndentation && state.sCount[nextLine] - state.blkIndent >= 4) {
+       // closing fence should be indented less than 4 spaces
+       continue;
+     }
+diff --git a/node_modules/markdown-it/lib/rules_block/heading.js b/node_modules/markdown-it/lib/rules_block/heading.js
+index 9863f48..bd2123a 100644
+--- a/node_modules/markdown-it/lib/rules_block/heading.js
++++ b/node_modules/markdown-it/lib/rules_block/heading.js
+@@ -11,7 +11,7 @@ module.exports = function heading(state, startLine, endLine, silent) {
+       max = state.eMarks[startLine];
+ 
+   // if it's indented more than 3 spaces, it should be a code block
+-  if (state.sCount[startLine] - state.blkIndent >= 4) { return false; }
++  if (!state.md.options.allowIndentation && state.sCount[startLine] - state.blkIndent >= 4) { return false; }
+ 
+   ch  = state.src.charCodeAt(pos);
+ 
+diff --git a/node_modules/markdown-it/lib/rules_block/hr.js b/node_modules/markdown-it/lib/rules_block/hr.js
+index a3bb14e..5d90d60 100644
+--- a/node_modules/markdown-it/lib/rules_block/hr.js
++++ b/node_modules/markdown-it/lib/rules_block/hr.js
+@@ -11,7 +11,7 @@ module.exports = function hr(state, startLine, endLine, silent) {
+       max = state.eMarks[startLine];
+ 
+   // if it's indented more than 3 spaces, it should be a code block
+-  if (state.sCount[startLine] - state.blkIndent >= 4) { return false; }
++  if (!state.md.options.allowIndentation && state.sCount[startLine] - state.blkIndent >= 4) { return false; }
+ 
+   marker = state.src.charCodeAt(pos++);
+ 
+diff --git a/node_modules/markdown-it/lib/rules_block/html_block.js b/node_modules/markdown-it/lib/rules_block/html_block.js
+index 2f17675..41ac35f 100644
+--- a/node_modules/markdown-it/lib/rules_block/html_block.js
++++ b/node_modules/markdown-it/lib/rules_block/html_block.js
+@@ -26,7 +26,7 @@ module.exports = function html_block(state, startLine, endLine, silent) {
+       max = state.eMarks[startLine];
+ 
+   // if it's indented more than 3 spaces, it should be a code block
+-  if (state.sCount[startLine] - state.blkIndent >= 4) { return false; }
++  if (!state.md.options.allowIndentation && state.sCount[startLine] - state.blkIndent >= 4) { return false; }
+ 
+   if (!state.md.options.html) { return false; }
+ 
+diff --git a/node_modules/markdown-it/lib/rules_block/lheading.js b/node_modules/markdown-it/lib/rules_block/lheading.js
+index 19bdc39..3c9d9ab 100644
+--- a/node_modules/markdown-it/lib/rules_block/lheading.js
++++ b/node_modules/markdown-it/lib/rules_block/lheading.js
+@@ -9,7 +9,7 @@ module.exports = function lheading(state, startLine, endLine/*, silent*/) {
+       terminatorRules = state.md.block.ruler.getRules('paragraph');
+ 
+   // if it's indented more than 3 spaces, it should be a code block
+-  if (state.sCount[startLine] - state.blkIndent >= 4) { return false; }
++  if (!state.md.options.allowIndentation && state.sCount[startLine] - state.blkIndent >= 4) { return false; }
+ 
+   oldParentType = state.parentType;
+   state.parentType = 'paragraph'; // use paragraph to match terminatorRules
+@@ -18,7 +18,7 @@ module.exports = function lheading(state, startLine, endLine/*, silent*/) {
+   for (; nextLine < endLine && !state.isEmpty(nextLine); nextLine++) {
+     // this would be a code block normally, but after paragraph
+     // it's considered a lazy continuation regardless of what's there
+-    if (state.sCount[nextLine] - state.blkIndent > 3) { continue; }
++    if (!state.md.options.allowIndentation && state.sCount[nextLine] - state.blkIndent > 3) { continue; }
+ 
+     //
+     // Check for underline in setext header
+diff --git a/node_modules/markdown-it/lib/rules_block/list.js b/node_modules/markdown-it/lib/rules_block/list.js
+index 1e5e87b..95f71c2 100644
+--- a/node_modules/markdown-it/lib/rules_block/list.js
++++ b/node_modules/markdown-it/lib/rules_block/list.js
+@@ -130,7 +130,7 @@ module.exports = function list(state, startLine, endLine, silent) {
+       tight = true;
+ 
+   // if it's indented more than 3 spaces, it should be a code block
+-  if (state.sCount[startLine] - state.blkIndent >= 4) { return false; }
++ if (!state.md.options.allowIndentation && state.sCount[startLine] - state.blkIndent >= 4) { return false; }
+ 
+   // Special case:
+   //  - item 1
+@@ -138,7 +138,8 @@ module.exports = function list(state, startLine, endLine, silent) {
+   //    - item 3
+   //     - item 4
+   //      - this one is a paragraph continuation
+-  if (state.listIndent >= 0 &&
++  if (!state.md.options.allowIndentation &&
++      state.listIndent >= 0 &&
+       state.sCount[startLine] - state.listIndent >= 4 &&
+       state.sCount[startLine] < state.blkIndent) {
+     return false;
+@@ -244,7 +245,7 @@ module.exports = function list(state, startLine, endLine, silent) {
+ 
+     // If we have more than 4 spaces, the indent is 1
+     // (the rest is just indented code block)
+-    if (indentAfterMarker > 4) { indentAfterMarker = 1; }
++    if (!state.md.options.allowIndentation && indentAfterMarker > 4) { indentAfterMarker = 1; }
+ 
+     // "  -  test"
+     //  ^^^^^ - calculating total length of this thing
+@@ -317,7 +318,7 @@ module.exports = function list(state, startLine, endLine, silent) {
+     if (state.sCount[nextLine] < state.blkIndent) { break; }
+ 
+     // if it's indented more than 3 spaces, it should be a code block
+-    if (state.sCount[startLine] - state.blkIndent >= 4) { break; }
++    if (!state.md.options.allowIndentation && state.sCount[startLine] - state.blkIndent >= 4) { break; }
+ 
+     // fail if terminating block found
+     terminate = false;
+diff --git a/node_modules/markdown-it/lib/rules_block/paragraph.js b/node_modules/markdown-it/lib/rules_block/paragraph.js
+index f0c6872..d779a75 100644
+--- a/node_modules/markdown-it/lib/rules_block/paragraph.js
++++ b/node_modules/markdown-it/lib/rules_block/paragraph.js
+@@ -16,7 +16,7 @@ module.exports = function paragraph(state, startLine/*, endLine*/) {
+   for (; nextLine < endLine && !state.isEmpty(nextLine); nextLine++) {
+     // this would be a code block normally, but after paragraph
+     // it's considered a lazy continuation regardless of what's there
+-    if (state.sCount[nextLine] - state.blkIndent > 3) { continue; }
++    if (!state.md.options.allowIndentation && state.sCount[nextLine] - state.blkIndent > 3) { continue; }
+ 
+     // quirk for blockquotes, this line should already be checked by that rule
+     if (state.sCount[nextLine] < 0) { continue; }
+diff --git a/node_modules/markdown-it/lib/rules_block/reference.js b/node_modules/markdown-it/lib/rules_block/reference.js
+index 78daa26..126ca93 100644
+--- a/node_modules/markdown-it/lib/rules_block/reference.js
++++ b/node_modules/markdown-it/lib/rules_block/reference.js
+@@ -28,7 +28,7 @@ module.exports = function reference(state, startLine, _endLine, silent) {
+       nextLine = startLine + 1;
+ 
+   // if it's indented more than 3 spaces, it should be a code block
+-  if (state.sCount[startLine] - state.blkIndent >= 4) { return false; }
++  if (!state.md.options.allowIndentation && state.sCount[startLine] - state.blkIndent >= 4) { return false; }
+ 
+   if (state.src.charCodeAt(pos) !== 0x5B/* [ */) { return false; }
+ 
+@@ -54,7 +54,7 @@ module.exports = function reference(state, startLine, _endLine, silent) {
+   for (; nextLine < endLine && !state.isEmpty(nextLine); nextLine++) {
+     // this would be a code block normally, but after paragraph
+     // it's considered a lazy continuation regardless of what's there
+-    if (state.sCount[nextLine] - state.blkIndent > 3) { continue; }
++    if (!state.md.options.allowIndentation && state.sCount[nextLine] - state.blkIndent > 3) { continue; }
+ 
+     // quirk for blockquotes, this line should already be checked by that rule
+     if (state.sCount[nextLine] < 0) { continue; }
+diff --git a/node_modules/markdown-it/lib/rules_block/table.js b/node_modules/markdown-it/lib/rules_block/table.js
+index 7d9208f..fab9aba 100644
+--- a/node_modules/markdown-it/lib/rules_block/table.js
++++ b/node_modules/markdown-it/lib/rules_block/table.js
+@@ -62,7 +62,7 @@ module.exports = function table(state, startLine, endLine, silent) {
+   if (state.sCount[nextLine] < state.blkIndent) { return false; }
+ 
+   // if it's indented more than 3 spaces, it should be a code block
+-  if (state.sCount[nextLine] - state.blkIndent >= 4) { return false; }
++  if (!state.md.options.allowIndentation && state.sCount[nextLine] - state.blkIndent >= 4) { return false; }
+ 
+   // first character of the second line should be '|', '-', ':',
+   // and no other characters are allowed but spaces;
+@@ -121,7 +121,7 @@ module.exports = function table(state, startLine, endLine, silent) {
+ 
+   lineText = getLine(state, startLine).trim();
+   if (lineText.indexOf('|') === -1) { return false; }
+-  if (state.sCount[startLine] - state.blkIndent >= 4) { return false; }
++  if (!state.md.options.allowIndentation && state.sCount[startLine] - state.blkIndent >= 4) { return false; }
+   columns = escapedSplit(lineText);
+   if (columns.length && columns[0] === '') columns.shift();
+   if (columns.length && columns[columns.length - 1] === '') columns.pop();
+@@ -179,7 +179,7 @@ module.exports = function table(state, startLine, endLine, silent) {
+     if (terminate) { break; }
+     lineText = getLine(state, nextLine).trim();
+     if (!lineText) { break; }
+-    if (state.sCount[nextLine] - state.blkIndent >= 4) { break; }
++    if (!state.md.options.allowIndentation && state.sCount[nextLine] - state.blkIndent >= 4) { break; }
+     columns = escapedSplit(lineText);
+     if (columns.length && columns[0] === '') columns.shift();
+     if (columns.length && columns[columns.length - 1] === '') columns.pop();
