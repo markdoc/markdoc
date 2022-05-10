@@ -1,7 +1,7 @@
 {
   "name": "@markdoc/markdoc",
   "author": "Ryan Paul",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "A text markup language for documentation",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
@@ -17,7 +17,7 @@
   "scripts": {
     "test": "node -r ts-eager/register ./node_modules/.bin/jasmine",
     "marktest": "node -r ts-eager/register ${INSPECT:+--inspect-brk} spec/marktest/index.ts spec/marktest/tests.yaml",
-    "build": "npm run build:common && npm run build:types",
+    "build": "npx patch-package && npm run build:common && npm run build:types",
     "build:common": "node build.js",
     "build:types": "tsc --emitDeclarationOnly --outDir dist",
     "lint": "eslint .",
@@ -25,8 +25,7 @@
     "prettier": "prettier --write index.ts src spec",
     "prettier:check": "prettier --check index.ts src spec",
     "type:check": "tsc --noEmit",
-    "typedoc": "typedoc index.ts --includeVersion --readme none --excludePrivate --excludeExternals --excludeInternal --sort source-order --out types",
-    "postinstall": "patch-package"
+    "typedoc": "typedoc index.ts --includeVersion --readme none --excludePrivate --excludeExternals --excludeInternal --sort source-order --out types"
   },
   "engines": {
     "node": ">=14.7.0"
