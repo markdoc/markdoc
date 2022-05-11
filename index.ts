@@ -5,6 +5,7 @@ import Tag from './src/ast/tag';
 import Ast from './src/ast/index';
 import * as nodes from './src/schema';
 import tags from './src/tags/index';
+import { truthy } from './src/tags/conditional';
 import functions from './src/functions/index';
 import renderers from './src/renderers/index';
 import transformer from './src/transformer';
@@ -121,6 +122,7 @@ export default {
   transform,
   validate,
   createElement,
+  truthy,
 };
 
 export {
@@ -135,4 +137,5 @@ export {
   parseTags,
   transformer,
   validator,
+  truthy,
 };
