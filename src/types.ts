@@ -1,10 +1,9 @@
+import type Func from './ast/function';
 import type Node from './ast/node';
-import type Function from './ast/function';
 import type Tag from './ast/tag';
 
-export type { default as Function } from './ast/function';
-export type { default as Node } from './ast/node';
-export type { default as Tag } from './ast/tag';
+export type { Node, Tag };
+export declare type Function = Func;
 
 export interface AstType {
   readonly $$mdtype: 'Function' | 'Node' | 'Variable';
@@ -34,7 +33,7 @@ export type ConfigFunction = {
   returns?: ValidationType | ValidationType[];
   parameters?: Record<string, SchemaAttribute>;
   transform?(parameters: Record<string, any>, config: Config): any;
-  validate?(fn: Function, config: Config): ValidationError[];
+  validate?(fn: Func, config: Config): ValidationError[];
 };
 
 export interface CustomAttributeTypeInterface {
