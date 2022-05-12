@@ -12,6 +12,8 @@ const mappings: Record<string, string> = {
   code_inline: 'code',
   list_item: 'item',
   variable: 'text',
+  html_block: 'html',
+  html_inline: 'html',
 };
 
 function annotate(node: Node, attributes: AttributeValue[]) {
@@ -47,6 +49,7 @@ function handleAttrs(token: Token, type: string) {
     case 'text':
     case 'code':
     case 'comment':
+    case 'html':
       return { content: (token.meta || {}).variable || token.content };
     case 'fence': {
       const [language] = token.info.split(' ', 1);

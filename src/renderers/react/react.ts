@@ -26,14 +26,15 @@ function tagName(
 export default function dynamic(
   node: RenderableTreeNodes,
   React: ReactShape,
-  { components = {} } = {}
+  { components = {} } = {},
+  raw?: (content: string, inline: boolean) => ReactNode
 ) {
   function deepRender(value: any): any {
     if (value == null || typeof value !== 'object') return value;
 
     if (Array.isArray(value)) return value.map((item) => deepRender(item));
 
-    if (value.$$mdtype === 'Tag') return render(value);
+    if (['Tag', 'Raw'].includes(value.$$mdtype)) return render(value);
 
     if (typeof value !== 'object') return value;
 
@@ -48,6 +49,8 @@ export default function dynamic(
 
     if (node === null || typeof node !== 'object' || !Tag.isTag(node))
       return node;
+
+    if (node.$$mdtype === 'Raw') return raw?.(node.content, node.inline);
 
     const {
       name,

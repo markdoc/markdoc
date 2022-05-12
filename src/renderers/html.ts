@@ -30,6 +30,8 @@ export default function render(node: RenderableTreeNodes): string {
 
   if (node === null || typeof node !== 'object' || !Tag.isTag(node)) return '';
 
+  if (node.$$mdtype === 'Raw') return node.content;
+
   const { name, attributes, children = [] } = node;
 
   if (!name) return render(children);
