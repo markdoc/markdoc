@@ -59,7 +59,7 @@ Contributions and feedback are welcome and encouraged. Check out our [contributi
 ### Development
 
 1. Run `npm install`
-1. Run `npm build`
+1. Run `npm run build`
 1. Run the tests using `npm test`
 
 ## Code of conduct
