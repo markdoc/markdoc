@@ -1,4 +1,4 @@
-name: Continuous Integration
+name: CI
 
 on: [push]
 
@@ -6,17 +6,12 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
-    strategy:
-      matrix:
-        node-version: [14, 16, 18]
-
     steps:
       - uses: actions/checkout@v3
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v3
+      - uses: actions/setup-node@v3
         with:
-          node-version: ${{ matrix.node-version }}
-          cache: "yarn"
+          node-version: 16
+          cache: "npm"
       - name: npm install, build, and test
         run: |
           npm ci
