@@ -1,6 +1,6 @@
 <h1 align="center">
   <br>
-    <img src="https://user-images.githubusercontent.com/62121649/167893184-a2b69260-ca9e-4a77-a5bc-63b8135ae5db.png" alt="Markdoc" width="260">
+    <img src="https://user-images.githubusercontent.com/62121649/167893184-a2b69260-ca9e-4a77-a5bc-63b8135ae5db.png" alt="Markdoc" width="300">
   <br>
   <br>
 </h1>
