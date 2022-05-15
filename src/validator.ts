@@ -70,7 +70,7 @@ function validateFunction(fn: Function, config: Config): ValidationError[] {
       {
         id: 'function-undefined',
         level: 'critical',
-        message: `Undefined function '${fn.name}'`,
+        message: `Undefined function: '${fn.name}'`,
       },
     ];
 
@@ -84,7 +84,7 @@ function validateFunction(fn: Function, config: Config): ValidationError[] {
         errors.push({
           id: 'parameter-undefined',
           level: 'error',
-          message: `Invalid parameter '${key}'`,
+          message: `Invalid parameter: '${key}'`,
         });
 
         continue;
@@ -100,7 +100,7 @@ function validateFunction(fn: Function, config: Config): ValidationError[] {
             level: 'error',
             message: `Parameter '${key}' of '${
               fn.name
-            }' must be type '${typeToString(param.type)}'`,
+            }' must be type of '${typeToString(param.type)}'`,
           });
         } else if (Array.isArray(valid)) {
           errors.push(...valid);
@@ -114,7 +114,7 @@ function validateFunction(fn: Function, config: Config): ValidationError[] {
       errors.push({
         id: 'parameter-missing-required',
         level: 'error',
-        message: `Missing required parameter '${key}'`,
+        message: `Missing required parameter: '${key}'`,
       });
 
   return errors;
@@ -129,8 +129,8 @@ export default function validate(node: Node, config: Config) {
       id: node.tag ? 'tag-undefined' : 'node-undefined',
       level: 'critical',
       message: node.tag
-        ? `Undefined tag '${node.tag}'`
-        : `Undefined node '${node.type}'`,
+        ? `Undefined tag: '${node.tag}'`
+        : `Undefined node: '${node.type}'`,
     });
 
     return errors;
@@ -140,7 +140,7 @@ export default function validate(node: Node, config: Config) {
     errors.push({
       id: 'tag-selfclosing-has-children',
       level: 'critical',
-      message: `Tag '${node.tag}' should be self-closing`,
+      message: `'${node.tag}' tag should be self-closing`,
     });
 
   const attributes = {
@@ -157,7 +157,7 @@ export default function validate(node: Node, config: Config) {
       errors.push({
         id: 'attribute-undefined',
         level: 'error',
-        message: `Invalid attribute '${key}'`,
+        message: `Invalid attribute: '${key}'`,
       });
 
       continue;
@@ -176,7 +176,7 @@ export default function validate(node: Node, config: Config) {
       errors.push({
         id: 'attribute-value-invalid',
         level: 'error',
-        message: 'The ID attribute must not start with a number',
+        message: 'The id attribute must not start with a number',
       });
 
     if (type) {
@@ -185,7 +185,7 @@ export default function validate(node: Node, config: Config) {
         errors.push({
           id: 'attribute-type-invalid',
           level: errorLevel || 'error',
-          message: `Attribute '${key}' must be type '${typeToString(type)}'`,
+          message: `Attribute '${key}' must be type of '${typeToString(type)}'`,
         });
       }
       if (Array.isArray(valid)) {
@@ -217,7 +217,7 @@ export default function validate(node: Node, config: Config) {
       errors.push({
         id: 'attribute-missing-required',
         level: 'error',
-        message: `Missing required attribute '${key}'`,
+        message: `Missing required attribute: '${key}'`,
       });
 
   for (const { type } of node.children) {
