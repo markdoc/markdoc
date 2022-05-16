@@ -31,7 +31,7 @@ export default function transform(document: Node) {
       // Convert lists to rows with special-case support for conditionals
       // When a conditional is encountered, convert all of its top-level lists to rows
       if (row.type === 'list') convertToRow(row);
-      else if (row.type === 'tag' && row.tag == 'if') {
+      else if (row.type === 'tag' && row.tag === 'if') {
         const children = [];
 
         for (const child of row.children) {
