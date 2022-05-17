@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 const { buildSync } = require('esbuild');
 
 const shared = {
