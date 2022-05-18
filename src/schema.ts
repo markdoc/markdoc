@@ -13,6 +13,7 @@ export const document: Schema = {
     'blockquote',
     'list',
     'hr',
+    'footnote_block',
   ],
   attributes: {
     frontmatter: { render: false },
@@ -35,7 +36,7 @@ export const heading: Schema = {
 
 export const paragraph: Schema = {
   render: 'p',
-  children: ['inline'],
+  children: ['inline', 'footnote_anchor'],
 };
 
 export const image: Schema = {
@@ -188,6 +189,7 @@ export const inline: Schema = {
     'image',
     'hardbreak',
     'softbreak',
+    'footnote_ref',
   ],
 };
 
@@ -247,7 +249,7 @@ export const footnote_ref: Schema = {
 };
 
 export const footnote: Schema = {
-  children: ['paragraph', 'inline'],
+  children: ['paragraph', 'inline', 'footnote_anchor'],
   attributes: {
     id: { type: String, render: true, required: true },
     class: { type: String, render: true, required: true },
@@ -260,10 +262,7 @@ export const footnote: Schema = {
 };
 
 export const footnote_block: Schema = {
-  children: ['item'],
-  attributes: {
-    id: { type: String, render: false, required: true },
-  },
+  children: ['footnote'],
   transform(node, config) {
     const children = node.transformChildren(config);
     const list = new Tag('ol', { class: 'footnotes-list' }, children);
