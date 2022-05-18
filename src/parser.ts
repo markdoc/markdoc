@@ -46,6 +46,20 @@ function handleAttrs(token: Token, type: string) {
         ? { content: token.content }
         : { content: token.content, language };
     }
+    case 'footnote_ref': {
+      const idNumber = token.meta.id + 1;
+      return {
+        id: `fnref${idNumber}`,
+        href: `#fn${idNumber}`,
+        label: token.meta.label,
+      };
+    }
+    case 'footnote': {
+      return { id: `fn${token.meta.id + 1}`, class: 'footnote-item' };
+    }
+    case 'footnote_anchor': {
+      return { href: `#fnref${token.meta.id + 1}`, class: 'footnote-anchor' };
+    }
     default:
       return {};
   }

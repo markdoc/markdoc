@@ -45,6 +45,7 @@
     "eslint": "^8.9.0",
     "jasmine": "3.5.0",
     "markdown-it": "12.3.2",
+    "markdown-it-footnote": "^3.0.3",
     "patch-package": "^6.4.7",
     "pegjs": "0.11.0-master.b7b87ea",
     "prettier": "^2.5.1",

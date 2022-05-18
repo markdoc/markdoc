@@ -592,6 +592,72 @@ describe('Markdown parser', function () {
     });
   });
 
+  describe('handling footnotes', function () {
+    it('simple footnote', function () {
+      const example = convert(`
+        foo[^1]
+
+        [^1]: bar
+      `);
+
+      expect(example).toDeepEqualSubset({
+        type: 'document',
+        children: [
+          {
+            type: 'paragraph',
+            children: [
+              {
+                type: 'inline',
+                children: [
+                  {
+                    type: 'text',
+                    attributes: { content: 'foo' },
+                  },
+                  {
+                    type: 'footnote_ref',
+                    attributes: { id: 'fnref1', href: '#fn1', label: '1' },
+                  },
+                ],
+              },
+            ],
+          },
+          {
+            type: 'footnote_block',
+            children: [
+              {
+                type: 'footnote',
+                attributes: { id: 'fn1', class: 'footnote-item' },
+                children: [
+                  {
+                    type: 'paragraph',
+                    children: [
+                      {
+                        type: 'inline',
+                        children: [
+                          {
+                            type: 'text',
+                            attributes: { content: 'bar' },
+                          },
+                        ],
+                      },
+                      {
+                        type: 'footnote_anchor',
+                        attributes: {
+                          href: '#fnref1',
+                          class: 'footnote-anchor',
+                        },
+                      },
+                    ],
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+      });
+    });
+  });
+
   it('parsing nested tags with indentation should not throw', function () {
     expect(() => {
       convert(`

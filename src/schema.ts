@@ -231,3 +231,54 @@ export const softbreak: Schema = {
 };
 
 export const error = {};
+
+export const footnote_ref: Schema = {
+  children: ['link'],
+  attributes: {
+    id: { type: String, render: true, required: true },
+    href: { type: String, render: true, required: true },
+    label: { type: String, render: false, required: true },
+  },
+  transform(node, config) {
+    const attributes = node.transformAttributes(config);
+    const link = new Tag('a', attributes, [`${node.attributes.label}`]);
+    return new Tag(`sup`, { class: 'footnote-ref' }, [link]);
+  },
+};
+
+export const footnote: Schema = {
+  children: ['paragraph', 'inline'],
+  attributes: {
+    id: { type: String, render: true, required: true },
+    class: { type: String, render: true, required: true },
+  },
+  transform(node, config) {
+    const attributes = node.transformAttributes(config);
+    const children = node.transformChildren(config);
+    return new Tag(`li`, attributes, children);
+  },
+};
+
+export const footnote_block: Schema = {
+  children: ['item'],
+  attributes: {
+    id: { type: String, render: false, required: true },
+  },
+  transform(node, config) {
+    const children = node.transformChildren(config);
+    const list = new Tag('ol', { class: 'footnotes-list' }, children);
+    return new Tag(`section`, { class: 'footnotes' }, [list]);
+  },
+};
+
+export const footnote_anchor: Schema = {
+  children: ['text'],
+  attributes: {
+    class: { type: String, render: true, required: true },
+    href: { type: String, render: true, required: true },
+  },
+  transform(node, config) {
+    const attributes = node.transformAttributes(config);
+    return new Tag('a', attributes, ['↩']);
+  },
+};
