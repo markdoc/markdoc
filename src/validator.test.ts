@@ -24,7 +24,7 @@ describe('validate', function () {
         {
           error: {
             id: 'function-undefined',
-            message: "Undefined function 'baz'",
+            message: "Undefined function: 'baz'",
           },
         },
       ]);
@@ -79,7 +79,7 @@ describe('validate', function () {
           {
             error: {
               id: 'attribute-type-invalid',
-              message: "Attribute 'baz' must be type 'Boolean'",
+              message: "Attribute 'baz' must be type of 'Boolean'",
             },
           },
         ]);
@@ -94,13 +94,13 @@ describe('validate', function () {
           {
             error: {
               id: 'parameter-type-invalid',
-              message: "Parameter '0' of 'nested' must be type 'String'",
+              message: "Parameter '0' of 'nested' must be type of 'String'",
             },
           },
           {
             error: {
               id: 'parameter-type-invalid',
-              message: "Parameter '1' of 'nested' must be type 'Number'",
+              message: "Parameter '1' of 'nested' must be type of 'Number'",
             },
           },
         ]);
@@ -173,7 +173,7 @@ describe('validate', function () {
           {
             error: {
               id: 'parameter-missing-required',
-              message: "Missing required parameter 'req'",
+              message: "Missing required parameter: 'req'",
             },
           },
         ]);
@@ -199,7 +199,7 @@ describe('validate', function () {
               type: 'tag',
               error: {
                 id: 'parameter-undefined',
-                message: "Invalid parameter 'foo'",
+                message: "Invalid parameter: 'foo'",
               },
             },
           ]);
@@ -211,7 +211,7 @@ describe('validate', function () {
               type: 'tag',
               error: {
                 id: 'parameter-undefined',
-                message: "Invalid parameter '0'",
+                message: "Invalid parameter: '0'",
               },
             },
           ]);
@@ -223,7 +223,7 @@ describe('validate', function () {
               type: 'tag',
               error: {
                 id: 'parameter-undefined',
-                message: "Invalid parameter '0'",
+                message: "Invalid parameter: '0'",
               },
             },
           ]);
@@ -242,7 +242,7 @@ describe('validate', function () {
         const error: ValidationError = {
           id: 'attribute-type-invalid',
           level: 'error',
-          message: "Attribute 'href' must be type 'Link'",
+          message: "Attribute 'href' must be type of 'Link'",
         };
 
         return [error];
@@ -270,7 +270,7 @@ describe('validate', function () {
           error: {
             id: 'attribute-type-invalid',
             level: 'error',
-            message: "Attribute 'href' must be type 'Link'",
+            message: "Attribute 'href' must be type of 'Link'",
           },
         },
       ]);
