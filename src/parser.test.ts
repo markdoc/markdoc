@@ -146,6 +146,22 @@ describe('Markdown parser', function () {
         content: 'This is a test\n',
       });
     });
+
+    it('for image with no title', function () {
+      const document = convert(`![foo](/url)`);
+      const image = document.children[0].children[0].children[0];
+      expect(image.attributes.title).toBe(undefined);
+      expect(image.attributes.src).toBe('/url');
+      expect(image.attributes.alt).toBe('foo');
+    });
+
+    it('for image with a title', function () {
+      const document = convert(`![foo](/url "title")`);
+      const image = document.children[0].children[0].children[0];
+      expect(image.attributes.title).toBe('title');
+      expect(image.attributes.src).toBe('/url');
+      expect(image.attributes.alt).toBe('foo');
+    });
   });
 
   it('handling a header', function () {
