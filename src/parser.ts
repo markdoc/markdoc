@@ -29,7 +29,9 @@ function handleAttrs(token: Token, type: string) {
       return { ordered: token.type.startsWith('ordered') };
     case 'link': {
       const attrs = Object.fromEntries(token.attrs);
-      return { href: attrs.href, title: attrs.title };
+      return attrs.title
+        ? { href: attrs.href, title: attrs.title }
+        : { href: attrs.href };
     }
     case 'image': {
       const attrs = Object.fromEntries(token.attrs);

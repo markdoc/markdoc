@@ -86,6 +86,15 @@ describe('Markdown parser', function () {
       expect(link.attributes).toDeepEqual({ href: '/bar' });
     });
 
+    it('for link with one word and a title', function () {
+      const document = convert(`
+      [foo](/bar "title")
+      `);
+
+      const link = document.children[0].children[0].children[0];
+      expect(link.attributes).toDeepEqual({ href: '/bar', title: 'title' });
+    });
+
     it('for link', function () {
       const document = convert(`
       [this is a test](/bar)
