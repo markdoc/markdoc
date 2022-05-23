@@ -35,7 +35,9 @@ function handleAttrs(token: Token, type: string) {
     }
     case 'image': {
       const attrs = Object.fromEntries(token.attrs);
-      return { alt: token.content, src: attrs.src };
+      return attrs.title
+        ? { alt: token.content, src: attrs.src, title: attrs.title }
+        : { alt: token.content, src: attrs.src };
     }
     case 'text':
     case 'code':
