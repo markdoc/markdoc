@@ -23,6 +23,10 @@ function createToken(
     token.info = content;
     token.meta = meta;
 
+    if (!state.delimiters) {
+      state.delimiters = [];
+    }
+
     return token;
   } catch (error) {
     if (!(error instanceof SyntaxError)) throw error;
