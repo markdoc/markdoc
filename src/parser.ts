@@ -48,6 +48,19 @@ function handleAttrs(token: Token, type: string) {
         ? { content: token.content }
         : { content: token.content, language };
     }
+    case 'td':
+    case 'th': {
+      const attrs = Object.fromEntries(token.attrs);
+      let align = 'left';
+      if (attrs.style) {
+        if (attrs.style.includes('center')) {
+          align = 'center';
+        } else if (attrs.style.includes('right')) {
+          align = 'right';
+        }
+      }
+      return { align };
+    }
     default:
       return {};
   }
