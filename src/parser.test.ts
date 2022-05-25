@@ -162,6 +162,23 @@ describe('Markdown parser', function () {
       expect(image.attributes.src).toBe('/url');
       expect(image.attributes.alt).toBe('foo');
     });
+
+    it('for table with alignments', function () {
+      const document = convert(`
+      | Left | Center | Right |
+      | :--- | :----: | ----: |
+      | Left | Center | Right |
+      `);
+      const [thead, tbody] = document.children[0].children;
+
+      expect(thead.children[0].children[0].attributes.align).toBe('left');
+      expect(thead.children[0].children[1].attributes.align).toBe('center');
+      expect(thead.children[0].children[2].attributes.align).toBe('right');
+
+      expect(tbody.children[0].children[0].attributes.align).toBe('left');
+      expect(tbody.children[0].children[1].attributes.align).toBe('center');
+      expect(tbody.children[0].children[2].attributes.align).toBe('right');
+    });
   });
 
   it('handling a header', function () {
