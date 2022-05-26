@@ -50,16 +50,25 @@ function handleAttrs(token: Token, type: string) {
     }
     case 'td':
     case 'th': {
-      const attrs = Object.fromEntries(token.attrs);
-      let align = 'left';
-      if (attrs.style) {
-        if (attrs.style.includes('center')) {
-          align = 'center';
-        } else if (attrs.style.includes('right')) {
-          align = 'right';
+      if (token.attrs) {
+        const attrs = Object.fromEntries(token.attrs);
+
+        let align;
+        if (attrs.style) {
+          if (attrs.style.includes('left')) {
+            align = 'left';
+          } else if (attrs.style.includes('center')) {
+            align = 'center';
+          } else if (attrs.style.includes('right')) {
+            align = 'right';
+          }
+        }
+
+        if (align) {
+          return { align };
         }
       }
-      return { align };
+      return {};
     }
     default:
       return {};
