@@ -8,7 +8,8 @@ export function tagName(
 ): string | Component {
   return typeof name !== 'string'
     ? 'Fragment'
-    : !(components instanceof Function)
-    ? components[name] ?? (name[0] !== name[0].toUpperCase() ? name : undefined)
-    : components(name);
+    : components instanceof Function
+    ? components(name)
+    : components[name] ??
+      (name[0] !== name[0].toUpperCase() ? name : undefined);
 }
