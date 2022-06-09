@@ -1502,12 +1502,3 @@
       children:
         - tag: p
           children: [testing]
-
-- name: code_block node
-  code: |
-    ```
-        # https://spec.commonmark.org/0.30/#indented-code-block
-        4-space indented code
-    ```
-  expected:
-    - 
