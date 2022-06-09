@@ -148,6 +148,19 @@
       attributes: { id: 'test', 'data-language': 'ruby' }
       children: ["example\n"]
 
+# https://spec.commonmark.org/0.30/#indented-code-block
+- name: code_block node via indentation
+  code: "\n\n    Code!\n\n"
+  expected:
+    - tag: pre
+      children: ['Code!']
+
+- name: code_block node via tab indentation
+  code: "\n\n\tCode!\n\n"
+  expected:
+    - tag: pre
+      children: ['Code!']
+
 - name: Frontmatter
   code: |
     ---
