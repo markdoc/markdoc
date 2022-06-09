@@ -100,6 +100,7 @@ function formatValidation(filename, test, validation) {
   const file = await fs.readFile(path);
   const tests = yaml.load(file, Loader);
 
+  let exitCode = 0;
   for (const test of tests) {
     const code = parse(test.code || '');
 
@@ -126,5 +127,7 @@ function formatValidation(filename, test, validation) {
 
     if (!result) continue;
     console.log(formatter(path, test, result));
+    exitCode = 1;
   }
+  process.exit(exitCode);
 })();
