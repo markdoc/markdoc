@@ -306,57 +306,6 @@ describe('processor rendering', function () {
   });
 
   describe('pluggable transformers', () => {
-    const asyncTransformer = {
-      findSchema: markdoc.transformer.findSchema,
-
-      async attributes(node, config = {}) {
-        const schema = this.findSchema(node, config) ?? {};
-        const output = {};
-
-        const attrs = {
-          ...markdoc.attributes,
-          ...schema.attributes,
-        };
-        for (const [key, attr] of Object.entries(attrs) as any) {
-          if (attr.render == false) continue;
-
-          const name = typeof attr.render === 'string' ? attr.render : key;
-
-          let value = node.attributes[key];
-          if (typeof attr.type === 'function') {
-            const instance = new attr.type();
-            if (instance.transform) {
-              value = await instance.transform(value, config);
-            }
-          }
-          value = value === undefined ? attr.default : value;
-
-          if (value === undefined) continue;
-          output[name] = value;
-        }
-
-        return output;
-      },
-
-      async children(node, config = {}) {
-        return Promise.all(
-          node.children.flatMap((child) => this.node(child, config))
-        );
-      },
-
-      async node(node, config = {}) {
-        const schema = this.findSchema(node, config) ?? {};
-        if (schema && schema.transform instanceof Function)
-          return schema.transform(node, config);
-
-        const children = await this.children(node, config);
-        if (!schema || !schema.render) return children;
-
-        const attributes = await this.attributes(node, config);
-        return new markdoc.Tag(schema.render, attributes, children);
-      },
-    };
-
     it('should allow for injecting an async transformer', async () => {
       const doc = `![img](/src)`;
 
@@ -369,7 +318,7 @@ describe('processor rendering', function () {
             },
           },
         },
-        transformer: asyncTransformer,
+        transformer: markdoc.asyncTransformer,
       };
 
       const content = await markdoc.transform(markdoc.parse(doc), config);

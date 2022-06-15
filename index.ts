@@ -8,7 +8,11 @@ import tags from './src/tags/index';
 import { truthy } from './src/tags/conditional';
 import functions from './src/functions/index';
 import renderers from './src/renderers/index';
-import transformer, { globalAttributes } from './src/transformer';
+import {
+  transformer,
+  asyncTransformer,
+  globalAttributes,
+} from './src/transformer';
 import validator from './src/validator';
 import { parseTags } from './src/utils';
 import transforms from './src/transforms/index';
@@ -119,6 +123,7 @@ export {
   Tokenizer,
   parseTags,
   transformer,
+  asyncTransformer,
   validator,
   truthy,
 };
