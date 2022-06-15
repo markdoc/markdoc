@@ -1,13 +1,6 @@
 import Tag from './ast/tag';
 import { Class } from './schema-types/class';
-import type {
-  Config,
-  Node,
-  NodeType,
-  Schema,
-  RenderableTreeNode,
-  RenderableTreeNodes,
-} from './types';
+import type { Config, Node, NodeType, Schema, Transformer } from './types';
 
 type AttributesSchema = Schema['attributes'];
 
@@ -15,13 +8,6 @@ export const globalAttributes: AttributesSchema = {
   class: { type: Class, render: true },
   id: { type: String, render: true },
 };
-
-export interface Transformer {
-  findSchema(node: Node, config: Config): Schema | undefined;
-  node(node: Node, config: Config): RenderableTreeNodes;
-  attributes(node: Node, config: Config): Record<string, any>;
-  children(node: Node, config: Config): RenderableTreeNode[];
-}
 
 export default {
   findSchema(node: Node, { nodes = {}, tags = {} }: Config = {}) {
