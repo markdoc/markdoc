@@ -54,18 +54,18 @@ export default class Node implements AstType {
   }
 
   findSchema(config: Config = {}): Schema | undefined {
-    return transformer.findSchema(this, config);
+    return (config.transformer || transformer).findSchema(this, config);
   }
 
   transformAttributes(config: Config = {}) {
-    return transformer.attributes(this, config);
+    return (config.transformer || transformer).attributes(this, config);
   }
 
   transformChildren(config: Config): RenderableTreeNode[] {
-    return transformer.children(this, config);
+    return (config.transformer || transformer).children(this, config);
   }
 
   transform(config: Config): RenderableTreeNodes {
-    return transformer.node(this, config);
+    return (config.transformer || transformer).node(this, config);
   }
 }

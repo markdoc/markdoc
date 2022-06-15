@@ -27,6 +27,7 @@ export type ConfigType = Partial<{
   validation?: {
     validateFunctions?: boolean;
   };
+  transformer: Transformer;
 }>;
 
 export type ConfigFunction = {

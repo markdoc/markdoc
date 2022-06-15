@@ -22,6 +22,7 @@ const tokenizer = new Tokenizer();
 
 function mergeConfig(config: Config = {}): Config {
   return {
+    transformer,
     ...config,
     tags: {
       ...tags,
