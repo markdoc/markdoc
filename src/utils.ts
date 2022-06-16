@@ -72,11 +72,13 @@ export function parseTags(content: string, firstLine = 0): Token[] {
 
     const end = findTagEnd(content, pos) || 0;
     const text = content.slice(pos, end + CLOSE.length);
-    const inner = content.slice(pos + OPEN.length, end);
+    const inner = content.slice(pos + OPEN.length, end).trim();
     const lineStart = content.lastIndexOf('\n', pos);
     const lineEnd = content.indexOf('\n', end);
     const lineContent = content.slice(lineStart, lineEnd);
-    const tag = parseTag(inner.trim(), line, pos - lineStart);
+
+    if (!inner.length) continue;
+    const tag = parseTag(inner, line, pos - lineStart);
 
     // Throw away excess whitespace introduced by block-level tags
     const precedingTextEnd = lineContent.trim() === text ? lineStart : pos;
