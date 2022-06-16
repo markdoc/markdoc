@@ -299,7 +299,6 @@ describe('MarkdownIt Annotations plugin', function () {
 
       it('simple with one tag', function () {
         const example = parse('```\nhello {% foo %}bar{% /foo %}\n```');
-        console.log(JSON.stringify(example, null, 2));
         expect(example).toDeepEqualSubset([
           {
             type: 'fence',
@@ -328,14 +327,13 @@ describe('MarkdownIt Annotations plugin', function () {
       it('unclosed tag', function () {
         const example = parse('```\nhello {%\n```');
         // unclosed tags should not result in crashes
-        console.log(JSON.stringify(example));
         expect(example).toDeepEqualSubset([
           {
             type: 'fence',
             children: [
               {
                 type: 'text',
-                content: 'hello {%\n',
+                tent: 'hello {%\n',
               },
             ],
           },
