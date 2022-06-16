@@ -165,9 +165,22 @@ describe('Templating', function () {
               example=1 another="test}"}
         `;
 
-        const end = findTagEnd(example, 0, '{', '}');
-        expect(end).toEqual(undefined);
+        const end = findTagEnd(example, 0);
+        expect(end).toEqual(null);
       });
+    });
+    it("shouldn't hang when {% is included in code block", () => {
+      const example = '```\n{%a %b %c}\n```';
+
+      const output = parseTags(example);
+      expect(output).toEqual([
+        {
+          type: 'text',
+          start: 0,
+          end: 17,
+          content: '```\n{%a %b %c}\n```',
+        },
+      ]);
     });
   });
 });

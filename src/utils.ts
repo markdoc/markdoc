@@ -37,6 +37,8 @@ export function findTagEnd(content: string, start = 0) {
         else if (content.startsWith(CLOSE, pos)) return pos;
     }
   }
+
+  return null;
 }
 
 function parseTag(content: string, line: number, contentStart: number) {
@@ -70,7 +72,15 @@ export function parseTags(content: string, firstLine = 0): Token[] {
 
     if (!content.startsWith(OPEN, pos)) continue;
 
-    const end = findTagEnd(content, pos) || 0;
+    const end = findTagEnd(content, pos);
+
+    if (end == null) {
+      // We have an unopened tag. To avoid crashing, we skip
+      // over this tag
+      pos = pos + OPEN.length;
+      continue;
+    }
+
     const text = content.slice(pos, end + CLOSE.length);
     const inner = content.slice(pos + OPEN.length, end);
     const lineStart = content.lastIndexOf('\n', pos);
