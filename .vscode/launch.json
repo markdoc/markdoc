@@ -8,9 +8,7 @@
       "type": "node",
       "request": "launch",
       "name": "Run marktest",
-      "skipFiles": [
-        "<node_internals>/**"
-      ],
+      "skipFiles": ["<node_internals>/**"],
       "runtimeArgs": ["-r", "ts-eager/register"],
       "console": "integratedTerminal",
       "program": "${workspaceFolder}/spec/marktest/index.ts",
@@ -21,9 +19,7 @@
       "type": "node",
       "request": "launch",
       "name": "Run marktest at Line",
-      "skipFiles": [
-        "<node_internals>/**"
-      ],
+      "skipFiles": ["<node_internals>/**"],
       "runtimeArgs": ["-r", "ts-eager/register"],
       "console": "integratedTerminal",
       "program": "${workspaceFolder}/spec/marktest/index.ts",

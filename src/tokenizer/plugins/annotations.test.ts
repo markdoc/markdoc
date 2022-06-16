@@ -280,6 +280,66 @@ describe('MarkdownIt Annotations plugin', function () {
         ]);
       });
     });
+
+    describe('fence', function () {
+      it('simple with no tags', function () {
+        const example = parse('```\nhello\n```');
+        expect(example).toDeepEqualSubset([
+          {
+            type: 'fence',
+            children: [
+              {
+                type: 'text',
+                content: 'hello\n',
+              },
+            ],
+          },
+        ]);
+      });
+
+      it('simple with one tag', function () {
+        const example = parse('```\nhello {% foo %}bar{% /foo %}\n```');
+        expect(example).toDeepEqualSubset([
+          {
+            type: 'fence',
+            children: [
+              {
+                type: 'text',
+                content: 'hello ',
+              },
+              {
+                type: 'tag_open',
+                info: '{% foo %}',
+              },
+              {
+                type: 'text',
+                content: 'bar',
+              },
+              {
+                type: 'tag_close',
+                info: '{% /foo %}',
+              },
+            ],
+          },
+        ]);
+      });
+
+      it('unclosed tag', function () {
+        const example = parse('```\nhello {%\n```');
+        // unclosed tags should not result in crashes
+        expect(example).toDeepEqualSubset([
+          {
+            type: 'fence',
+            children: [
+              {
+                type: 'text',
+                content: 'hello {%\n',
+              },
+            ],
+          },
+        ]);
+      });
+    });
   });
 
   describe('parsing inline annotations', function () {
