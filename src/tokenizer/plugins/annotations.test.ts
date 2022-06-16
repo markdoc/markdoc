@@ -333,7 +333,7 @@ describe('MarkdownIt Annotations plugin', function () {
             children: [
               {
                 type: 'text',
-                tent: 'hello {%\n',
+                content: 'hello {%\n',
               },
             ],
           },
