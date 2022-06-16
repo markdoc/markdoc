@@ -75,8 +75,7 @@ export function parseTags(content: string, firstLine = 0): Token[] {
     const end = findTagEnd(content, pos);
 
     if (end == null) {
-      // We have an unopened tag. To avoid crashing, we skip
-      // over this tag
+      // If we cannot find the closing tag, we skip over it
       pos = pos + OPEN.length;
       continue;
     }
