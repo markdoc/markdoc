@@ -8,7 +8,7 @@ import tags from './src/tags/index';
 import { truthy } from './src/tags/conditional';
 import functions from './src/functions/index';
 import renderers from './src/renderers/index';
-import transformer, { globalAttributes as attributes } from './src/transformer';
+import transformer, { globalAttributes } from './src/transformer';
 import validator from './src/validator';
 import { parseTags } from './src/utils';
 import transforms from './src/transforms/index';
@@ -110,7 +110,7 @@ export default {
   nodes,
   tags,
   functions,
-  attributes,
+  globalAttributes,
   renderers,
   transforms,
   Ast,
@@ -130,7 +130,7 @@ export {
   nodes,
   tags,
   functions,
-  attributes,
+  globalAttributes,
   transforms,
   renderers,
   Ast,
