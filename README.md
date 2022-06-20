@@ -75,4 +75,4 @@ This project uses the [MIT license](LICENSE).
 Special shout out to:
 
 - [@marcioAlmada](https://github.com/marcioAlmada) for providing us with the [@markdoc](https://github.com/markdoc) GitHub org.
-- [@koomen](https://github.com/koomen) for gifting us https://markdoc.dev.
+- [@koomen](https://github.com/koomen) for gifting us https://markdoc.io.
