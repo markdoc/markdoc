@@ -318,7 +318,6 @@ describe('processor rendering', function () {
             },
           },
         },
-        transformer: markdoc.asyncTransformer,
       };
 
       const content = await markdoc.transform(markdoc.parse(doc), config);

@@ -8,11 +8,7 @@ import tags from './src/tags/index';
 import { truthy } from './src/tags/conditional';
 import functions from './src/functions/index';
 import renderers from './src/renderers/index';
-import {
-  transformer,
-  asyncTransformer,
-  globalAttributes,
-} from './src/transformer';
+import transformer, { globalAttributes } from './src/transformer';
 import validator from './src/validator';
 import { parseTags } from './src/utils';
 import transforms from './src/transforms/index';
@@ -26,7 +22,6 @@ const tokenizer = new Tokenizer();
 
 function mergeConfig(config: Config = {}): Config {
   return {
-    transformer,
     ...config,
     tags: {
       ...tags,
@@ -111,6 +106,29 @@ export function createElement(
   return { name, attributes, children };
 }
 
+<<<<<<< HEAD
+=======
+export default {
+  nodes,
+  tags,
+  functions,
+  globalAttributes,
+  renderers,
+  transforms,
+  Ast,
+  Tag,
+  Tokenizer,
+  parseTags,
+  transformer,
+  validator,
+  parse,
+  transform,
+  validate,
+  createElement,
+  truthy,
+};
+
+>>>>>>> 4490414 (Option #3: implement Promise detection within transformer)
 export {
   nodes,
   tags,
@@ -123,7 +141,6 @@ export {
   Tokenizer,
   parseTags,
   transformer,
-  asyncTransformer,
   validator,
   truthy,
 };
