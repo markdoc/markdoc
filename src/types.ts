@@ -111,6 +111,13 @@ export type SchemaAttribute = {
 
 export type SchemaMatches = RegExp | string[] | null;
 
+export interface Transformer {
+  findSchema(node: Node, config: Config): Schema | undefined;
+  node(node: Node, config: Config): RenderableTreeNodes;
+  attributes(node: Node, config: Config): Record<string, any>;
+  children(node: Node, config: Config): RenderableTreeNode[];
+}
+
 export type ValidationError = {
   id: string;
   level: 'debug' | 'info' | 'warning' | 'error' | 'critical';
