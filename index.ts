@@ -8,7 +8,7 @@ import tags from './src/tags/index';
 import { truthy } from './src/tags/conditional';
 import functions from './src/functions/index';
 import renderers from './src/renderers/index';
-import transformer, { globalAttributes } from './src/transformer';
+import { transformer, globalAttributes } from './src/transformer';
 import validator from './src/validator';
 import { parseTags } from './src/utils';
 import transforms from './src/transforms/index';
@@ -81,6 +81,20 @@ export function transform<C extends Config = Config>(
   return content.transform(config);
 }
 
+export function transformAsync<C extends Config = Config>(
+  nodes: any,
+  options?: C
+): Promise<RenderableTreeNode | RenderableTreeNode[]> {
+  const config = mergeConfig(options);
+  const content = resolve(nodes, config);
+
+  if (Array.isArray(content))
+    return Promise.all(
+      content.flatMap((child) => child.transformAsync(config))
+    );
+  return content.transformAsync(config);
+}
+
 export function validate<C extends Config = Config>(
   content: Node,
   options?: C
@@ -106,29 +120,6 @@ export function createElement(
   return { name, attributes, children };
 }
 
-<<<<<<< HEAD
-=======
-export default {
-  nodes,
-  tags,
-  functions,
-  globalAttributes,
-  renderers,
-  transforms,
-  Ast,
-  Tag,
-  Tokenizer,
-  parseTags,
-  transformer,
-  validator,
-  parse,
-  transform,
-  validate,
-  createElement,
-  truthy,
-};
-
->>>>>>> 4490414 (Option #3: implement Promise detection within transformer)
 export {
   nodes,
   tags,

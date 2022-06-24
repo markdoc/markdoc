@@ -320,7 +320,7 @@ describe('processor rendering', function () {
         },
       };
 
-      const content = await markdoc.transform(markdoc.parse(doc), config);
+      const content = await markdoc.transformAsync(markdoc.parse(doc), config);
 
       expect(content.children[0].children[0]).toEqual(['1']);
     });
