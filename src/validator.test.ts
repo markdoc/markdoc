@@ -295,4 +295,12 @@ describe('validate', function () {
       expect(output).toEqual([]);
     });
   });
+
+  it('should not error for missing support for code_block', () => {
+    const example = `   # https://spec.commonmark.org/0.30/#indented-code-block
+    4-space indented code`;
+    const output = validate(example, {});
+
+    expect(output).toEqual([]);
+  });
 });
