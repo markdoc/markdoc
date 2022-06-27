@@ -106,26 +106,6 @@ export function createElement(
   return { name, attributes, children };
 }
 
-export default {
-  nodes,
-  tags,
-  functions,
-  globalAttributes,
-  renderers,
-  transforms,
-  Ast,
-  Tag,
-  Tokenizer,
-  parseTags,
-  transformer,
-  validator,
-  parse,
-  transform,
-  validate,
-  createElement,
-  truthy,
-};
-
 export {
   nodes,
   tags,
@@ -141,3 +121,36 @@ export {
   validator,
   truthy,
 };
+
+export default class Markdoc {
+  static nodes = nodes;
+  static tags = tags;
+  static functions = functions;
+  static globalAttributes = globalAttributes;
+  static renderers = renderers;
+  static transforms = transforms;
+  static Ast = Ast;
+  static Tag = Tag;
+  static Tokenizer = Tokenizer;
+  static parseTags = parseTags;
+  static transformer = transformer;
+  static validator = validator;
+  static parse = parse;
+  static transform = transform;
+  static validate = validate;
+  static createElement = createElement;
+  static truthy = truthy;
+
+  config;
+  constructor(config: Config) {
+    this.config = config;
+  }
+
+  parse = parse;
+  resolve = (content: Parameters<typeof resolve>[0]) =>
+    resolve(content, this.config);
+  transform = (content: Parameters<typeof transform>[0]) =>
+    transform(content, this.config);
+  validate = (content: Parameters<typeof validate>[0]) =>
+    validate(content, this.config);
+}
