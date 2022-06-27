@@ -1,5 +1,5 @@
 import { resolve } from './base';
-import { transformer, asyncTransformer } from '../transformer';
+import transformer from '../transformer';
 import type {
   AstType,
   Location,
@@ -67,17 +67,5 @@ export default class Node implements AstType {
 
   transform(config: Config): RenderableTreeNodes {
     return transformer.node(this, config);
-  }
-
-  async transformAttributesAsync(config: Config = {}) {
-    return asyncTransformer.attributes(this, config);
-  }
-
-  async transformChildrenAsync(config: Config): Promise<RenderableTreeNode[]> {
-    return asyncTransformer.children(this, config);
-  }
-
-  async transformAsync(config: Config): Promise<RenderableTreeNodes> {
-    return asyncTransformer.node(this, config);
   }
 }

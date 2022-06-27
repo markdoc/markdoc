@@ -305,7 +305,7 @@ describe('processor rendering', function () {
     });
   });
 
-  describe('pluggable transformers', () => {
+  describe('async support', () => {
     it('should allow for injecting an async transformer', async () => {
       const doc = `![img](/src)`;
 
@@ -320,8 +320,10 @@ describe('processor rendering', function () {
         },
       };
 
-      const content = await markdoc.transformAsync(markdoc.parse(doc), config);
+      // @ts-expect-error
+      const content = await markdoc.transform(markdoc.parse(doc), config);
 
+      // @ts-expect-error
       expect(content.children[0].children[0]).toEqual(['1']);
     });
   });
