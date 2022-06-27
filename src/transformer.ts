@@ -5,7 +5,7 @@ import type { Config, Node, NodeType, Schema, Transformer } from './types';
 type AttributesSchema = Schema['attributes'];
 
 function isPromise(a: any): a is Promise<any> {
-  return typeof a === 'object' && typeof a.then === 'function';
+  return a && typeof a === 'object' && typeof a.then === 'function';
 }
 
 export const globalAttributes: AttributesSchema = {
