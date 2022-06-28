@@ -4,6 +4,10 @@ import type { Config, Node, NodeType, Schema, Transformer } from './types';
 
 type AttributesSchema = Schema['attributes'];
 
+function isPromise(a: any): a is Promise<any> {
+  return a && typeof a === 'object' && typeof a.then === 'function';
+}
+
 export const globalAttributes: AttributesSchema = {
   class: { type: Class, render: true },
   id: { type: String, render: true },
@@ -41,7 +45,11 @@ export default {
   },
 
   children(node: Node, config: Config = {}) {
-    return node.children.flatMap((child) => this.node(child, config));
+    const children = node.children.flatMap((child) => this.node(child, config));
+    if (children.some(isPromise)) {
+      return Promise.all(children);
+    }
+    return children;
   },
 
   node(node: Node, config: Config = {}) {
@@ -53,6 +61,13 @@ export default {
     if (!schema || !schema.render) return children;
 
     const attributes = this.attributes(node, config);
+
+    if (isPromise(attributes) || isPromise(children)) {
+      return Promise.all([attributes, children]).then(
+        (values) => new Tag(schema.render, ...values)
+      );
+    }
+
     return new Tag(schema.render, attributes, children);
   },
 } as Transformer;

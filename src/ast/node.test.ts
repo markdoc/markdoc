@@ -304,4 +304,27 @@ describe('processor rendering', function () {
       });
     });
   });
+
+  describe('async support', () => {
+    it('should allow for injecting an async transformer', async () => {
+      const doc = `![img](/src)`;
+
+      const config = {
+        nodes: {
+          image: {
+            async transform() {
+              const value = await new Promise((res) => res('1'));
+              return value;
+            },
+          },
+        },
+      };
+
+      // @ts-expect-error
+      const content = await markdoc.transform(markdoc.parse(doc), config);
+
+      // @ts-expect-error
+      expect(content.children[0].children[0]).toEqual(['1']);
+    });
+  });
 });
