@@ -14,13 +14,15 @@ const mappings: Record<string, string> = {
 };
 
 function annotate(node: Node, attributes: AttributeValue[]) {
-  for (const { name, value, type } of attributes)
-    if (type === 'attribute') {
-      node.attributes[name] = value;
-      node.annotations[name] = value;
-    } else if (type === 'class')
+  for (const attribute of attributes) {
+    node.annotations.push(attribute);
+
+    const { name, value, type } = attribute;
+    if (type === 'attribute') node.attributes[name] = value;
+    else if (type === 'class')
       if (node.attributes.class) node.attributes.class[name] = value;
       else node.attributes.class = { [name]: value };
+  }
 }
 
 function handleAttrs(token: Token, type: string) {
