@@ -19,6 +19,7 @@ export default class Node implements AstType {
   lines: number[] = [];
   type: string;
   tag?: string;
+  annotations: Record<string, any>;
 
   inline = false;
   location?: Location;
@@ -33,6 +34,7 @@ export default class Node implements AstType {
     this.children = children;
     this.type = type;
     this.tag = tag;
+    this.annotations = {};
   }
 
   *walk(): Generator<Node, void, unknown> {

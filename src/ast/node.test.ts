@@ -4,6 +4,7 @@ import Node from './node';
 import Variable from './variable';
 
 import Tag from '../ast/tag';
+import { json } from 'stream/consumers';
 
 describe('Node object', function () {
   describe('traversal', function () {
@@ -301,6 +302,32 @@ describe('processor rendering', function () {
           const output = process(example, config) as Tag;
           expect(output.attributes.bar).toEqual(test.expectedValue);
         });
+      });
+    });
+  });
+
+  describe('annotations', () => {
+    it('multiple values should be ordered correctly', () => {
+      const example = markdoc.parse(
+        `\`\`\`js {% z=true y=2 x="1" %} \nContent\n\`\`\``
+      );
+
+      const fence = example.children[0];
+
+      const { attributes, annotations } = fence;
+
+      expect(attributes).toEqual({
+        content: 'Content\n',
+        language: 'js',
+        z: true,
+        y: 2,
+        x: '1',
+      });
+      expect(Object.keys(annotations)).toEqual(['z', 'y', 'x']);
+      expect(annotations).toEqual({
+        z: true,
+        y: 2,
+        x: '1',
       });
     });
   });
