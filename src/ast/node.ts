@@ -2,6 +2,7 @@ import { resolve } from './base';
 import transformer from '../transformer';
 import type {
   AstType,
+  AttributeValue,
   Location,
   Config,
   RenderableTreeNode,
@@ -19,6 +20,7 @@ export default class Node implements AstType {
   lines: number[] = [];
   type: string;
   tag?: string;
+  annotations: AttributeValue[];
 
   inline = false;
   location?: Location;
@@ -33,6 +35,7 @@ export default class Node implements AstType {
     this.children = children;
     this.type = type;
     this.tag = tag;
+    this.annotations = [];
   }
 
   *walk(): Generator<Node, void, unknown> {
