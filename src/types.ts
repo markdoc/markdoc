@@ -82,7 +82,10 @@ export type NodeType =
   | 'code'
   | 'text'
   | 'hardbreak'
-  | 'softbreak';
+  | 'softbreak'
+  | 'node'
+  | 'tag'
+  | 'error';
 
 export type Primitive = null | boolean | number | string;
 

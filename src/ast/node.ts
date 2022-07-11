@@ -3,8 +3,9 @@ import transformer from '../transformer';
 import type {
   AstType,
   AttributeValue,
-  Location,
   Config,
+  Location,
+  NodeType,
   RenderableTreeNode,
   RenderableTreeNodes,
   Schema,
@@ -18,7 +19,7 @@ export default class Node implements AstType {
   children: Node[];
   errors: ValidationError[] = [];
   lines: number[] = [];
-  type: string;
+  type: NodeType;
   tag?: string;
   annotations: AttributeValue[];
 
@@ -26,7 +27,7 @@ export default class Node implements AstType {
   location?: Location;
 
   constructor(
-    type = 'node',
+    type: NodeType = 'node',
     attributes: Record<string, any> = {},
     children: Node[] = [],
     tag?: string
