@@ -79,7 +79,6 @@ export type NodeType =
   | 'strong'
   | 'table'
   | 'tag'
-  | 'tag'
   | 'tbody'
   | 'td'
   | 'text'
