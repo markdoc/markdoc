@@ -1,6 +1,6 @@
 import type { Node, Config, Schema, ValidationError } from '../types';
 
-class File {
+class PartialFile {
   validate(file: any, config: Config): ValidationError[] {
     const { partials = {} } = config;
     const partial = partials[file];
@@ -21,7 +21,7 @@ class File {
 export const partial: Schema = {
   selfClosing: true,
   attributes: {
-    file: { type: File, render: false, required: true },
+    file: { type: PartialFile, render: false, required: true },
     variables: { type: Object, render: false },
   },
   transform(node: Node, config: Config) {
