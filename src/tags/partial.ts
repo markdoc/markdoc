@@ -10,8 +10,7 @@ class File {
         {
           id: 'attribute-value-invalid',
           level: 'error',
-          message:
-            "The 'file' attribute value must be set in `config.partials`",
+          message: `Partial \`${file}\` not found. The 'file' attribute must be set in \`config.partials\``,
         },
       ];
 

@@ -316,7 +316,7 @@ describe('validate', function () {
           id: 'attribute-value-invalid',
           level: 'error',
           message:
-            "The 'file' attribute value must be set in `config.partials`",
+            "Partial `non-existent.md` not found. The 'file' attribute must be set in `config.partials`",
         },
       },
     ]);
