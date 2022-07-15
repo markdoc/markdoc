@@ -303,4 +303,22 @@ describe('validate', function () {
 
     expect(output).toEqual([]);
   });
+
+  // https://github.com/markdoc/markdoc/issues/122
+  it('should validate partial file attributes', () => {
+    const example = `{% partial file="non-existent.md" /%}`;
+    const output = validate(example, {});
+
+    expect(output).toDeepEqualSubset([
+      {
+        type: 'tag',
+        error: {
+          id: 'attribute-value-invalid',
+          level: 'error',
+          message:
+            "Partial `non-existent.md` not found. The 'file' attribute must be set in `config.partials`",
+        },
+      },
+    ]);
+  });
 });

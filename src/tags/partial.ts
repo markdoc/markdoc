@@ -1,12 +1,29 @@
-import type { Node, Config, Schema } from '../types';
+import type { Node, Config, Schema, ValidationError } from '../types';
+
+class File {
+  validate(file: any, config: Config): ValidationError[] {
+    const { partials = {} } = config;
+    const partial = partials[file];
+
+    if (!partial)
+      return [
+        {
+          id: 'attribute-value-invalid',
+          level: 'error',
+          message: `Partial \`${file}\` not found. The 'file' attribute must be set in \`config.partials\``,
+        },
+      ];
+
+    return [];
+  }
+}
 
 export const partial: Schema = {
   selfClosing: true,
   attributes: {
-    file: { type: String, render: false, required: true },
+    file: { type: File, render: false, required: true },
     variables: { type: Object, render: false },
   },
-
   transform(node: Node, config: Config) {
     const { partials = {} } = config;
     const { file, variables } = node.attributes;
