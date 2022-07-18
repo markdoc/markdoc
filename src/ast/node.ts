@@ -19,7 +19,7 @@ export default class Node implements AstType {
   children: Node[];
   errors: ValidationError[] = [];
   lines: number[] = [];
-  type: NodeType | 'node';
+  type: NodeType;
   tag?: string;
   annotations: AttributeValue[];
 
@@ -27,7 +27,7 @@ export default class Node implements AstType {
   location?: Location;
 
   constructor(
-    type: NodeType | 'node' = 'node',
+    type: NodeType = 'node',
     attributes: Record<string, any> = {},
     children: Node[] = [],
     tag?: string

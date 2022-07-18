@@ -232,3 +232,4 @@ export const softbreak: Schema = {
 };
 
 export const error = {};
+export const node = {};

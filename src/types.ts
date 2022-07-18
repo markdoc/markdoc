@@ -72,6 +72,7 @@ export type NodeType =
   | 'item'
   | 'link'
   | 'list'
+  | 'node'
   | 'paragraph'
   | 's'
   | 'softbreak'
