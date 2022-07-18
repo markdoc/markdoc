@@ -96,7 +96,10 @@ export type Schema<C extends Config = Config, R = string> = {
   children?: string[];
   attributes?: Record<string, SchemaAttribute>;
   selfClosing?: boolean;
-  transform?(node: Node, config: C): RenderableTreeNodes;
+  transform?(
+    node: Node,
+    config: C
+  ): RenderableTreeNodes | Promise<RenderableTreeNodes>;
   validate?(node: Node, config: C): ValidationError[];
 };
 
