@@ -1,8 +1,9 @@
 import type Func from './ast/function';
 import type Node from './ast/node';
 import type Tag from './ast/tag';
+import type Variable from './ast/variable';
 
-export type { Node, Tag };
+export type { Node, Tag, Variable };
 export declare type Function = Func;
 
 export interface AstType {

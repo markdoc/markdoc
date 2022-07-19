@@ -296,6 +296,31 @@ describe('validate', function () {
     });
   });
 
+  describe('variable validation', () => {
+    it('should warn against missing variables', () => {
+      const example = `{% $undefinedVariable %}`;
+      const output = validate(example, {});
+
+      expect(output).toDeepEqualSubset([
+        {
+          type: 'text',
+          error: {
+            id: 'variable-undefined',
+            level: 'error',
+            message: "Undefined variable: 'undefinedVariable'",
+          },
+        },
+      ]);
+    });
+
+    it('should not warn if variable exists', () => {
+      const example = `{% $valid.variable %}`;
+      const output = validate(example, { valid: { variable: false } });
+
+      expect(output).toDeepEqualSubset([]);
+    });
+  });
+
   it('should not error for missing support for code_block', () => {
     const example = `   # https://spec.commonmark.org/0.30/#indented-code-block
     4-space indented code`;
