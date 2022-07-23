@@ -22,6 +22,7 @@ type TypeParam = NonNullable<SchemaAttribute['type']>;
 
 export function validateType(
   type: TypeParam,
+  node: Node,
   value: Value,
   config: Config
 ): boolean | ValidationError[] {
@@ -39,14 +40,14 @@ export function validateType(
   if (Ast.isAst(value)) return true;
 
   if (Array.isArray(type))
-    return type.some((t) => validateType(t, value, config));
+    return type.some((t) => validateType(t, node, value, config));
 
   if (typeof type === 'string') type = TypeMappings[type];
 
   if (typeof type === 'function') {
     const instance: any = new type();
     if (instance.validate) {
-      return instance.validate(value, config);
+      return instance.validate(value, node, config);
     }
   }
 
@@ -61,7 +62,11 @@ function typeToString(type: TypeParam): string {
   return type.name;
 }
 
-function validateFunction(fn: Function, config: Config): ValidationError[] {
+function validateFunction(
+  fn: Function,
+  node: Node,
+  config: Config
+): ValidationError[] {
   const schema = config.functions?.[fn.name];
   const errors: ValidationError[] = [];
 
@@ -71,6 +76,7 @@ function validateFunction(fn: Function, config: Config): ValidationError[] {
         id: 'function-undefined',
         level: 'critical',
         message: `Undefined function: '${fn.name}'`,
+        location: node.location,
       },
     ];
 
@@ -85,6 +91,7 @@ function validateFunction(fn: Function, config: Config): ValidationError[] {
           id: 'parameter-undefined',
           level: 'error',
           message: `Invalid parameter: '${key}'`,
+          location: node.location,
         });
 
         continue;
@@ -93,7 +100,7 @@ function validateFunction(fn: Function, config: Config): ValidationError[] {
       if (Ast.isAst(value) && !Ast.isFunction(value)) continue;
 
       if (param.type) {
-        const valid = validateType(param.type, value, config);
+        const valid = validateType(param.type, node, value, config);
         if (valid === false) {
           errors.push({
             id: 'parameter-type-invalid',
@@ -101,6 +108,7 @@ function validateFunction(fn: Function, config: Config): ValidationError[] {
             message: `Parameter '${key}' of '${
               fn.name
             }' must be type of '${typeToString(param.type)}'`,
+            location: node.location,
           });
         } else if (Array.isArray(valid)) {
           errors.push(...valid);
@@ -115,6 +123,7 @@ function validateFunction(fn: Function, config: Config): ValidationError[] {
         id: 'parameter-missing-required',
         level: 'error',
         message: `Missing required parameter: '${key}'`,
+        location: node.location,
       });
 
   return errors;
@@ -131,6 +140,7 @@ export default function validate(node: Node, config: Config) {
       message: node.tag
         ? `Undefined tag: '${node.tag}'`
         : `Undefined node: '${node.type}'`,
+      location: node.location,
     });
 
     return errors;
@@ -141,6 +151,7 @@ export default function validate(node: Node, config: Config) {
       id: 'tag-selfclosing-has-children',
       level: 'critical',
       message: `'${node.tag}' tag should be self-closing`,
+      location: node.location,
     });
 
   const attributes = {
@@ -158,6 +169,7 @@ export default function validate(node: Node, config: Config) {
         id: 'attribute-undefined',
         level: 'error',
         message: `Invalid attribute: '${key}'`,
+        location: node.location,
       });
 
       continue;
@@ -167,7 +179,7 @@ export default function validate(node: Node, config: Config) {
 
     if (Ast.isAst(value)) {
       if (Ast.isFunction(value) && config.validation?.validateFunctions)
-        errors.push(...validateFunction(value, config));
+        errors.push(...validateFunction(value, node, config));
       else continue;
     }
 
@@ -177,15 +189,17 @@ export default function validate(node: Node, config: Config) {
         id: 'attribute-value-invalid',
         level: 'error',
         message: 'The id attribute must not start with a number',
+        location: node.location,
       });
 
     if (type) {
-      const valid = validateType(type, value, config);
+      const valid = validateType(type, node, value, config);
       if (valid === false) {
         errors.push({
           id: 'attribute-type-invalid',
           level: errorLevel || 'error',
           message: `Attribute '${key}' must be type of '${typeToString(type)}'`,
+          location: node.location,
         });
       }
       if (Array.isArray(valid)) {
@@ -202,6 +216,7 @@ export default function validate(node: Node, config: Config) {
         message: `Attribute '${key}' must match one of ${JSON.stringify(
           matches
         )}`,
+        location: node.location,
       });
 
     if (matches instanceof RegExp && !matches.test(value))
@@ -209,6 +224,7 @@ export default function validate(node: Node, config: Config) {
         id: 'attribute-value-invalid',
         level: errorLevel || 'error',
         message: `Attribute '${key}' must match ${matches}`,
+        location: node.location,
       });
   }
 
@@ -218,6 +234,7 @@ export default function validate(node: Node, config: Config) {
         id: 'attribute-missing-required',
         level: 'error',
         message: `Missing required attribute: '${key}'`,
+        location: node.location,
       });
 
   for (const { type } of node.children) {
@@ -226,6 +243,7 @@ export default function validate(node: Node, config: Config) {
         id: 'child-invalid',
         level: 'warning',
         message: `Can't nest '${type}' in '${node.tag || node.type}'`,
+        location: node.location,
       });
   }
 

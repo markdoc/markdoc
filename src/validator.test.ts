@@ -1,5 +1,5 @@
 import Markdoc from '../index';
-import type { ValidationError } from './types';
+import type { ValidationError, Node } from './types';
 
 function validate(string, config) {
   return Markdoc.validate(Markdoc.parse(string), config);
@@ -234,7 +234,7 @@ describe('validate', function () {
 
   describe('custom type registration example', () => {
     class Link {
-      validate(value) {
+      validate(value, node: Node) {
         if (value.startsWith('http')) {
           return [];
         }
@@ -243,6 +243,7 @@ describe('validate', function () {
           id: 'attribute-type-invalid',
           level: 'error',
           message: "Attribute 'href' must be type of 'Link'",
+          location: node.location,
         };
 
         return [error];
@@ -250,7 +251,7 @@ describe('validate', function () {
     }
 
     it('should return error on failure', () => {
-      const example = '{% link href="/relative-link"  /%}';
+      const example = `{% link href="/relative-link"  /%}`;
       const output = validate(example, {
         tags: {
           link: {
@@ -276,6 +277,28 @@ describe('validate', function () {
       ]);
     });
 
+    it('should return location on failure', () => {
+      const example = `
+# Foo
+{% link href="/relative-link"  /%}
+`;
+      const output = validate(example, {
+        tags: {
+          link: {
+            render: 'a',
+            selfClosing: true,
+            attributes: {
+              href: {
+                type: Link,
+              },
+            },
+          },
+        },
+      });
+
+      expect(output[0].location?.start.line).toBe(2);
+      expect(output[0].location?.end.line).toBe(3);
+    });
     it('should return no errors when valid', () => {
       const example = '{% link href="http://google.com"  /%}';
       const output = validate(example, {

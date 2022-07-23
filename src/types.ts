@@ -38,7 +38,7 @@ export type ConfigFunction = {
 
 export interface CustomAttributeTypeInterface {
   transform?(value: any, config: Config): Scalar;
-  validate?(value: any, config: Config): ValidationError[];
+  validate?(value: any, node: Node, config: Config): ValidationError[];
 }
 
 export interface CustomAttributeType {

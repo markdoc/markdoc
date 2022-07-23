@@ -1,7 +1,7 @@
 import type { Node, Config, Schema, ValidationError } from '../types';
 
 class PartialFile {
-  validate(file: any, config: Config): ValidationError[] {
+  validate(file: any, node: Node, config: Config): ValidationError[] {
     const { partials = {} } = config;
     const partial = partials[file];
 
@@ -11,6 +11,7 @@ class PartialFile {
           id: 'attribute-value-invalid',
           level: 'error',
           message: `Partial \`${file}\` not found. The 'file' attribute must be set in \`config.partials\``,
+          location: node.location,
         },
       ];
 

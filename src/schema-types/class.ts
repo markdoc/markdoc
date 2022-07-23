@@ -1,7 +1,7 @@
-import { CustomAttributeTypeInterface, ValidationError } from '../types';
+import { CustomAttributeTypeInterface, ValidationError, Node } from '../types';
 
 export class Class implements CustomAttributeTypeInterface {
-  validate(value: any): ValidationError[] {
+  validate(value: any, node: Node): ValidationError[] {
     if (typeof value === 'string' || typeof value === 'object') return [];
 
     return [
@@ -9,6 +9,7 @@ export class Class implements CustomAttributeTypeInterface {
         id: 'attribute-type-invalid',
         level: 'error',
         message: `Attribute 'class' must be type 'string | object'`,
+        location: node.location,
       },
     ];
   }
