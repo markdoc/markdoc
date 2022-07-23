@@ -4,10 +4,12 @@ import frontmatter from './plugins/frontmatter';
 import type Token from 'markdown-it/lib/token';
 
 export default class Tokenizer {
-  private parser: MarkdownIt;
+  parser: MarkdownIt;
 
   constructor(
-    config: MarkdownIt.Options & { allowIndentation?: boolean } = {}
+    config: MarkdownIt.Options & {
+      allowIndentation?: boolean;
+    } = {}
   ) {
     this.parser = new MarkdownIt(config);
     this.parser.use(annotations, 'annotations', {});
