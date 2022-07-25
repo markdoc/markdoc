@@ -301,7 +301,7 @@ describe('validate', function () {
       const example = `{% $valid.variable %}`;
       const output = validate(example, {});
 
-      expect(output).toDeepEqualSubset([]);
+      expect(output).toEqual([]);
     });
 
     it('should warn against missing variables', () => {
@@ -326,7 +326,7 @@ describe('validate', function () {
         variables: { valid: { variable: false } },
       });
 
-      expect(output).toDeepEqualSubset([]);
+      expect(output).toEqual([]);
     });
   });
 
