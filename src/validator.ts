@@ -168,9 +168,9 @@ export default function validate(node: Node, config: Config) {
     if (Ast.isAst(value)) {
       if (Ast.isFunction(value) && config.validation?.validateFunctions)
         errors.push(...validateFunction(value, config));
-      else if (Ast.isVariable(value)) {
+      else if (Ast.isVariable(value) && config.variables) {
         let missing = false;
-        let variables = config.variables || {};
+        let variables = config.variables;
 
         for (const key of value.path) {
           if (!Object.prototype.hasOwnProperty.call(variables, key)) {

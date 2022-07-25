@@ -297,9 +297,16 @@ describe('validate', function () {
   });
 
   describe('variable validation', () => {
+    it('should only validate if the variables config is passed', () => {
+      const example = `{% $valid.variable %}`;
+      const output = validate(example, {});
+
+      expect(output).toDeepEqualSubset([]);
+    });
+
     it('should warn against missing variables', () => {
       const example = `{% $undefinedVariable %}`;
-      const output = validate(example, {});
+      const output = validate(example, { variables: {} });
 
       expect(output).toDeepEqualSubset([
         {
@@ -315,7 +322,9 @@ describe('validate', function () {
 
     it('should not warn if variable exists', () => {
       const example = `{% $valid.variable %}`;
-      const output = validate(example, { valid: { variable: false } });
+      const output = validate(example, {
+        variables: { valid: { variable: false } },
+      });
 
       expect(output).toDeepEqualSubset([]);
     });
