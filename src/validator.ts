@@ -168,7 +168,26 @@ export default function validate(node: Node, config: Config) {
     if (Ast.isAst(value)) {
       if (Ast.isFunction(value) && config.validation?.validateFunctions)
         errors.push(...validateFunction(value, config));
-      else continue;
+      else if (Ast.isVariable(value) && config.variables) {
+        let missing = false;
+        let variables = config.variables;
+
+        for (const key of value.path) {
+          if (!Object.prototype.hasOwnProperty.call(variables, key)) {
+            missing = true;
+            break;
+          }
+          variables = variables[key];
+        }
+
+        if (missing) {
+          errors.push({
+            id: 'variable-undefined',
+            level: 'error',
+            message: `Undefined variable: '${value.path.join('.')}'`,
+          });
+        }
+      } else continue;
     }
 
     value = value as string;

@@ -3,6 +3,7 @@ import type {
   Config,
   Function as AstFunction,
   Scalar,
+  Variable as AstVariable,
 } from '../types';
 
 export function isAst(value?: any): value is AstType {
@@ -11,6 +12,10 @@ export function isAst(value?: any): value is AstType {
 
 export function isFunction(value?: any): value is AstFunction {
   return !!(value?.$$mdtype === 'Function');
+}
+
+export function isVariable(value?: any): value is AstVariable {
+  return !!(value?.$$mdtype === 'Variable');
 }
 
 export function* getAstValues(value: any): Generator<AstType, void, unknown> {
