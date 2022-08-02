@@ -93,8 +93,7 @@ export type RenderableTreeNode = Tag | string | null;
 export type RenderableTreeNodes = RenderableTreeNode | RenderableTreeNode[];
 export type RenderableTreeNodesPromise =
   | RenderableTreeNodes
-  | Promise<RenderableTreeNodes>
-  | RenderableTreeNodesPromise[];
+  | Promise<RenderableTreeNodes>;
 
 export type Scalar = Primitive | Scalar[] | { [key: string]: Scalar };
 
