@@ -7,7 +7,7 @@ import type {
   Location,
   NodeType,
   RenderableTreeNode,
-  RenderableTreeNodes,
+  RenderableTreeNodesPromise,
   Schema,
   ValidationError,
 } from '../types';
@@ -69,7 +69,7 @@ export default class Node implements AstType {
     return transformer.children(this, config);
   }
 
-  transform(config: Config): RenderableTreeNodes {
+  transform(config: Config): RenderableTreeNodesPromise {
     return transformer.node(this, config);
   }
 }

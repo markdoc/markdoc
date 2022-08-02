@@ -91,6 +91,10 @@ export type Primitive = null | boolean | number | string;
 
 export type RenderableTreeNode = Tag | string | null;
 export type RenderableTreeNodes = RenderableTreeNode | RenderableTreeNode[];
+export type RenderableTreeNodesPromise =
+  | RenderableTreeNodes
+  | Promise<RenderableTreeNodes>
+  | RenderableTreeNodesPromise[];
 
 export type Scalar = Primitive | Scalar[] | { [key: string]: Scalar };
 
@@ -99,7 +103,7 @@ export type Schema<C extends Config = Config, R = string> = {
   children?: string[];
   attributes?: Record<string, SchemaAttribute>;
   selfClosing?: boolean;
-  transform?(node: Node, config: C): RenderableTreeNodes;
+  transform?(node: Node, config: C): RenderableTreeNodesPromise;
   validate?(node: Node, config: C): ValidationError[];
 };
 
@@ -116,7 +120,7 @@ export type SchemaMatches = RegExp | string[] | null;
 
 export interface Transformer {
   findSchema(node: Node, config: Config): Schema | undefined;
-  node(node: Node, config: Config): RenderableTreeNodes;
+  node(node: Node, config: Config): RenderableTreeNodesPromise;
   attributes(node: Node, config: Config): Record<string, any>;
   children(node: Node, config: Config): RenderableTreeNode[];
 }
