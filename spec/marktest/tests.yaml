@@ -1247,6 +1247,7 @@
 # Truthiness checks
 
 - name: Untruthy things are false
+  validation: false
   config:
     variables:
       foo: null
