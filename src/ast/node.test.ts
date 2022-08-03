@@ -30,8 +30,8 @@ describe('Node object', function () {
   });
 });
 
-describe('processor rendering', function () {
-  function process(content, config = {}) {
+describe('transform', function () {
+  function transform(content, config = {}) {
     return markdoc.transform(content, config);
   }
 
@@ -43,7 +43,7 @@ describe('processor rendering', function () {
         ]),
       ]);
 
-      const output = process(example);
+      const output = transform(example);
       expect(output).toDeepEqual(new Tag('h1', {}, ['This is a heading']));
     });
 
@@ -53,7 +53,7 @@ describe('processor rendering', function () {
           language: 'ruby',
           content: 'test',
         });
-        const output = process(example);
+        const output = transform(example);
         expect(output).toDeepEqual(
           new Tag('pre', { 'data-language': 'ruby' }, ['test'])
         );
@@ -61,7 +61,7 @@ describe('processor rendering', function () {
     });
   });
 
-  describe('render functions', function () {
+  describe('transform functions', function () {
     it('with a simple render function', function () {
       const example = new Node('foo', {});
 
@@ -71,7 +71,7 @@ describe('processor rendering', function () {
         },
       };
 
-      const output = process(example, { nodes: { foo } });
+      const output = transform(example, { nodes: { foo } });
       expect(output).toDeepEqual(new Tag('foo', {}, []));
     });
 
@@ -90,7 +90,7 @@ describe('processor rendering', function () {
         },
       };
 
-      const output = process(example, { nodes: { foo } });
+      const output = transform(example, { nodes: { foo } });
       expect(output).toDeepEqual({
         name: 'foo',
         attributes: { bar: 'baz', example: 100 },
@@ -116,7 +116,7 @@ describe('processor rendering', function () {
         'foo'
       );
 
-      const output = process(example, { tags });
+      const output = transform(example, { tags });
       expect(output).toDeepEqual(new Tag('foo', { bar: 'baz' }, ['test']));
     });
 
@@ -127,7 +127,7 @@ describe('processor rendering', function () {
 
       // @ts-ignore test mutating node in userland
       example.container = 'bar';
-      const output = process(example, { tags });
+      const output = transform(example, { tags });
       expect(output).toDeepEqual(['test']);
     });
   });
@@ -137,14 +137,14 @@ describe('processor rendering', function () {
       const example = new Node('foo', {});
       const foo = { render: 'foo' };
 
-      const output = process(example, { nodes: { foo } }) as Tag;
+      const output = transform(example, { nodes: { foo } }) as Tag;
       expect(output.name).toEqual('foo');
     });
 
     it('with no value', function () {
       const example = new Node('foo', {}, [new Node('bar', {})]);
 
-      const output = process(example, {
+      const output = transform(example, {
         nodes: { foo: {}, bar: { render: 'bar' } },
       });
       expect(output).toDeepEqual([new Tag('bar', {}, [])]);
@@ -154,7 +154,7 @@ describe('processor rendering', function () {
   describe('attributes', function () {
     it('with an id', function () {
       const example = new Node('paragraph', { id: 'bar' });
-      const output = process(example);
+      const output = transform(example);
       expect(output).toDeepEqualSubset({
         name: 'p',
         attributes: { id: 'bar' },
@@ -165,7 +165,7 @@ describe('processor rendering', function () {
       const example = new Node('paragraph', {
         class: { foo: true, bar: false },
       });
-      const output = process(example);
+      const output = transform(example);
       expect(output).toDeepEqual(new Tag('p', { class: 'foo' }, []));
     });
 
@@ -179,7 +179,7 @@ describe('processor rendering', function () {
         },
       };
 
-      const output = process(example, { nodes: { foo } });
+      const output = transform(example, { nodes: { foo } });
       expect(output).toDeepEqual(new Tag('foo', { bar: 1, baz: 'test' }));
     });
 
@@ -193,7 +193,7 @@ describe('processor rendering', function () {
         },
       };
 
-      const output = process(example, { nodes: { foo } });
+      const output = transform(example, { nodes: { foo } });
       expect(output).toDeepEqual(
         new Tag('foo', { 'data-bar': 1, 'data-baz': 'test' })
       );
@@ -208,7 +208,7 @@ describe('processor rendering', function () {
         },
       };
 
-      const output = process(example, { nodes: { foo } }) as Tag;
+      const output = transform(example, { nodes: { foo } }) as Tag;
       expect(Object.keys(output.attributes).includes('baz')).toBeFalse();
       expect(output).toDeepEqual(new Tag('foo', { bar: 1 }, []));
     });
@@ -222,7 +222,7 @@ describe('processor rendering', function () {
         },
       };
 
-      const output = process(example, { nodes: { foo } }) as Tag;
+      const output = transform(example, { nodes: { foo } }) as Tag;
       expect(output.attributes.bar).toEqual(10);
     });
 
@@ -235,7 +235,7 @@ describe('processor rendering', function () {
         },
       };
 
-      const output = process(example, { nodes: { foo } }) as Tag;
+      const output = transform(example, { nodes: { foo } }) as Tag;
       expect(output.attributes.bar).toEqual(1);
     });
 
@@ -249,7 +249,7 @@ describe('processor rendering', function () {
         },
       };
 
-      const output = process(example, {
+      const output = transform(example, {
         nodes: { foo },
         variables: { a: { b: { c: 'example' } } },
       });
@@ -298,7 +298,7 @@ describe('processor rendering', function () {
             },
           };
 
-          const output = process(example, config) as Tag;
+          const output = transform(example, config) as Tag;
           expect(output.attributes.bar).toEqual(test.expectedValue);
         });
       });
