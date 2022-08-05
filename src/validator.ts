@@ -207,6 +207,19 @@ export default function validate(node: Node, config: Config) {
           message: `Attribute '${key}' must be type of '${typeToString(type)}'`,
         });
       }
+      if (
+        type === TypeMappings.String &&
+        value &&
+        typeof value === 'string' &&
+        value.match(/{%.*\/%}/)
+      ) {
+        errors.push({
+          id: 'attribute-value-invalid',
+          level: 'error',
+          message:
+            'The string attribute must have an opening and closing quote',
+        });
+      }
       if (Array.isArray(valid)) {
         errors.push(...valid);
       }

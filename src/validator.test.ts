@@ -355,4 +355,66 @@ describe('validate', function () {
       },
     ]);
   });
+
+  it('should throw an error when string attribute is missing a closing quote', () => {
+    const example = '{% foo bar="testing /%}';
+    const output = validate(example, {
+      tags: {
+        foo: {
+          attributes: {
+            bar: { type: String },
+          },
+        },
+      },
+    });
+    expect(output).toDeepEqualSubset([
+      {
+        type: 'text',
+        error: {
+          id: 'attribute-value-invalid',
+          level: 'error',
+          message:
+            'The string attribute must have an opening and closing quote',
+        },
+      },
+    ]);
+  });
+
+  it('should throw an error when string attribute is missing an opening quote', () => {
+    const example = '{% foo bar=testing" /%}';
+    const output = validate(example, {
+      tags: {
+        foo: {
+          attributes: {
+            bar: { type: String },
+          },
+        },
+      },
+    });
+    expect(output).toDeepEqualSubset([
+      {
+        type: 'text',
+        error: {
+          id: 'attribute-value-invalid',
+          level: 'error',
+          message:
+            'The string attribute must have an opening and closing quote',
+        },
+      },
+    ]);
+  });
+
+  it('should not throw an error when string attribute is properly closed', () => {
+    const example = '{% foo bar="test" /%}';
+    const output = validate(example, {
+      tags: {
+        foo: {
+          attributes: {
+            bar: { type: String },
+          },
+        },
+      },
+    });
+    expect(output).toEqual([]);
+  });
 });
