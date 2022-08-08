@@ -1,4 +1,4 @@
-import Tag from './ast/tag';
+import Tag from './tag';
 import { Class } from './schema-types/class';
 import type { Config, Node, NodeType, Schema, Transformer } from './types';
 

@@ -3,7 +3,7 @@ import markdoc from '../../index';
 import Node from './node';
 import Variable from './variable';
 
-import Tag from '../ast/tag';
+import Tag from '../tag';
 
 describe('Node object', function () {
   describe('traversal', function () {

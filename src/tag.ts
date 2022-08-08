@@ -1,4 +1,4 @@
-import type { RenderableTreeNode } from '../types';
+import type { RenderableTreeNode } from './types';
 
 export default class Tag {
   readonly $$mdtype = 'Tag' as const;
