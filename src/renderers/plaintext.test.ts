@@ -19,7 +19,7 @@ Markdoc is a **Markdown**-based \`syntax\` and _toolchain_ for creating custom d
 Markdoc is open-source—check out it's [source](http://github.com/markdoc/markdoc) to see how it works.
 {% /callout %}
 
-\`\`\`js
+\`\`\`js {% .class #id x="test"   render=false %}
 Code!
 \`\`\`
 
@@ -66,7 +66,7 @@ Markdoc is open-source—check out it's [http://github.com/markdoc/markdoc](sour
 
 {% /callout %}
 
-\`\`\`js
+\`\`\`js {% .class #id x="test" render=false %}
 Code!
 \`\`\`
 

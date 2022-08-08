@@ -20,6 +20,24 @@ function* renderVariable(v: Variable) {
   yield ' %}';
 }
 
+function* renderAnnotations(n: Node) {
+  if (n.annotations.length) {
+    yield ' {% ';
+    yield n.annotations
+      .map((a) => {
+        if (a.type === 'class') {
+          return '.' + a.name;
+        }
+        if (a.name === 'id') {
+          return '#' + a.value;
+        }
+        return `${a.name}=${JSON.stringify(a.value)}`;
+      })
+      .join(' ');
+    yield ' %}';
+  }
+}
+
 function* renderFunction(f: Function) {
   yield '{% ';
   yield '';
@@ -98,6 +116,8 @@ function* renderNode(n: Node) {
       yield '\n';
       yield '```';
       yield (n.attributes.language || '').toLowerCase();
+      // if (n.annotations.length) yield ' ';
+      yield* renderAnnotations(n);
       yield '\n';
       yield* renderChildren(n);
       yield '```';
