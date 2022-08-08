@@ -1,5 +1,5 @@
 import type { Schema } from './types';
-import Tag from './ast/tag';
+import Tag from './tag';
 
 export const document: Schema = {
   render: 'article',
