@@ -50,7 +50,7 @@ const expected = `---
 title: What is Markdoc?
 ---
 
-# {% $markdoc.frontmatter.title %} 
+# {% $markdoc.frontmatter.title %} {% #overview %}
 
 Markdoc is a **Markdown**-based \`syntax\` and _toolchain_ for creating custom documentation sites. Stripe created Markdoc to power [http://stripe.com/docs](our public docs).
 
@@ -70,7 +70,7 @@ Markdoc is open-source—check out it's [http://github.com/markdoc/markdoc](sour
 Code!
 \`\`\`
 
-## How is {% markdoc("test", 1) %} different? 
+## How is {% markdoc("test", 1) %} different? {% .classname %}
 
 foo\\
 baz

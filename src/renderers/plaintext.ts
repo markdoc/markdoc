@@ -22,7 +22,7 @@ function* renderVariable(v: Variable) {
 
 function* renderAnnotations(n: Node) {
   if (n.annotations.length) {
-    yield ' {% ';
+    yield '{% ';
     yield n.annotations
       .map((a) => {
         if (a.type === 'class') {
@@ -64,8 +64,8 @@ function* renderNode(n: Node) {
       yield '#'.repeat(n.attributes.level || 1);
       yield ' ';
       yield* renderChildren(n);
+      yield* renderAnnotations(n);
       yield '\n';
-      // TODO look at annotations here
       break;
     }
     case 'paragraph': {
@@ -116,7 +116,7 @@ function* renderNode(n: Node) {
       yield '\n';
       yield '```';
       yield (n.attributes.language || '').toLowerCase();
-      // if (n.annotations.length) yield ' ';
+      if (n.annotations.length) yield ' ';
       yield* renderAnnotations(n);
       yield '\n';
       yield* renderChildren(n);
