@@ -44,6 +44,7 @@
     "esbuild": "0.13.3",
     "eslint": "^8.9.0",
     "jasmine": "3.5.0",
+    "jest-diff": "^28.1.3",
     "markdown-it": "12.3.2",
     "patch-package": "^6.4.7",
     "pegjs": "0.11.0-master.b7b87ea",

@@ -1,3 +1,5 @@
+import { diff } from 'jest-diff';
+
 import Markdoc from '../../index';
 import render from './plaintext';
 
@@ -13,7 +15,7 @@ Markdoc is a **Markdown**-based \`syntax\` and _toolchain_ for creating custom d
 
 ---
 
-![Alt](/image)
+    ![Alt](/image)
 
 {% callout a="check" b={e: 5} c=8 d=[1, 2, 3] %}
 Markdoc is open-source—check out it's [source](http://github.com/markdoc/markdoc) to see how it works.
@@ -67,10 +69,16 @@ break
 Markdoc uses…
 `;
 
+const check = (a, b) => {
+  const d = diff(a, b);
+  if (d && d.includes('Compared values have no visual difference.')) return;
+  throw d;
+};
+
 fdescribe('Plaintext renderer', function () {
   it('basics', function () {
     const doc = render(Markdoc.parse(source));
-    expect(doc).toEqual(expected);
+    check(doc, expected);
   });
 
   it('tables', () => {
@@ -94,7 +102,8 @@ fdescribe('Plaintext renderer', function () {
 {% /table %}
     `)
     );
-    expect(doc).toEqual(
+    check(
+      doc,
       `
 | Syntax      | Description |
 | ----------- | ----------- |
@@ -127,7 +136,9 @@ fdescribe('Plaintext renderer', function () {
   - B2
 - C`)
     );
-    expect(doc).toEqual(`
+    check(
+      doc,
+      `
 - [/docs/getting-started](Install Markdoc)
 - [/sandbox](Try it out online)
 
@@ -139,6 +150,7 @@ fdescribe('Plaintext renderer', function () {
 - B
   - B2
 - C
-`);
+`
+    );
   });
 });
