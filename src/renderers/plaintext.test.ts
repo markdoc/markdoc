@@ -44,23 +44,6 @@ Markdoc uses a fully declarative approach to composition and flow control, where
 * B
   * B2
 * C
-
-| Syntax      | Description |
-| ------ | ---- |
-| Header      | Title  |
-| Paragraph        | Text        |
-
-{% table %}
-
-- One
-- Two
-
-
----
-- Three
-- Four
-
-{% /table %}
 `;
 
 const expected = `---
@@ -109,7 +92,36 @@ Markdoc uses a fully declarative approach to composition and flow control, where
 - B
   - B2
 - C
+`;
 
+fdescribe('Plaintext renderer', function () {
+  it('rendering a tag', function () {
+    const doc = render(Markdoc.parse(source));
+    expect(doc).toEqual(expected);
+  });
+  it('tables', () => {
+    const doc = render(
+      Markdoc.parse(`
+| Syntax      | Description |
+| ------ | ---- |
+| Header      | Title  |
+| Paragraph        | Text        |
+
+{% table %}
+
+- One
+- Two
+
+
+---
+- Three
+- Four
+
+{% /table %}
+    `)
+    );
+    expect(doc).toEqual(
+      `
 | Syntax      | Description |
 | ----------- | ----------- |
 | Header      | Title       |
@@ -122,14 +134,7 @@ Markdoc uses a fully declarative approach to composition and flow control, where
 * Three
 * Four
 {% /table %}
-`;
-
-const ast = Markdoc.parse(source);
-
-fdescribe('Plaintext renderer', function () {
-  it('rendering a tag', function () {
-    const doc = render(ast);
-    console.log(doc);
-    expect(doc).toEqual(expected);
+`
+    );
   });
 });
