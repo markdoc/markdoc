@@ -40,6 +40,11 @@ Markdoc uses a fully declarative approach to composition and flow control, where
 2. Two
 3. Three
 
+* A
+* B
+  * B2
+* C
+
 | Syntax      | Description |
 | ------ | ---- |
 | Header      | Title  |
@@ -99,6 +104,11 @@ Markdoc uses a fully declarative approach to composition and flow control, where
 1. One
 2. Two
 3. Three
+
+- A
+- B
+  - B2
+- C
 
 | Syntax      | Description |
 | ----------- | ----------- |

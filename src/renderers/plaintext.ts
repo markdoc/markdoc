@@ -3,6 +3,7 @@ import type Variable from '../ast/variable';
 
 type Options = {
   parent?: Node;
+  indent?: number;
 };
 
 const max = (a: number, b: number) => Math.max(a, b);
@@ -148,14 +149,16 @@ function* renderNode(n: Node, o: Options = {}) {
     case 'list': {
       yield '\n';
       for (let i = 0; i < n.children.length; i++) {
+        yield '  '.repeat(o.indent || 0);
         yield n.attributes.ordered ? `${i + 1}. ` : '- ';
-        yield* render(n.children[i]);
-        yield '\n';
+        yield* render(n.children[i], o);
+        // TODO do we need this newline?
+        if (!o.indent) yield '\n';
       }
       break;
     }
     case 'item': {
-      yield* renderChildren(n);
+      yield* renderChildren(n, { indent: (o.indent || 0) + 1 });
       break;
     }
     case 'strong': {
