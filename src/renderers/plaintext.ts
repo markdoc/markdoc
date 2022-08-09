@@ -8,6 +8,7 @@ type Options = {
 };
 
 const SPACE = ' ';
+const NL = '\n';
 
 const max = (a: number, b: number) => Math.max(a, b);
 
@@ -59,6 +60,7 @@ function* renderFunction(f: Function) {
 }
 
 function* renderNode(n: Node, o: Options = {}) {
+  const indent = SPACE.repeat(2 * (o.indent || 0));
   switch (n.type as NodeType) {
     case 'document': {
       if (n.attributes.frontmatter && n.attributes.frontmatter.length) {
@@ -68,19 +70,19 @@ function* renderNode(n: Node, o: Options = {}) {
       break;
     }
     case 'heading': {
-      yield '\n';
+      yield NL;
       yield '#'.repeat(n.attributes.level || 1);
       yield SPACE;
       yield* renderChildren(n, o);
       yield* renderAnnotations(n);
-      yield '\n';
+      yield NL;
       break;
     }
     case 'paragraph': {
       // Remove new line at the start of a loose list
-      if (!(o?.parentContext?.type === 'item' && o.itemIndex === 0)) yield '\n';
+      if (!(o?.parentContext?.type === 'item' && o.itemIndex === 0)) yield NL;
       yield* renderChildren(n, o);
-      yield '\n';
+      yield NL;
       break;
     }
     case 'inline': {
@@ -98,20 +100,23 @@ function* renderNode(n: Node, o: Options = {}) {
     }
     case 'text': {
       // Indent text when nested in a loose list
-      // TODO should we move this to the paragraph, softbreak, etc. level and replace '\n' with '\n' + SPACE.repeat(2 * (o.indent || 0))?
-      if (o.itemIndex) yield SPACE.repeat(2 * (o.indent || 0));
+      // TODO should we move this to the paragraph, softbreak, etc. level and replace NL with NL + SPACE.repeat(2 * (o.indent || 0))?
+      if (o.itemIndex) yield indent;
       yield* render(n.attributes.content, o);
       break;
     }
     case 'blockquote': {
-      yield '\n';
+      yield NL;
       yield '> ';
       yield* renderChildren(n.children[0], o);
-      yield '\n';
+      yield NL;
       break;
     }
     case 'hr': {
-      yield '\n---\n';
+      yield NL;
+      yield indent;
+      yield '---';
+      yield NL;
       break;
     }
     case 'image': {
@@ -125,43 +130,43 @@ function* renderNode(n: Node, o: Options = {}) {
       break;
     }
     case 'fence': {
-      yield '\n';
+      yield NL;
       yield '```';
       yield (n.attributes.language || '').toLowerCase();
       if (n.annotations.length) yield SPACE;
       yield* renderAnnotations(n);
-      yield '\n';
+      yield NL;
       yield* renderChildren(n, o);
       yield '```';
-      yield '\n';
+      yield NL;
       break;
     }
     case 'tag': {
-      yield '\n';
+      yield NL;
       yield '{% ';
       yield n.tag;
       yield Object.entries(n.attributes)
         .map(([key, value]) => ` ${key}=${JSON.stringify(value)}`)
         .join('');
       yield ' %}';
-      yield '\n';
+      yield NL;
       yield* renderChildren(n, { parentContext: n });
-      yield '\n';
+      yield NL;
       yield '{% /';
       yield n.tag;
       yield ' %}';
-      yield '\n';
+      yield NL;
       break;
     }
     case 'list': {
-      yield '\n';
+      yield NL;
       const indent = o.indent || 0;
       for (let i = 0; i < n.children.length; i++) {
         yield '  '.repeat(indent);
         yield n.attributes.ordered ? `${i + 1}. ` : '- ';
         yield* render(n.children[i], { ...o, indent: indent + 1 });
         // TODO do we need this newline?
-        if (!indent) yield '\n';
+        if (!indent) yield NL;
       }
       break;
     }
@@ -198,7 +203,7 @@ function* renderNode(n: Node, o: Options = {}) {
       break;
     }
     case 'softbreak': {
-      yield '\n';
+      yield NL;
       break;
     }
     case 'table': {
@@ -209,10 +214,10 @@ function* renderNode(n: Node, o: Options = {}) {
         o.parentContext.tag === 'table'
       ) {
         yield table
-          .map((a: any) => a.map((i: string) => `* ` + i).join('\n'))
-          .join(`${table[0].length ? '\n' : ''}---\n`);
+          .map((a: any) => a.map((i: string) => `* ` + i).join(NL))
+          .join(`${table[0].length ? NL : ''}---\n`);
       } else {
-        yield '\n';
+        yield NL;
         const [head, ...rows] = table;
 
         const ml = table
@@ -220,14 +225,14 @@ function* renderNode(n: Node, o: Options = {}) {
           .reduce(max);
 
         yield* renderTableRow(head.map((h) => h + SPACE.repeat(ml - h.length)));
-        yield '\n';
+        yield NL;
         yield* renderTableRow(head.map(() => '-'.repeat(ml)));
-        yield '\n';
+        yield NL;
         for (const row of rows) {
           yield* renderTableRow(
             row.map((r) => r + SPACE.repeat(ml - r.length))
           );
-          yield '\n';
+          yield NL;
         }
       }
       break;

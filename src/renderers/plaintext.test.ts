@@ -159,7 +159,9 @@ fdescribe('Plaintext renderer', function () {
 
 - Two
 
-  My second paragraph`,
+  My second paragraph
+  
+  ---`,
       `
 - One
 
@@ -169,6 +171,8 @@ fdescribe('Plaintext renderer', function () {
 - Two
 
   My second paragraph
+
+  ---
 
 `
     );
