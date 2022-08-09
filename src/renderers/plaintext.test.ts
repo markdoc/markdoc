@@ -69,21 +69,20 @@ break
 Markdoc uses…
 `;
 
-const check = (a, b) => {
-  const d = diff(a, b);
+function check(source, expected) {
+  const d = diff(expected, render(Markdoc.parse(source)));
   if (d && d.includes('Compared values have no visual difference.')) return;
   throw d;
-};
+}
 
 fdescribe('Plaintext renderer', function () {
   it('basics', function () {
-    const doc = render(Markdoc.parse(source));
-    check(doc, expected);
+    check(source, expected);
   });
 
   it('tables', () => {
-    const doc = render(
-      Markdoc.parse(`
+    check(
+      `
 | Syntax      | Description |
 | ------ | ---- |
 | Header      | Title  |
@@ -100,10 +99,7 @@ fdescribe('Plaintext renderer', function () {
 - Four
 
 {% /table %}
-    `)
-    );
-    check(
-      doc,
+    `,
       `
 | Syntax      | Description |
 | ----------- | ----------- |
@@ -122,8 +118,8 @@ fdescribe('Plaintext renderer', function () {
   });
 
   it('lists', () => {
-    const doc = render(
-      Markdoc.parse(`
+    check(
+      `
 - [Install Markdoc](/docs/getting-started)
 - [Try it out online](/sandbox)
 
@@ -134,10 +130,7 @@ fdescribe('Plaintext renderer', function () {
 - A
 - B
   - B2
-- C`)
-    );
-    check(
-      doc,
+- C`,
       `
 - [/docs/getting-started](Install Markdoc)
 - [/sandbox](Try it out online)
