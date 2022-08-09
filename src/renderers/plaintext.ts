@@ -168,9 +168,6 @@ function* renderNode(n: Node, o: Options = {}) {
       yield n.tag;
       yield* renderAttributes(n);
       yield ' %}';
-      if (no.allowIndentation) {
-        yield SPACE.repeat(2);
-      }
       yield* renderChildren(n, {
         ...no,
         indent: no.allowIndentation ? (no.indent || 0) + 1 : no.indent,

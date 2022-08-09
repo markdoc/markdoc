@@ -113,8 +113,8 @@ Yes!
 {% /checkout %}
     `,
       `
-{% checkout %}  
-  {% if true %}  
+{% checkout %}
+  {% if true %}
     Yes!
   {% /if %}
 {% /checkout %}
