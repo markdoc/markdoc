@@ -1,9 +1,13 @@
 import type { AstType, Function, Node, NodeType } from '../types';
 import type Variable from '../ast/variable';
 
+type Options = {
+  parent?: Node;
+};
+
 const max = (a: number, b: number) => Math.max(a, b);
 
-function* renderChildren(a: Node, options?: any) {
+function* renderChildren(a: Node, options?: Options) {
   for (const child of a.children) {
     yield* render(child, options);
   }
@@ -50,7 +54,7 @@ function* renderFunction(f: Function) {
   yield ' %}';
 }
 
-function* renderNode(n: Node, o: any = {}) {
+function* renderNode(n: Node, o: Options = {}) {
   switch (n.type as NodeType) {
     case 'document': {
       if (n.attributes.frontmatter && n.attributes.frontmatter.length) {
@@ -133,7 +137,7 @@ function* renderNode(n: Node, o: any = {}) {
         .join('');
       yield ' %}';
       yield '\n';
-      yield* renderChildren(n, { tableTag: true });
+      yield* renderChildren(n, { parent: n });
       yield '\n';
       yield '{% /';
       yield n.tag;
@@ -181,14 +185,13 @@ function* renderNode(n: Node, o: any = {}) {
       break;
     }
     case 'table': {
-      if (o.tableTag) {
-        const table = [...renderChildren(n, o)] as any[];
+      const table = [...renderChildren(n)] as unknown as string[][];
+      if (o.parent && o.parent.type === 'tag' && o.parent.tag === 'table') {
         yield table
           .map((a: any) => a.map((i: string) => `* ` + i).join('\n'))
           .join(`${table[0].length ? '\n' : ''}---\n`);
       } else {
         yield '\n';
-        const table = [...renderChildren(n)] as unknown as string[][];
         const [head, ...rows] = table;
 
         const ml = table
@@ -226,7 +229,7 @@ function* renderNode(n: Node, o: any = {}) {
 
 export function* render(
   a: AstType | string | boolean | number,
-  o?: any
+  o?: Options
 ): Generator<string, void, unknown> {
   switch (typeof a) {
     case 'boolean':
@@ -256,6 +259,7 @@ export function* render(
   }
 }
 
-export default function TODO(a: AstType | string | boolean | number) {
+// TODO naming
+export default function print(a: AstType | string | boolean | number): string {
   return [...render(a)].join('');
 }
