@@ -2,7 +2,7 @@ import type { Function, Node, NodeType, Value } from '../types';
 import type Variable from '../ast/variable';
 
 type Options = {
-  parentContext?: Node;
+  parent?: Node;
   indent?: number;
   itemIndex?: number;
 };
@@ -60,14 +60,15 @@ function* renderFunction(f: Function) {
 }
 
 function* renderNode(n: Node, o: Options = {}) {
-  const indent = SPACE.repeat(2 * (o.indent || 0));
+  const no = { ...o, parent: n };
+  const indent = SPACE.repeat(2 * (no.indent || 0));
 
   switch (n.type as NodeType) {
     case 'document': {
       if (n.attributes.frontmatter && n.attributes.frontmatter.length) {
         yield `---\n${n.attributes.frontmatter}\n---\n`;
       }
-      yield* renderChildren(n, o);
+      yield* renderChildren(n, no);
       break;
     }
     case 'heading': {
@@ -75,46 +76,45 @@ function* renderNode(n: Node, o: Options = {}) {
       yield indent;
       yield '#'.repeat(n.attributes.level || 1);
       yield SPACE;
-      yield* renderChildren(n, o);
+      yield* renderChildren(n, no);
       yield* renderAnnotations(n);
       yield NL;
       break;
     }
     case 'paragraph': {
-      // TODO confirm if this should be parent or parentContext
-      const tagChild = o?.parentContext?.type === 'tag';
+      const tagChild = o?.parent?.type === 'tag';
       const nested =
-        (o?.parentContext?.type === 'list' && o.itemIndex === 0) || tagChild;
-      // Remove new line at the start of a loose list
+        (o?.parent?.type === 'item' && o.itemIndex === 0) || tagChild;
+
       if (!nested) {
         yield NL;
         yield indent;
       }
-      yield* renderChildren(n, o);
+      yield* renderChildren(n, no);
       if (!tagChild) yield NL;
       break;
     }
     case 'inline': {
-      yield* renderChildren(n, o);
+      yield* renderChildren(n, no);
       break;
     }
     case 'link': {
       yield '[';
-      yield* render(n.attributes.href, o);
+      yield* render(n.attributes.href, no);
       yield ']';
       yield '(';
-      yield* renderChildren(n, o);
+      yield* renderChildren(n, no);
       yield ')';
       break;
     }
     case 'text': {
-      yield* render(n.attributes.content, o);
+      yield* render(n.attributes.content, no);
       break;
     }
     case 'blockquote': {
       yield NL;
       yield '> ';
-      yield* renderChildren(n.children[0], o);
+      yield* renderChildren(n.children[0], no);
       yield NL;
       break;
     }
@@ -128,10 +128,10 @@ function* renderNode(n: Node, o: Options = {}) {
     case 'image': {
       yield '!';
       yield '[';
-      yield* render(n.attributes.alt, o);
+      yield* render(n.attributes.alt, no);
       yield ']';
       yield '(';
-      yield* render(n.attributes.src, o);
+      yield* render(n.attributes.src, no);
       yield ')';
       break;
     }
@@ -144,7 +144,7 @@ function* renderNode(n: Node, o: Options = {}) {
       yield* renderAnnotations(n);
       yield NL;
       yield indent;
-      yield* renderChildren(n, o);
+      yield* renderChildren(n, no);
       yield indent;
       yield '```';
       yield NL;
@@ -161,7 +161,7 @@ function* renderNode(n: Node, o: Options = {}) {
       yield ' %}';
       yield NL;
       yield indent;
-      yield* renderChildren(n, { ...o, parentContext: n });
+      yield* renderChildren(n, no);
       yield NL;
       yield indent;
       yield '{% /';
@@ -176,9 +176,8 @@ function* renderNode(n: Node, o: Options = {}) {
         yield indent;
         yield n.attributes.ordered ? `${i + 1}. ` : '- ';
         yield* render(n.children[i], {
-          ...o,
-          parentContext: n,
-          indent: (o.indent || 0) + 1,
+          ...no,
+          indent: (no.indent || 0) + 1,
         });
         // TODO do we need this newline?
         if (!indent) yield NL;
@@ -188,7 +187,7 @@ function* renderNode(n: Node, o: Options = {}) {
     case 'item': {
       for (let i = 0; i < n.children.length; i++) {
         yield* render(n.children[i], {
-          ...o,
+          ...no,
           itemIndex: i,
         });
       }
@@ -196,19 +195,19 @@ function* renderNode(n: Node, o: Options = {}) {
     }
     case 'strong': {
       yield '**';
-      yield* renderChildren(n, o);
+      yield* renderChildren(n, no);
       yield '**';
       break;
     }
     case 'em': {
       yield '_';
-      yield* renderChildren(n, o);
+      yield* renderChildren(n, no);
       yield '_';
       break;
     }
     case 'code': {
       yield '`';
-      yield* render(n.attributes.content, o);
+      yield* render(n.attributes.content, no);
       yield '`';
       break;
     }
@@ -223,12 +222,8 @@ function* renderNode(n: Node, o: Options = {}) {
       break;
     }
     case 'table': {
-      const table = [...renderChildren(n, o)] as unknown as string[][];
-      if (
-        o.parentContext &&
-        o.parentContext.type === 'tag' &&
-        o.parentContext.tag === 'table'
-      ) {
+      const table = [...renderChildren(n, no)] as unknown as string[][];
+      if (o.parent && o.parent.type === 'tag' && o.parent.tag === 'table') {
         yield table
           .map((a: any) => a.map((i: string) => `* ` + i).join(NL))
           .join(`${table[0].length ? NL : ''}---\n`);
@@ -254,18 +249,18 @@ function* renderNode(n: Node, o: Options = {}) {
       break;
     }
     case 'thead': {
-      const [head] = [...renderChildren(n, o)];
+      const [head] = [...renderChildren(n, no)];
       yield head || [];
       break;
     }
     case 'tr': {
-      yield [...renderChildren(n, o)];
+      yield [...renderChildren(n, no)];
       break;
     }
     case 'tbody':
     case 'td':
     case 'th': {
-      yield* renderChildren(n, o);
+      yield* renderChildren(n, no);
       break;
     }
     default: {
