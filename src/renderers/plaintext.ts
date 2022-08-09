@@ -125,14 +125,12 @@ function* renderNode(n: Node, o: any = {}) {
       break;
     }
     case 'tag': {
-      // TODO fix extra space in tag without attributes
       yield '\n';
       yield '{% ';
       yield n.tag;
-      yield ' ';
       yield Object.entries(n.attributes)
-        .map(([key, value]) => `${key}=${JSON.stringify(value)}`)
-        .join(' ');
+        .map(([key, value]) => ` ${key}=${JSON.stringify(value)}`)
+        .join('');
       yield ' %}';
       yield '\n';
       yield* renderChildren(n, { tableTag: true });

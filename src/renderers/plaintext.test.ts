@@ -105,7 +105,7 @@ Markdoc uses a fully declarative approach to composition and flow control, where
 | Header      | Title       |
 | Paragraph   | Text        |
 
-{% table  %}
+{% table %}
 * One
 * Two
 ---
