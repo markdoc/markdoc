@@ -133,13 +133,13 @@ Yes!
 
 {% table %}
 
-- One
+- One {% align="middle" %}
 - Two
 
 
 ---
 - Three
-- Four
+- Four {% align="end" %}
 
 {% /table %}
 
@@ -156,11 +156,11 @@ Yes!
 | Paragraph   | Text        |
 
 {% table %}
-* One
+* One {% align="middle" %}
 * Two
 ---
 * Three
-* Four
+* Four {% align="end" %}
 {% /table %}
 
 {% table %}

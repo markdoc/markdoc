@@ -286,12 +286,12 @@ function* renderNode(n: Node, o: Options = {}) {
       yield [...renderChildren(n, no)];
       break;
     }
-    case 'td': {
-      yield [...renderChildren(n, no)].join('');
+    case 'td':
+    case 'th': {
+      yield [...renderChildren(n, no), ...renderAnnotations(n)].join('');
       break;
     }
-    case 'tbody':
-    case 'th': {
+    case 'tbody': {
       yield* renderChildren(n, no);
       break;
     }
