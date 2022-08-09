@@ -4,7 +4,10 @@ import Markdoc from '../../index';
 import render from './plaintext';
 
 const source = `---
+
+
 title: What is Markdoc?
+
 ---
 
 # {% $markdoc.frontmatter.title %} {% #overview %}
