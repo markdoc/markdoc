@@ -111,13 +111,16 @@ function* renderNode(n: Node, o: Options = {}) {
       break;
     }
     case 'paragraph': {
-      const nested = o?.parent?.type === 'item' && o.itemIndex === 0;
+      const nested =
+        (o?.parent?.type === 'item' && o.itemIndex === 0) ||
+        o?.parent?.type === 'blockquote';
 
       if (!nested) {
         yield NL;
         yield indent;
       }
       yield* renderChildren(n, no);
+      yield* renderAnnotations(n);
       yield NL;
       break;
     }
@@ -140,9 +143,9 @@ function* renderNode(n: Node, o: Options = {}) {
     }
     case 'blockquote': {
       yield NL;
+      yield indent;
       yield '> ';
-      yield* renderChildren(n.children[0], no);
-      yield NL;
+      yield* render(n.children[0], no);
       break;
     }
     case 'hr': {

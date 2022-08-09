@@ -14,7 +14,7 @@ title: What is Markdoc?
 
 Markdoc is a **Markdown**-based \`syntax\` and _toolchain_ for creating custom documentation sites. Stripe created Markdoc to power [our public docs](http://stripe.com/docs).
 
-> Blockquote
+> Blockquote {% .special %}
 
 ---
 
@@ -46,7 +46,7 @@ title: What is Markdoc?
 
 Markdoc is a **Markdown**-based \`syntax\` and _toolchain_ for creating custom documentation sites. Stripe created Markdoc to power [http://stripe.com/docs](our public docs).
 
-> Blockquote
+> Blockquote {% .special %}
 
 ---
 
@@ -223,7 +223,9 @@ Yes!
   
   ---
   
-  ## Indented header`,
+  ## Indented header
+
+  > Indented blockquote`,
       `
 - One
 
@@ -245,6 +247,8 @@ Yes!
   ---
 
   ## Indented header
+
+  > Indented blockquote
 
 `
     );
