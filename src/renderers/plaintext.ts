@@ -18,7 +18,7 @@ function* renderChildren(a: Node, options?: Options) {
 }
 
 function* renderTableRow(items: Array<string>) {
-  yield `| ${items.join(' | ')} |\n`;
+  yield `| ${items.join(' | ')} |`;
 }
 
 function* renderVariable(v: Variable) {
@@ -214,11 +214,14 @@ function* renderNode(n: Node, o: Options = {}) {
           .reduce(max);
 
         yield* renderTableRow(head.map((h) => h + SPACE.repeat(ml - h.length)));
+        yield '\n';
         yield* renderTableRow(head.map(() => '-'.repeat(ml)));
+        yield '\n';
         for (const row of rows) {
           yield* renderTableRow(
             row.map((r) => r + SPACE.repeat(ml - r.length))
           );
+          yield '\n';
         }
       }
       break;
