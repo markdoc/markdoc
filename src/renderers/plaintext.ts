@@ -98,6 +98,7 @@ function* renderNode(n: Node, o: Options = {}) {
     }
     case 'text': {
       // Indent text when nested in a loose list
+      // TODO should we move this to the paragraph, softbreak, etc. level and replace '\n' with '\n' + SPACE.repeat(2 * (o.indent || 0))?
       if (o.itemIndex) yield SPACE.repeat(2 * (o.indent || 0));
       yield* render(n.attributes.content, o);
       break;
@@ -154,20 +155,21 @@ function* renderNode(n: Node, o: Options = {}) {
     }
     case 'list': {
       yield '\n';
+      const indent = o.indent || 0;
       for (let i = 0; i < n.children.length; i++) {
-        yield '  '.repeat(o.indent || 0);
+        yield '  '.repeat(indent);
         yield n.attributes.ordered ? `${i + 1}. ` : '- ';
-        yield* render(n.children[i], o);
+        yield* render(n.children[i], { ...o, indent: indent + 1 });
         // TODO do we need this newline?
-        if (!o.indent) yield '\n';
+        if (!indent) yield '\n';
       }
       break;
     }
     case 'item': {
       for (let i = 0; i < n.children.length; i++) {
         yield* render(n.children[i], {
+          ...o,
           parentContext: n,
-          indent: (o.indent || 0) + 1,
           itemIndex: i,
         });
       }
