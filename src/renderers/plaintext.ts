@@ -151,19 +151,25 @@ function* renderNode(n: Node, o: Options = {}) {
       break;
     }
     case 'tag': {
-      yield NL;
-      yield indent;
+      if (!n.inline) {
+        yield NL;
+        yield indent;
+      }
       yield '{% ';
       yield n.tag;
       yield Object.entries(n.attributes)
         .map(([key, value]) => ` ${key}=${JSON.stringify(value)}`)
         .join('');
       yield ' %}';
-      yield NL;
-      yield indent;
+      if (!n.inline) {
+        yield NL;
+        yield indent;
+      }
       yield* renderChildren(n, no);
-      yield NL;
-      yield indent;
+      if (!n.inline) {
+        yield NL;
+        yield indent;
+      }
       yield '{% /';
       yield n.tag;
       yield ' %}';
@@ -225,8 +231,15 @@ function* renderNode(n: Node, o: Options = {}) {
       const table = [...renderChildren(n, no)] as unknown as string[][];
       if (o.parent && o.parent.type === 'tag' && o.parent.tag === 'table') {
         yield table
-          .map((a: any) => a.map((i: string) => `* ` + i).join(NL))
-          .join(`${table[0].length ? NL : ''}---\n`);
+          .map((a: any[], i: number) =>
+            a
+              .map(
+                (s: string, j: number) =>
+                  (i === 0 && j === 0 ? '' : indent) + '* ' + s
+              )
+              .join(NL)
+          )
+          .join(`${table[0].length ? NL + indent : ''}---\n`);
       } else {
         yield NL;
         const [head, ...rows] = table;
@@ -257,8 +270,11 @@ function* renderNode(n: Node, o: Options = {}) {
       yield [...renderChildren(n, no)];
       break;
     }
+    case 'td': {
+      yield [...renderChildren(n, no)].join('');
+      break;
+    }
     case 'tbody':
-    case 'td':
     case 'th': {
       yield* renderChildren(n, no);
       break;

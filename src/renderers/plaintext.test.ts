@@ -195,4 +195,75 @@ fdescribe('Plaintext renderer', function () {
 `
     );
   });
+
+  it('complicated nested lists', () => {
+    const source = `
+* Create your CNAME record
+
+  1. Click **Add record**.
+  1. Enter these values in the form that opens:
+
+      {% table %}
+      * Field
+      * Value to enter
+      * Description
+      ---
+      * Type
+      * Select \`CNAME\` from the dropdown
+      * What kind of DNS record this is.
+      ---
+      * Target
+      * If your custom subdomain is checkout.powdur.me, enter \`checkout\`
+      * For CNAME records, this field is the first part of your subdomain (the part leading up to the first period).
+      ---
+      * Value
+      * {% code %}hosted-checkout.stripecdn.com{% /code %}
+      * This is what the new subdomain record points to-in this case, Stripe Checkout.
+      ---
+      * TTL
+      * \`5 min\`
+      * An expiration of 5 minutes (300 seconds) is OK.
+      ---
+      * Proxy status
+      * \`Off\`
+      * Set the proxy status to \`off\` to avoid issues during setup.
+      {% /table %}`;
+
+    const expected = `
+- Create your CNAME record
+
+  1. Click **Add record**.
+  2. Enter these values in the form that opens:
+
+    {% table %}
+    * Field
+    * Value to enter
+    * Description
+    ---
+    * Type
+    * Select \`CNAME\` from the dropdown
+    * What kind of DNS record this is.
+    ---
+    * Target
+    * If your custom subdomain is checkout.powdur.me, enter \`checkout\`
+    * For CNAME records, this field is the first part of your subdomain (the part leading up to the first period).
+    ---
+    * Value
+    * {% code %}hosted-checkout.stripecdn.com{% /code %}
+
+    * This is what the new subdomain record points to-in this case, Stripe Checkout.
+    ---
+    * TTL
+    * \`5 min\`
+    * An expiration of 5 minutes (300 seconds) is OK.
+    ---
+    * Proxy status
+    * \`Off\`
+    * Set the proxy status to \`off\` to avoid issues during setup.
+    {% /table %}
+
+`;
+
+    check(source, expected);
+  });
 });
