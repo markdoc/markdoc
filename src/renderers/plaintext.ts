@@ -50,7 +50,7 @@ function* renderFunction(f: Function) {
   yield ' %}';
 }
 
-function* renderNode(n: Node, o?: any = {}) {
+function* renderNode(n: Node, o: any = {}) {
   switch (n.type as NodeType) {
     case 'document': {
       if (n.attributes.frontmatter && n.attributes.frontmatter.length) {
@@ -153,7 +153,6 @@ function* renderNode(n: Node, o?: any = {}) {
       break;
     }
     case 'item': {
-      // TODO avoid this join
       yield* renderChildren(n);
       break;
     }
@@ -185,10 +184,10 @@ function* renderNode(n: Node, o?: any = {}) {
     }
     case 'table': {
       if (o.tableTag) {
-        // TODO yield to child type
-        yield [...renderChildren(n, o)]
+        const table = [...renderChildren(n, o)] as any[];
+        yield table
           .map((a: any) => a.map((i: string) => `* ` + i).join('\n'))
-          .join('\n---\n');
+          .join(`${table[0].length ? '\n' : ''}---\n`);
       } else {
         yield '\n';
         const table = [...renderChildren(n)] as unknown as string[][];
@@ -208,7 +207,7 @@ function* renderNode(n: Node, o?: any = {}) {
     }
     case 'thead': {
       const [head] = [...renderChildren(n)];
-      yield head;
+      yield head || [];
       break;
     }
     case 'tr': {
