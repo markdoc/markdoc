@@ -214,10 +214,8 @@ function* renderNode(n: Node, o: Options = {}) {
     }
     case 'item': {
       for (let i = 0; i < n.children.length; i++) {
-        yield* render(n.children[i], {
-          ...no,
-          itemIndex: i,
-        });
+        yield* render(n.children[i], { ...no, itemIndex: i });
+        yield* renderAnnotations(n);
       }
       break;
     }

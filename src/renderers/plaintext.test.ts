@@ -178,7 +178,7 @@ Yes!
 - [Install Markdoc](/docs/getting-started)
 - [Try it out online](/sandbox)
 
-1. One
+1. One {% align="left" %}
 2. Two
 3. Three
 
@@ -190,7 +190,7 @@ Yes!
 - [/docs/getting-started](Install Markdoc)
 - [/sandbox](Try it out online)
 
-1. One
+1. One {% align="left" %}
 2. Two
 3. Three
 
