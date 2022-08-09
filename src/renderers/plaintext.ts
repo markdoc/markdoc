@@ -81,13 +81,17 @@ function* renderNode(n: Node, o: Options = {}) {
       break;
     }
     case 'paragraph': {
+      // TODO confirm if this should be parent or parentContext
+      const tagChild = o?.parentContext?.type === 'tag';
+      const nested =
+        (o?.parentContext?.type === 'list' && o.itemIndex === 0) || tagChild;
       // Remove new line at the start of a loose list
-      if (!(o?.parentContext?.type === 'item' && o.itemIndex === 0)) {
+      if (!nested) {
         yield NL;
         yield indent;
       }
       yield* renderChildren(n, o);
-      yield NL;
+      if (!tagChild) yield NL;
       break;
     }
     case 'inline': {
@@ -148,6 +152,7 @@ function* renderNode(n: Node, o: Options = {}) {
     }
     case 'tag': {
       yield NL;
+      yield indent;
       yield '{% ';
       yield n.tag;
       yield Object.entries(n.attributes)
@@ -155,8 +160,10 @@ function* renderNode(n: Node, o: Options = {}) {
         .join('');
       yield ' %}';
       yield NL;
-      yield* renderChildren(n, { parentContext: n });
+      yield indent;
+      yield* renderChildren(n, { ...o, parentContext: n });
       yield NL;
+      yield indent;
       yield '{% /';
       yield n.tag;
       yield ' %}';
@@ -168,7 +175,11 @@ function* renderNode(n: Node, o: Options = {}) {
       for (let i = 0; i < n.children.length; i++) {
         yield indent;
         yield n.attributes.ordered ? `${i + 1}. ` : '- ';
-        yield* render(n.children[i], { ...o, indent: (o.indent || 0) + 1 });
+        yield* render(n.children[i], {
+          ...o,
+          parentContext: n,
+          indent: (o.indent || 0) + 1,
+        });
         // TODO do we need this newline?
         if (!indent) yield NL;
       }
@@ -178,7 +189,6 @@ function* renderNode(n: Node, o: Options = {}) {
       for (let i = 0; i < n.children.length; i++) {
         yield* render(n.children[i], {
           ...o,
-          parentContext: n,
           itemIndex: i,
         });
       }

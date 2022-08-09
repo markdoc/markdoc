@@ -53,9 +53,7 @@ Markdoc is a **Markdown**-based \`syntax\` and _toolchain_ for creating custom d
 ![Alt](/image)
 
 {% callout a="check" b={"e":5} c=8 d=[1,2,3] %}
-
 Markdoc is open-source—check out it's [http://github.com/markdoc/markdoc](source) to see how it works.
-
 {% /callout %}
 
 \`\`\`js {% .class #id x="test" render=false %}
@@ -157,6 +155,10 @@ fdescribe('Plaintext renderer', function () {
   My first paragraph
   Test
 
+  {% tag %} 
+    Indented tag
+  {% /tag %} 
+
   \`\`\`
   Code
   \`\`\`
@@ -173,6 +175,10 @@ fdescribe('Plaintext renderer', function () {
 
   My first paragraph
   Test
+
+  {% tag %}
+  Indented tag
+  {% /tag %}
 
   \`\`\`
   Code
