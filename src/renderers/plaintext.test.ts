@@ -157,6 +157,10 @@ fdescribe('Plaintext renderer', function () {
   My first paragraph
   Test
 
+  \`\`\`
+  Code
+  \`\`\`
+
 - Two
 
   My second paragraph
@@ -169,6 +173,10 @@ fdescribe('Plaintext renderer', function () {
 
   My first paragraph
   Test
+
+  \`\`\`
+  Code
+  \`\`\`
 
 - Two
 

@@ -133,12 +133,15 @@ function* renderNode(n: Node, o: Options = {}) {
     }
     case 'fence': {
       yield NL;
+      yield indent;
       yield '```';
       yield (n.attributes.language || '').toLowerCase();
       if (n.annotations.length) yield SPACE;
       yield* renderAnnotations(n);
       yield NL;
+      yield indent;
       yield* renderChildren(n, o);
+      yield indent;
       yield '```';
       yield NL;
       break;
