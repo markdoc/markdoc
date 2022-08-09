@@ -30,20 +30,7 @@ baz
 
 Soft 
  break
-Markdoc uses a fully declarative approach to composition and flow control, where other solutions…[read more](/docs/overview)
-
-## Next steps
-- [Install Markdoc](/docs/getting-started)
-- [Try it out online](/sandbox)
-
-1. One
-2. Two
-3. Three
-
-* A
-* B
-  * B2
-* C
+Markdoc uses…
 `;
 
 const expected = `---
@@ -77,28 +64,15 @@ baz
 
 Soft
 break
-Markdoc uses a fully declarative approach to composition and flow control, where other solutions…[/docs/overview](read more)
-
-## Next steps
-
-- [/docs/getting-started](Install Markdoc)
-- [/sandbox](Try it out online)
-
-1. One
-2. Two
-3. Three
-
-- A
-- B
-  - B2
-- C
+Markdoc uses…
 `;
 
 fdescribe('Plaintext renderer', function () {
-  it('rendering a tag', function () {
+  it('basics', function () {
     const doc = render(Markdoc.parse(source));
     expect(doc).toEqual(expected);
   });
+
   it('tables', () => {
     const doc = render(
       Markdoc.parse(`
@@ -136,5 +110,35 @@ fdescribe('Plaintext renderer', function () {
 {% /table %}
 `
     );
+  });
+
+  it('lists', () => {
+    const doc = render(
+      Markdoc.parse(`
+- [Install Markdoc](/docs/getting-started)
+- [Try it out online](/sandbox)
+
+1. One
+2. Two
+3. Three
+
+- A
+- B
+  - B2
+- C`)
+    );
+    expect(doc).toEqual(`
+- [/docs/getting-started](Install Markdoc)
+- [/sandbox](Try it out online)
+
+1. One
+2. Two
+3. Three
+
+- A
+- B
+  - B2
+- C
+`);
   });
 });
