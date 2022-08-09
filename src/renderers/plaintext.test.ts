@@ -81,6 +81,25 @@ fdescribe('Plaintext renderer', function () {
     check(source, expected);
   });
 
+  it('nested tags', () => {
+    check(
+      `
+{% checkout %}
+  {% if true %}
+  Yes!
+  {% /if %}
+{% /checkout %}
+    `,
+      `
+{% checkout %}
+{% if true %}
+Yes!
+{% /if %}
+{% /checkout %}
+`
+    );
+  });
+
   it('tables', () => {
     check(
       `

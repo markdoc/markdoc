@@ -22,6 +22,16 @@ function* renderTableRow(items: Array<string>) {
   yield `| ${items.join(' | ')} |`;
 }
 
+function* renderAttributes(n: Node) {
+  for (const [key, value] of Object.entries(n.attributes)) {
+    if (key === 'primary') {
+      yield ` ${JSON.stringify(value)}`;
+    } else {
+      yield ` ${key}=${JSON.stringify(value)}`;
+    }
+  }
+}
+
 function* renderAnnotations(n: Node) {
   if (n.annotations.length) {
     yield '{% ';
@@ -151,15 +161,13 @@ function* renderNode(n: Node, o: Options = {}) {
       break;
     }
     case 'tag': {
-      if (!n.inline) {
+      if (!n.inline && o?.parent?.type !== 'tag') {
         yield NL;
         yield indent;
       }
       yield '{% ';
       yield n.tag;
-      yield Object.entries(n.attributes)
-        .map(([key, value]) => ` ${key}=${JSON.stringify(value)}`)
-        .join('');
+      yield* renderAttributes(n);
       yield ' %}';
       if (!n.inline) {
         yield NL;
@@ -173,7 +181,9 @@ function* renderNode(n: Node, o: Options = {}) {
       yield '{% /';
       yield n.tag;
       yield ' %}';
-      yield NL;
+      if (o?.parent?.type !== 'tag') {
+        yield NL;
+      }
       break;
     }
     case 'list': {
