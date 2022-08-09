@@ -44,6 +44,18 @@ Markdoc uses a fully declarative approach to composition and flow control, where
 | ------ | ---- |
 | Header      | Title  |
 | Paragraph        | Text        |
+
+{% table %}
+
+- One
+- Two
+
+
+---
+- Three
+- Four
+
+{% /table %}
 `;
 
 const expected = `---
@@ -92,6 +104,14 @@ Markdoc uses a fully declarative approach to composition and flow control, where
 | ----------- | ----------- |
 | Header      | Title       |
 | Paragraph   | Text        |
+
+{% table  %}
+* One
+* Two
+---
+* Three
+* Four
+{% /table %}
 `;
 
 const ast = Markdoc.parse(source);

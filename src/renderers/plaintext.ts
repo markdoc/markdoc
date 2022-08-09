@@ -3,9 +3,9 @@ import type Variable from '../ast/variable';
 
 const max = (a: number, b: number) => Math.max(a, b);
 
-function* renderChildren(a: Node) {
+function* renderChildren(a: Node, options?: any) {
   for (const child of a.children) {
-    yield* render(child);
+    yield* render(child, options);
   }
 }
 
@@ -50,10 +50,10 @@ function* renderFunction(f: Function) {
   yield ' %}';
 }
 
-function* renderNode(n: Node) {
+function* renderNode(n: Node, o?: any = {}) {
   switch (n.type as NodeType) {
     case 'document': {
-      if (n.attributes.frontmatter.length) {
+      if (n.attributes.frontmatter && n.attributes.frontmatter.length) {
         yield `---\n${n.attributes.frontmatter}\n---\n`;
       }
       yield* renderChildren(n);
@@ -125,6 +125,7 @@ function* renderNode(n: Node) {
       break;
     }
     case 'tag': {
+      // TODO fix extra space in tag without attributes
       yield '\n';
       yield '{% ';
       yield n.tag;
@@ -134,7 +135,7 @@ function* renderNode(n: Node) {
         .join(' ');
       yield ' %}';
       yield '\n';
-      yield* renderChildren(n);
+      yield* renderChildren(n, { tableTag: true });
       yield '\n';
       yield '{% /';
       yield n.tag;
@@ -183,18 +184,25 @@ function* renderNode(n: Node) {
       break;
     }
     case 'table': {
-      yield '\n';
-      const table = [...renderChildren(n)] as unknown as string[][];
-      const [head, ...rows] = table;
+      if (o.tableTag) {
+        // TODO yield to child type
+        yield [...renderChildren(n, o)]
+          .map((a: any) => a.map((i: string) => `* ` + i).join('\n'))
+          .join('\n---\n');
+      } else {
+        yield '\n';
+        const table = [...renderChildren(n)] as unknown as string[][];
+        const [head, ...rows] = table;
 
-      const ml = table
-        .map((arr) => arr.map((s) => s.length).reduce(max))
-        .reduce(max);
+        const ml = table
+          .map((arr) => arr.map((s) => s.length).reduce(max))
+          .reduce(max);
 
-      yield* renderTableRow(head.map((h) => h + ' '.repeat(ml - h.length)));
-      yield* renderTableRow(head.map(() => '-'.repeat(ml)));
-      for (const row of rows) {
-        yield* renderTableRow(row.map((r) => r + ' '.repeat(ml - r.length)));
+        yield* renderTableRow(head.map((h) => h + ' '.repeat(ml - h.length)));
+        yield* renderTableRow(head.map(() => '-'.repeat(ml)));
+        for (const row of rows) {
+          yield* renderTableRow(row.map((r) => r + ' '.repeat(ml - r.length)));
+        }
       }
       break;
     }
@@ -220,7 +228,8 @@ function* renderNode(n: Node) {
 }
 
 export function* render(
-  a: AstType | string | boolean | number
+  a: AstType | string | boolean | number,
+  o?: any
 ): Generator<string, void, unknown> {
   switch (typeof a) {
     case 'boolean':
@@ -236,7 +245,7 @@ export function* render(
           break;
         }
         case 'Node':
-          yield* renderNode(a as Node);
+          yield* renderNode(a as Node, o);
           break;
         case 'Variable': {
           yield* renderVariable(a as Variable);
