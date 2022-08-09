@@ -11,7 +11,7 @@ const SPACE = ' ';
 
 const max = (a: number, b: number) => Math.max(a, b);
 
-function* renderChildren(a: Node, options?: Options) {
+function* renderChildren(a: Node, options: Options) {
   for (const child of a.children) {
     yield* render(child, options);
   }
@@ -19,13 +19,6 @@ function* renderChildren(a: Node, options?: Options) {
 
 function* renderTableRow(items: Array<string>) {
   yield `| ${items.join(' | ')} |`;
-}
-
-function* renderVariable(v: Variable) {
-  yield '{% ';
-  yield '$';
-  yield v.path.join('.');
-  yield ' %}';
 }
 
 function* renderAnnotations(n: Node) {
@@ -46,6 +39,13 @@ function* renderAnnotations(n: Node) {
   }
 }
 
+function* renderVariable(v: Variable) {
+  yield '{% ';
+  yield '$';
+  yield v.path.join('.');
+  yield ' %}';
+}
+
 function* renderFunction(f: Function) {
   yield '{% ';
   yield '';
@@ -64,14 +64,14 @@ function* renderNode(n: Node, o: Options = {}) {
       if (n.attributes.frontmatter && n.attributes.frontmatter.length) {
         yield `---\n${n.attributes.frontmatter}\n---\n`;
       }
-      yield* renderChildren(n);
+      yield* renderChildren(n, o);
       break;
     }
     case 'heading': {
       yield '\n';
       yield '#'.repeat(n.attributes.level || 1);
       yield SPACE;
-      yield* renderChildren(n);
+      yield* renderChildren(n, o);
       yield* renderAnnotations(n);
       yield '\n';
       break;
@@ -92,7 +92,7 @@ function* renderNode(n: Node, o: Options = {}) {
       yield* render(n.attributes.href);
       yield ']';
       yield '(';
-      yield* renderChildren(n);
+      yield* renderChildren(n, o);
       yield ')';
       break;
     }
@@ -105,7 +105,7 @@ function* renderNode(n: Node, o: Options = {}) {
     case 'blockquote': {
       yield '\n';
       yield '> ';
-      yield* renderChildren(n.children[0]);
+      yield* renderChildren(n.children[0], o);
       yield '\n';
       break;
     }
@@ -130,7 +130,7 @@ function* renderNode(n: Node, o: Options = {}) {
       if (n.annotations.length) yield SPACE;
       yield* renderAnnotations(n);
       yield '\n';
-      yield* renderChildren(n);
+      yield* renderChildren(n, o);
       yield '```';
       yield '\n';
       break;
@@ -175,13 +175,13 @@ function* renderNode(n: Node, o: Options = {}) {
     }
     case 'strong': {
       yield '**';
-      yield* renderChildren(n);
+      yield* renderChildren(n, o);
       yield '**';
       break;
     }
     case 'em': {
       yield '_';
-      yield* renderChildren(n);
+      yield* renderChildren(n, o);
       yield '_';
       break;
     }
@@ -200,7 +200,7 @@ function* renderNode(n: Node, o: Options = {}) {
       break;
     }
     case 'table': {
-      const table = [...renderChildren(n)] as unknown as string[][];
+      const table = [...renderChildren(n, o)] as unknown as string[][];
       if (o.parent && o.parent.type === 'tag' && o.parent.tag === 'table') {
         yield table
           .map((a: any) => a.map((i: string) => `* ` + i).join('\n'))
@@ -227,18 +227,18 @@ function* renderNode(n: Node, o: Options = {}) {
       break;
     }
     case 'thead': {
-      const [head] = [...renderChildren(n)];
+      const [head] = [...renderChildren(n, o)];
       yield head || [];
       break;
     }
     case 'tr': {
-      yield [...renderChildren(n)];
+      yield [...renderChildren(n, o)];
       break;
     }
     case 'tbody':
     case 'td':
     case 'th': {
-      yield* renderChildren(n);
+      yield* renderChildren(n, o);
       break;
     }
     default: {
