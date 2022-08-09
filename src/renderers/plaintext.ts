@@ -93,16 +93,14 @@ function* renderNode(n: Node, o: Options = {}) {
       break;
     }
     case 'paragraph': {
-      const tagChild = o?.parent?.type === 'tag';
-      const nested =
-        (o?.parent?.type === 'item' && o.itemIndex === 0) || tagChild;
+      const nested = o?.parent?.type === 'item' && o.itemIndex === 0;
 
       if (!nested) {
         yield NL;
         yield indent;
       }
       yield* renderChildren(n, no);
-      if (!tagChild) yield NL;
+      yield NL;
       break;
     }
     case 'inline': {
@@ -162,7 +160,7 @@ function* renderNode(n: Node, o: Options = {}) {
       break;
     }
     case 'tag': {
-      if (!n.inline && o?.parent?.type !== 'tag') {
+      if (!n.inline) {
         yield NL;
         yield indent;
       }
@@ -170,10 +168,6 @@ function* renderNode(n: Node, o: Options = {}) {
       yield n.tag;
       yield* renderAttributes(n);
       yield ' %}';
-      if (!n.inline) {
-        yield NL;
-        yield indent;
-      }
       if (no.allowIndentation) {
         yield SPACE.repeat(2);
       }
@@ -182,13 +176,12 @@ function* renderNode(n: Node, o: Options = {}) {
         indent: no.allowIndentation ? (no.indent || 0) + 1 : no.indent,
       });
       if (!n.inline) {
-        yield NL;
         yield indent;
       }
       yield '{% /';
       yield n.tag;
       yield ' %}';
-      if (o?.parent?.type !== 'tag') {
+      if (!n.inline) {
         yield NL;
       }
       break;
@@ -247,16 +240,11 @@ function* renderNode(n: Node, o: Options = {}) {
     case 'table': {
       const table = [...renderChildren(n, no)] as unknown as string[][];
       if (o.parent && o.parent.type === 'tag' && o.parent.tag === 'table') {
+        yield NL;
         yield table
-          .map((a: any[], i: number) =>
-            a
-              .map(
-                (s: string, j: number) =>
-                  (i === 0 && j === 0 ? '' : indent) + '* ' + s
-              )
-              .join(NL)
-          )
+          .map((a: any[]) => a.map((s: string) => indent + '* ' + s).join(NL))
           .join(`${table[0].length ? NL + indent : ''}---\n`);
+        yield NL;
       } else {
         yield NL;
         const [head, ...rows] = table;

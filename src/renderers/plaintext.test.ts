@@ -71,7 +71,10 @@ Markdoc uses…
 `;
 
 function check(source, expected, options = {}) {
-  const d = diff(expected, render(Markdoc.parse(source), options));
+  const a = expected;
+  const b = render(Markdoc.parse(source), options);
+  // console.log(a, b);
+  const d = diff(a, b);
   if (d && d.includes('Compared values have no visual difference.')) return;
   throw d;
 }
@@ -110,8 +113,8 @@ Yes!
 {% /checkout %}
     `,
       `
-{% checkout %}
-  {% if true %}
+{% checkout %}  
+  {% if true %}  
     Yes!
   {% /if %}
 {% /checkout %}
@@ -289,7 +292,6 @@ Yes!
     ---
     * Value
     * {% code %}hosted-checkout.stripecdn.com{% /code %}
-
     * This is what the new subdomain record points to-in this case, Stripe Checkout.
     ---
     * TTL
