@@ -284,45 +284,45 @@ function* renderNode(n: Node, o: Options = {}) {
 }
 
 export function* render(
-  a: Value,
+  v: Value,
   o: Options = {}
-): Generator<string, void, unknown> {
-  switch (typeof a) {
+): Generator<string, boolean, unknown> {
+  switch (typeof v) {
     case 'boolean':
     case 'number':
     case 'string': {
-      yield a.toString();
+      yield v.toString();
       break;
     }
     case 'object': {
-      if (a === null) break;
-      if (Array.isArray(a)) {
-        for (const n of a) {
+      if (v === null) break;
+      if (Array.isArray(v)) {
+        for (const n of v) {
           yield* render(n, o);
         }
         break;
       }
-      switch (a.$$mdtype) {
+      switch (v.$$mdtype) {
         case 'Function': {
-          yield* renderFunction(a as Function);
+          yield* renderFunction(v as Function);
           break;
         }
         case 'Node':
-          yield* renderNode(a as Node, o);
+          yield* renderNode(v as Node, o);
           break;
         case 'Variable': {
-          yield* renderVariable(a as Variable);
+          yield* renderVariable(v as Variable);
           break;
         }
         default:
-          throw new Error(`Unimplemented: "${a.$$mdtype}"`);
+          throw new Error(`Unimplemented: "${v.$$mdtype}"`);
       }
       break;
     }
   }
+  return true;
 }
 
-// TODO naming
 export default function print(a: Value, options?: Options): string {
   return [...render(a, options)].join('');
 }
