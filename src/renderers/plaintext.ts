@@ -12,6 +12,7 @@ const SPACE = ' ';
 const NL = '\n';
 
 const max = (a: number, b: number) => Math.max(a, b);
+const increment = (o: Options) => ({ ...o, indent: (o.indent || 0) + 1 });
 
 function* renderChildren(a: Node, options: Options) {
   for (const child of a.children) {
@@ -168,10 +169,7 @@ function* renderNode(n: Node, o: Options = {}) {
       yield n.tag;
       yield* renderAttributes(n);
       yield ' %}';
-      yield* renderChildren(n, {
-        ...no,
-        indent: no.allowIndentation ? (no.indent || 0) + 1 : no.indent,
-      });
+      yield* renderChildren(n, no.allowIndentation ? increment(no) : no);
       if (!n.inline) {
         yield indent;
       }
@@ -188,10 +186,7 @@ function* renderNode(n: Node, o: Options = {}) {
       for (let i = 0; i < n.children.length; i++) {
         yield indent;
         yield n.attributes.ordered ? `${i + 1}. ` : '- ';
-        yield* render(n.children[i], {
-          ...no,
-          indent: (no.indent || 0) + 1,
-        });
+        yield* render(n.children[i], increment(no));
         // TODO do we need this newline?
         if (!indent) yield NL;
       }
