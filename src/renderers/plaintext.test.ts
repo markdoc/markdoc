@@ -70,8 +70,8 @@ break
 Markdoc uses…
 `;
 
-function check(source, expected) {
-  const d = diff(expected, render(Markdoc.parse(source)));
+function check(source, expected, options = {}) {
+  const d = diff(expected, render(Markdoc.parse(source), options));
   if (d && d.includes('Compared values have no visual difference.')) return;
   throw d;
 }
@@ -97,6 +97,26 @@ Yes!
 {% /if %}
 {% /checkout %}
 `
+    );
+  });
+
+  it('nested tags — allowIndentation: true', () => {
+    check(
+      `
+{% checkout %}
+  {% if true %}
+  Yes!
+  {% /if %}
+{% /checkout %}
+    `,
+      `
+{% checkout %}
+  {% if true %}
+    Yes!
+  {% /if %}
+{% /checkout %}
+`,
+      { allowIndentation: true }
     );
   });
 

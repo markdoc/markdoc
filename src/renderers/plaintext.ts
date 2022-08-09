@@ -2,6 +2,7 @@ import type { Function, Node, NodeType, Value } from '../types';
 import type Variable from '../ast/variable';
 
 type Options = {
+  allowIndentation?: boolean;
   parent?: Node;
   indent?: number;
   itemIndex?: number;
@@ -173,7 +174,13 @@ function* renderNode(n: Node, o: Options = {}) {
         yield NL;
         yield indent;
       }
-      yield* renderChildren(n, no);
+      if (no.allowIndentation) {
+        yield SPACE.repeat(2);
+      }
+      yield* renderChildren(n, {
+        ...no,
+        indent: no.allowIndentation ? (no.indent || 0) + 1 : no.indent,
+      });
       if (!n.inline) {
         yield NL;
         yield indent;
@@ -335,6 +342,6 @@ export function* render(
 }
 
 // TODO naming
-export default function print(a: Value): string {
-  return [...render(a)].join('');
+export default function print(a: Value, options?: Options): string {
+  return [...render(a, options)].join('');
 }
