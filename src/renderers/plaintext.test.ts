@@ -142,6 +142,12 @@ Yes!
 - Four
 
 {% /table %}
+
+{% table %}
+---
+- H1
+- H2
+{% /table %}
     `,
       `
 | Syntax      | Description |
@@ -155,6 +161,12 @@ Yes!
 ---
 * Three
 * Four
+{% /table %}
+
+{% table %}
+---
+* H1
+* H2
 {% /table %}
 `
     );

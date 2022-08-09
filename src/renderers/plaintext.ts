@@ -241,6 +241,7 @@ function* renderNode(n: Node, o: Options = {}) {
       const table = [...renderChildren(n, no)] as unknown as string[][];
       if (o.parent && o.parent.type === 'tag' && o.parent.tag === 'table') {
         yield NL;
+        // TODO clean up this logic
         yield table
           .map((a: any[]) => a.map((s: string) => indent + '* ' + s).join(NL))
           .join(`${table[0].length ? NL + indent : ''}---\n`);
