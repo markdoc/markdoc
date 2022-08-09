@@ -61,6 +61,7 @@ function* renderFunction(f: Function) {
 
 function* renderNode(n: Node, o: Options = {}) {
   const indent = SPACE.repeat(2 * (o.indent || 0));
+
   switch (n.type as NodeType) {
     case 'document': {
       if (n.attributes.frontmatter && n.attributes.frontmatter.length) {
@@ -71,6 +72,7 @@ function* renderNode(n: Node, o: Options = {}) {
     }
     case 'heading': {
       yield NL;
+      yield indent;
       yield '#'.repeat(n.attributes.level || 1);
       yield SPACE;
       yield* renderChildren(n, o);
@@ -80,7 +82,10 @@ function* renderNode(n: Node, o: Options = {}) {
     }
     case 'paragraph': {
       // Remove new line at the start of a loose list
-      if (!(o?.parentContext?.type === 'item' && o.itemIndex === 0)) yield NL;
+      if (!(o?.parentContext?.type === 'item' && o.itemIndex === 0)) {
+        yield NL;
+        yield indent;
+      }
       yield* renderChildren(n, o);
       yield NL;
       break;
@@ -99,9 +104,6 @@ function* renderNode(n: Node, o: Options = {}) {
       break;
     }
     case 'text': {
-      // Indent text when nested in a loose list
-      // TODO should we move this to the paragraph, softbreak, etc. level and replace NL with NL + SPACE.repeat(2 * (o.indent || 0))?
-      if (o.itemIndex) yield indent;
       yield* render(n.attributes.content, o);
       break;
     }
@@ -160,11 +162,10 @@ function* renderNode(n: Node, o: Options = {}) {
     }
     case 'list': {
       yield NL;
-      const indent = o.indent || 0;
       for (let i = 0; i < n.children.length; i++) {
-        yield '  '.repeat(indent);
+        yield indent;
         yield n.attributes.ordered ? `${i + 1}. ` : '- ';
-        yield* render(n.children[i], { ...o, indent: indent + 1 });
+        yield* render(n.children[i], { ...o, indent: (o.indent || 0) + 1 });
         // TODO do we need this newline?
         if (!indent) yield NL;
       }
@@ -200,10 +201,12 @@ function* renderNode(n: Node, o: Options = {}) {
     }
     case 'hardbreak': {
       yield '\\\n';
+      yield indent;
       break;
     }
     case 'softbreak': {
       yield NL;
+      yield indent;
       break;
     }
     case 'table': {

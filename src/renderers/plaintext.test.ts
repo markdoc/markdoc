@@ -161,7 +161,9 @@ fdescribe('Plaintext renderer', function () {
 
   My second paragraph
   
-  ---`,
+  ---
+  
+  ## Indented header`,
       `
 - One
 
@@ -173,6 +175,8 @@ fdescribe('Plaintext renderer', function () {
   My second paragraph
 
   ---
+
+  ## Indented header
 
 `
     );
