@@ -4,7 +4,10 @@ import type Variable from '../ast/variable';
 type Options = {
   parent?: Node;
   indent?: number;
+  itemIndex?: number;
 };
+
+const SPACE = ' ';
 
 const max = (a: number, b: number) => Math.max(a, b);
 
@@ -38,7 +41,7 @@ function* renderAnnotations(n: Node) {
         }
         return `${a.name}=${JSON.stringify(a.value)}`;
       })
-      .join(' ');
+      .join(SPACE);
     yield ' %}';
   }
 }
@@ -67,20 +70,21 @@ function* renderNode(n: Node, o: Options = {}) {
     case 'heading': {
       yield '\n';
       yield '#'.repeat(n.attributes.level || 1);
-      yield ' ';
+      yield SPACE;
       yield* renderChildren(n);
       yield* renderAnnotations(n);
       yield '\n';
       break;
     }
     case 'paragraph': {
-      yield '\n';
-      yield* renderChildren(n);
+      // Remove new line at the start of a loose list
+      if (!(o?.parent?.type === 'item' && o.itemIndex === 0)) yield '\n';
+      yield* renderChildren(n, o);
       yield '\n';
       break;
     }
     case 'inline': {
-      yield* renderChildren(n);
+      yield* renderChildren(n, o);
       break;
     }
     case 'link': {
@@ -93,6 +97,8 @@ function* renderNode(n: Node, o: Options = {}) {
       break;
     }
     case 'text': {
+      // Indent text when nested in a loose list
+      if (o.itemIndex) yield SPACE.repeat(2 * (o.indent || 0));
       yield* render(n.attributes.content);
       break;
     }
@@ -121,7 +127,7 @@ function* renderNode(n: Node, o: Options = {}) {
       yield '\n';
       yield '```';
       yield (n.attributes.language || '').toLowerCase();
-      if (n.annotations.length) yield ' ';
+      if (n.annotations.length) yield SPACE;
       yield* renderAnnotations(n);
       yield '\n';
       yield* renderChildren(n);
@@ -158,7 +164,13 @@ function* renderNode(n: Node, o: Options = {}) {
       break;
     }
     case 'item': {
-      yield* renderChildren(n, { indent: (o.indent || 0) + 1 });
+      for (let i = 0; i < n.children.length; i++) {
+        yield* render(n.children[i], {
+          parent: n,
+          indent: (o.indent || 0) + 1,
+          itemIndex: i,
+        });
+      }
       break;
     }
     case 'strong': {
@@ -201,10 +213,12 @@ function* renderNode(n: Node, o: Options = {}) {
           .map((arr) => arr.map((s) => s.length).reduce(max))
           .reduce(max);
 
-        yield* renderTableRow(head.map((h) => h + ' '.repeat(ml - h.length)));
+        yield* renderTableRow(head.map((h) => h + SPACE.repeat(ml - h.length)));
         yield* renderTableRow(head.map(() => '-'.repeat(ml)));
         for (const row of rows) {
-          yield* renderTableRow(row.map((r) => r + ' '.repeat(ml - r.length)));
+          yield* renderTableRow(
+            row.map((r) => r + SPACE.repeat(ml - r.length))
+          );
         }
       }
       break;

@@ -146,4 +146,28 @@ fdescribe('Plaintext renderer', function () {
 `
     );
   });
+  it('"loose" lists', () => {
+    check(
+      `
+- One
+
+  My first paragraph
+  Test
+
+- Two
+
+  My second paragraph`,
+      `
+- One
+
+  My first paragraph
+  Test
+
+- Two
+
+  My second paragraph
+
+`
+    );
+  });
 });
