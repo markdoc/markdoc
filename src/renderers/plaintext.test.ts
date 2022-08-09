@@ -20,7 +20,7 @@ Markdoc is a **Markdown**-based \`syntax\` and _toolchain_ for creating custom d
 
     ![Alt](/image)
 
-{% callout a="check" b={e: 5} c=8 d=[1, 2, 3] %}
+{% callout #id   .class   a="check" b={e: 5} c=8 d=[1, 2, 3] %}
 Markdoc is open-source—check out it's [source](http://github.com/markdoc/markdoc) to see how it works.
 {% /callout %}
 
@@ -52,7 +52,7 @@ Markdoc is a **Markdown**-based \`syntax\` and _toolchain_ for creating custom d
 
 ![Alt](/image)
 
-{% callout a="check" b={"e":5} c=8 d=[1,2,3] %}
+{% callout #id .class a="check" b={"e":5} c=8 d=[1,2,3] %}
 Markdoc is open-source—check out it's [http://github.com/markdoc/markdoc](source) to see how it works.
 {% /callout %}
 

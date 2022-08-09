@@ -24,12 +24,29 @@ function* renderTableRow(items: Array<string>) {
   yield `| ${items.join(' | ')} |`;
 }
 
+// TODO dedup this and renderAnnotations
 function* renderAttributes(n: Node) {
   for (const [key, value] of Object.entries(n.attributes)) {
-    if (key === 'primary') {
-      yield ` ${JSON.stringify(value)}`;
-    } else {
-      yield ` ${key}=${JSON.stringify(value)}`;
+    yield ' ';
+    switch (key) {
+      case 'primary': {
+        yield JSON.stringify(value);
+        break;
+      }
+      case 'id': {
+        yield '#' + value;
+        break;
+      }
+      case 'class': {
+        yield Object.keys(value)
+          .map((key) => `.${key}`)
+          .join(' ');
+        break;
+      }
+      default: {
+        yield `${key}=${JSON.stringify(value)}`;
+        break;
+      }
     }
   }
 }
