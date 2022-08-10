@@ -71,7 +71,7 @@ Markdoc uses…
 `;
 
 function check(source, expected, options = {}) {
-  const a = expected;
+  const a = expected.trimStart();
   const b = render(Markdoc.parse(source), options);
   // console.log(a, b);
   const d = diff(a, b);

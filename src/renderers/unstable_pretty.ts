@@ -86,9 +86,10 @@ function* renderNode(n: Node, o: Options = {}) {
   switch (n.type as NodeType) {
     case 'document': {
       if (n.attributes.frontmatter && n.attributes.frontmatter.length) {
-        yield `---\n${n.attributes.frontmatter}\n---\n`;
+        yield '---' + NL + n.attributes.frontmatter + NL + '---' + NL + NL;
       }
-      yield* renderChildren(n, no);
+      // TODO handle trimStart without creating intermediate array
+      yield [...renderChildren(n, no)].join('').trimStart();
       break;
     }
     case 'heading': {
@@ -102,11 +103,11 @@ function* renderNode(n: Node, o: Options = {}) {
       break;
     }
     case 'paragraph': {
-      const nested =
+      const skipIndent =
         (o?.parent?.type === 'item' && o?.parent?.children.indexOf(n) === 0) ||
         o?.parent?.type === 'blockquote';
 
-      if (!nested) {
+      if (!skipIndent) {
         yield NL;
         yield indent;
       }
