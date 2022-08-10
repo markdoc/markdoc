@@ -8,7 +8,6 @@ type Options = {
   allowIndentation?: boolean;
   parent?: Node;
   indent?: number;
-  itemIndex?: number;
 };
 
 const SPACE = ' ';
@@ -105,7 +104,7 @@ function* renderNode(n: Node, o: Options = {}) {
     }
     case 'paragraph': {
       const nested =
-        (o?.parent?.type === 'item' && o.itemIndex === 0) ||
+        (o?.parent?.type === 'item' && o?.parent?.children.indexOf(n) === 0) ||
         o?.parent?.type === 'blockquote';
 
       if (!nested) {
@@ -217,9 +216,7 @@ function* renderNode(n: Node, o: Options = {}) {
       break;
     }
     case 'item': {
-      for (let i = 0; i < n.children.length; i++) {
-        yield* render(n.children[i], { ...no, itemIndex: i });
-      }
+      yield* renderChildren(n, no);
       yield* renderAnnotations(n);
       break;
     }
