@@ -1,3 +1,4 @@
+import { inspect } from 'util';
 import Ast from '../ast';
 import { OPEN, CLOSE } from '../utils';
 import type { AttributeValue, Function, Node, NodeType, Value } from '../types';
@@ -33,8 +34,13 @@ function renderValue(v: Value) {
   return Ast.isAst(v)
     ? // TODO yield
       [...render(v)].join('')
-    : // TODO improve formatting (e.g. [1,2,3])
-      JSON.stringify(v);
+    : // TODO improve formatting
+      inspect(v, { depth: null })
+        .replace(/(?<!\\)'/g, '"')
+        .replace(/\[ /g, '[')
+        .replace(/ \]/g, ']')
+        .replace(/\{ /g, '{')
+        .replace(/ \}/g, '}');
 }
 
 function renderAnnotationValue(a: AttributeValue): string {
