@@ -79,6 +79,11 @@ function* renderFunction(f: Function) {
   yield ')';
 }
 
+// TODO handle trimStart without creating intermediate array
+function trimStart(g: Generator): string {
+  return [...g].join('').trimStart();
+}
+
 function* renderNode(n: Node, o: Options = {}) {
   const no = { ...o, parent: n };
   const indent = SPACE.repeat(no.indent || 0);
@@ -88,8 +93,7 @@ function* renderNode(n: Node, o: Options = {}) {
       if (n.attributes.frontmatter && n.attributes.frontmatter.length) {
         yield '---' + NL + n.attributes.frontmatter + NL + '---' + NL + NL;
       }
-      // TODO handle trimStart without creating intermediate array
-      yield [...renderChildren(n, no)].join('').trimStart();
+      yield trimStart(renderChildren(n, no));
       break;
     }
     case 'heading': {
@@ -103,14 +107,8 @@ function* renderNode(n: Node, o: Options = {}) {
       break;
     }
     case 'paragraph': {
-      const skipIndent =
-        (o?.parent?.type === 'item' && o?.parent?.children.indexOf(n) === 0) ||
-        o?.parent?.type === 'blockquote';
-
-      if (!skipIndent) {
-        yield NL;
-        yield indent;
-      }
+      yield NL;
+      yield indent;
       yield* renderChildren(n, no);
       yield* renderAnnotations(n);
       yield NL;
@@ -139,7 +137,7 @@ function* renderNode(n: Node, o: Options = {}) {
       yield NL;
       yield indent;
       yield '> ';
-      yield* render(n.children[0], no);
+      yield trimStart(renderChildren(n, no));
       break;
     }
     case 'hr': {
@@ -216,7 +214,7 @@ function* renderNode(n: Node, o: Options = {}) {
       break;
     }
     case 'item': {
-      yield* renderChildren(n, no);
+      yield trimStart(renderChildren(n, no));
       yield* renderAnnotations(n);
       break;
     }
