@@ -89,7 +89,33 @@ fdescribe('[Unstable] Pretty renderer', function () {
     stable(expected);
   });
 
-  fit('nested tags', () => {
+  it('variables', () => {
+    const source = `
+{% $user.name %}
+{% key x=$user.name new=$flag /%}
+`;
+    const expected = `
+{% $user.name %}
+
+{% key x=$user.name new=$flag /%}
+`;
+
+    check(source, expected);
+  });
+
+  it('functions', () => {
+    const source = `
+{% markdoc("test", 1) %}
+{% key x=default($x, 1) /%}
+`;
+    const expected = `{% markdoc("test", 1) %}
+{% key x=default($x, 1) /%}
+`;
+
+    check(source, expected);
+  });
+
+  it('tags', () => {
     const source = `
 {% key /%}
   

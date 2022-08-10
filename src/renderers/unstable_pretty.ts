@@ -1,3 +1,4 @@
+import Ast from '../ast';
 import { OPEN, CLOSE } from '../utils';
 import type { AttributeValue, Function, Node, NodeType, Value } from '../types';
 import type Variable from '../ast/variable';
@@ -28,11 +29,19 @@ function* renderTableRow(items: Array<string>) {
   yield `| ${items.join(' | ')} |`;
 }
 
+function renderValue(v: Value) {
+  return Ast.isAst(v)
+    ? // TODO yield
+      [...render(v)].join('')
+    : // TODO improve formatting (e.g. [1,2,3])
+      JSON.stringify(v);
+}
+
 function renderAnnotationValue(a: AttributeValue): string {
   if (a.name === 'primary') return a.value;
   if (a.name === 'id') return '#' + a.value;
   if (a.type === 'class') return '.' + a.name;
-  return `${a.name}=${JSON.stringify(a.value)}`;
+  return `${a.name}=${renderValue(a.value)}`;
 }
 
 function* renderAttributes(n: Node) {
@@ -55,21 +64,15 @@ function* renderAnnotations(n: Node) {
 }
 
 function* renderVariable(v: Variable) {
-  yield OPEN + SPACE;
   yield '$';
   yield v.path.join('.');
-  yield SPACE + CLOSE;
 }
 
 function* renderFunction(f: Function) {
-  yield OPEN + SPACE;
   yield f.name;
   yield '(';
-  yield Object.values(f.parameters)
-    .map((value) => JSON.stringify(value))
-    .join(', ');
+  yield Object.values(f.parameters).map(renderValue).join(', ');
   yield ')';
-  yield SPACE + CLOSE;
 }
 
 function* renderNode(n: Node, o: Options = {}) {
@@ -122,7 +125,9 @@ function* renderNode(n: Node, o: Options = {}) {
       break;
     }
     case 'text': {
+      if (Ast.isAst(n.attributes.content)) yield OPEN + SPACE;
       yield* render(n.attributes.content, no);
+      if (Ast.isAst(n.attributes.content)) yield SPACE + CLOSE;
       break;
     }
     case 'blockquote': {
@@ -303,6 +308,8 @@ function* render(
   o: Options = {}
 ): Generator<string, boolean, unknown> {
   switch (typeof v) {
+    case 'undefined':
+      break;
     case 'boolean':
     case 'number':
     case 'string': {
@@ -339,8 +346,8 @@ function* render(
 }
 
 export default function unstable_pretty_render(
-  a: Value,
+  v: Value,
   options?: Options
 ): string {
-  return [...render(a, options)].join('');
+  return [...render(v, options)].join('');
 }
