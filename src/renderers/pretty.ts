@@ -1,3 +1,4 @@
+import { OPEN, CLOSE } from '../utils';
 import type { AttributeValue, Function, Node, NodeType, Value } from '../types';
 import type Variable from '../ast/variable';
 
@@ -44,29 +45,28 @@ function* renderAttributes(n: Node) {
 
 function* renderAnnotations(n: Node) {
   if (n.annotations.length) {
-    yield '{% ';
+    yield OPEN + SPACE;
     yield n.annotations.map(renderAnnotationValue).join(SPACE);
-    yield ' %}';
+    yield SPACE + CLOSE;
   }
 }
 
 function* renderVariable(v: Variable) {
-  yield '{% ';
+  yield OPEN + SPACE;
   yield '$';
   yield v.path.join('.');
-  yield ' %}';
+  yield SPACE + CLOSE;
 }
 
 function* renderFunction(f: Function) {
-  yield '{% ';
-  yield '';
+  yield OPEN + SPACE;
   yield f.name;
   yield '(';
   yield Object.values(f.parameters)
     .map((value) => JSON.stringify(value))
     .join(', ');
   yield ')';
-  yield ' %}';
+  yield SPACE + CLOSE;
 }
 
 function* renderNode(n: Node, o: Options = {}) {
@@ -166,17 +166,17 @@ function* renderNode(n: Node, o: Options = {}) {
         yield NL;
         yield indent;
       }
-      yield '{% ';
+      yield OPEN + SPACE;
       yield n.tag;
       yield* renderAttributes(n);
-      yield ' %}';
+      yield SPACE + CLOSE;
       yield* renderChildren(n, no.allowIndentation ? increment(no) : no);
       if (!n.inline) {
         yield indent;
       }
-      yield '{% /';
+      yield OPEN + SPACE + '/';
       yield n.tag;
-      yield ' %}';
+      yield SPACE + CLOSE;
       if (!n.inline) {
         yield NL;
       }
