@@ -83,7 +83,7 @@ function stable(source) {
   return check(source, source);
 }
 
-fdescribe('[Unstable] Pretty renderer', function () {
+describe('[Unstable] Pretty renderer', function () {
   it('basics', function () {
     check(source, expected);
     stable(expected);
@@ -96,6 +96,7 @@ fdescribe('[Unstable] Pretty renderer', function () {
 `;
 
     check(source, expected);
+    stable(expected);
   });
 
   it('variables', () => {
@@ -110,6 +111,7 @@ fdescribe('[Unstable] Pretty renderer', function () {
 `;
 
     check(source, expected);
+    stable(expected);
   });
 
   it('functions', () => {

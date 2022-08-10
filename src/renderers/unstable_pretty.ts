@@ -29,10 +29,9 @@ function* renderTableRow(items: Array<string>) {
   yield `| ${items.join(' | ')} |`;
 }
 
-// TODO combine with `render`
 function renderValue(v: Value) {
   return Ast.isAst(v)
-    ? [...render(v)].join('')
+    ? UNSTABLE_DO_NOT_USE_pretty_render(v)
     : // TODO improve formatting
       inspect(v, { depth: null })
         .replace(/(?<!\\)'/g, '"')
@@ -350,9 +349,11 @@ function* render(
   return true;
 }
 
-export default function unstable_pretty_render(
+export default function UNSTABLE_DO_NOT_USE_pretty_render(
   v: Value,
   options?: Options
 ): string {
-  return [...render(v, options)].join('');
+  let doc = '';
+  for (const s of render(v, options)) doc += s;
+  return doc;
 }
