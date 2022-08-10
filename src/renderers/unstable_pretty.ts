@@ -39,7 +39,7 @@ function renderValue(v: Value) {
 
 function renderAnnotationValue(a: AttributeValue): string {
   if (a.name === 'primary') return a.value;
-  if (a.name === 'id') return '#' + a.value;
+  if (a.name === 'id' && typeof a.value === 'string') return '#' + a.value;
   if (a.type === 'class') return '.' + a.name;
   return `${a.name}=${renderValue(a.value)}`;
 }
@@ -47,7 +47,7 @@ function renderAnnotationValue(a: AttributeValue): string {
 function* renderAttributes(n: Node) {
   for (const [key, value] of Object.entries(n.attributes)) {
     yield ' ';
-    if (key === 'class')
+    if (key === 'class' && !Ast.isAst(value))
       yield Object.keys(value)
         .map((name) => renderAnnotationValue({ type: 'class', name, value }))
         .join(' ');
@@ -81,6 +81,7 @@ function* renderNode(n: Node, o: Options = {}) {
 
   switch (n.type as NodeType) {
     case 'document': {
+      // TODO check for n.errors here?
       if (n.attributes.frontmatter && n.attributes.frontmatter.length) {
         yield `---\n${n.attributes.frontmatter}\n---\n`;
       }
@@ -295,6 +296,11 @@ function* renderNode(n: Node, o: Options = {}) {
     }
     case 'tbody': {
       yield* renderChildren(n, no);
+      break;
+    }
+    case 'error': {
+      // TODO
+      console.error(n);
       break;
     }
     default: {

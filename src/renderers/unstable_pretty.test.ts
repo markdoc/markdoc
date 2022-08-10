@@ -20,7 +20,7 @@ Markdoc is a **Markdown**-based \`syntax\` and _toolchain_ for creating custom d
 
     ![Alt](/image)
 
-{% callout #id   .class   a="check" b={e: 5} c=8 d=[1, 2, 3] %}
+{% callout #id   .class  .class2   a="check" b={e: 5} c=8 d=[1, 2, 3] %}
 Markdoc is open-source—check out it's [source](http://github.com/markdoc/markdoc) to see how it works.
 {% /callout %}
 
@@ -52,7 +52,7 @@ Markdoc is a **Markdown**-based \`syntax\` and _toolchain_ for creating custom d
 
 ![Alt](/image)
 
-{% callout #id .class a="check" b={"e":5} c=8 d=[1,2,3] %}
+{% callout #id .class .class2 a="check" b={"e":5} c=8 d=[1,2,3] %}
 Markdoc is open-source—check out it's [source](http://github.com/markdoc/markdoc) to see how it works.
 {% /callout %}
 
@@ -87,6 +87,15 @@ fdescribe('[Unstable] Pretty renderer', function () {
   it('basics', function () {
     check(source, expected);
     stable(expected);
+  });
+
+  it('attribute edge cases', () => {
+    const source = `{% key id=$user.name class=default($y, "test") %}Child{% /key %}`;
+    const expected = `
+{% key id=$user.name class=default($y, "test") %}Child{% /key %}
+`;
+
+    check(source, expected);
   });
 
   it('variables', () => {
