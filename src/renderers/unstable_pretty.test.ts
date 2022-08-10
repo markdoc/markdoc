@@ -1,7 +1,7 @@
 import { diff } from 'jest-diff';
 
 import Markdoc from '../../index';
-import render from './pretty';
+import render from './unstable_pretty';
 
 const source = `---
 
@@ -83,7 +83,7 @@ function stable(source) {
   return check(source, source);
 }
 
-fdescribe('Pretty renderer', function () {
+fdescribe('[Unstable] Pretty renderer', function () {
   it('basics', function () {
     check(source, expected);
     stable(expected);

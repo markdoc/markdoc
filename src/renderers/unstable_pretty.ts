@@ -299,7 +299,7 @@ function* renderNode(n: Node, o: Options = {}) {
   }
 }
 
-export function* render(
+function* render(
   v: Value,
   o: Options = {}
 ): Generator<string, boolean, unknown> {
@@ -339,6 +339,9 @@ export function* render(
   return true;
 }
 
-export default function print(a: Value, options?: Options): string {
+export default function unstable_pretty_render(
+  a: Value,
+  options?: Options
+): string {
   return [...render(a, options)].join('');
 }
