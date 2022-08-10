@@ -186,7 +186,7 @@ function* renderNode(n: Node, o: Options = {}) {
       yield NL;
       for (let i = 0; i < n.children.length; i++) {
         yield indent;
-        yield n.attributes.ordered ? `${i + 1}. ` : '- ';
+        yield n.attributes.ordered ? `1. ` : '- ';
         yield* render(n.children[i], increment(no));
         // TODO do we need this newline?
         if (!indent) yield NL;

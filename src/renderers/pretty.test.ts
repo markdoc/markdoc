@@ -196,8 +196,8 @@ Yes!
 - [Try it out online](/sandbox)
 
 1. One {% align="left" %}
-2. Two
-3. Three
+1. Two
+1. Three
 
 - A
 - B
@@ -298,7 +298,7 @@ Yes!
 - Create your CNAME record
 
   1. Click **Add record**.
-  2. Enter these values in the form that opens:
+  1. Enter these values in the form that opens:
 
     {% table %}
     * Field
