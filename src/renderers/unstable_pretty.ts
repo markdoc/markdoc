@@ -247,7 +247,7 @@ function* renderNode(n: Node, o: Options = {}) {
         for (const row of table) {
           yield NL;
           for (const d of row) {
-            yield indent + '* ' + d;
+            yield indent + '- ' + d;
             yield NL;
           }
           if (row !== table[table.length - 1]) {

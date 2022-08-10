@@ -160,17 +160,17 @@ Yes!
 | Paragraph   | Text        |
 
 {% table %}
-* One {% align="middle" %}
-* Two
+- One {% align="middle" %}
+- Two
 ---
-* Three
-* Four {% align="end" %}
+- Three
+- Four {% align="end" %}
 {% /table %}
 
 {% table %}
 ---
-* H1
-* H2
+- H1
+- H2
 {% /table %}
 `;
 
@@ -301,29 +301,29 @@ Yes!
   1. Enter these values in the form that opens:
 
      {% table %}
-     * Field
-     * Value to enter
-     * Description
+     - Field
+     - Value to enter
+     - Description
      ---
-     * Type
-     * Select \`CNAME\` from the dropdown
-     * What kind of DNS record this is.
+     - Type
+     - Select \`CNAME\` from the dropdown
+     - What kind of DNS record this is.
      ---
-     * Target
-     * If your custom subdomain is checkout.powdur.me, enter \`checkout\`
-     * For CNAME records, this field is the first part of your subdomain (the part leading up to the first period).
+     - Target
+     - If your custom subdomain is checkout.powdur.me, enter \`checkout\`
+     - For CNAME records, this field is the first part of your subdomain (the part leading up to the first period).
      ---
-     * Value
-     * {% code %}hosted-checkout.stripecdn.com{% /code %}
-     * This is what the new subdomain record points to-in this case, Stripe Checkout.
+     - Value
+     - {% code %}hosted-checkout.stripecdn.com{% /code %}
+     - This is what the new subdomain record points to-in this case, Stripe Checkout.
      ---
-     * TTL
-     * \`5 min\`
-     * An expiration of 5 minutes (300 seconds) is OK.
+     - TTL
+     - \`5 min\`
+     - An expiration of 5 minutes (300 seconds) is OK.
      ---
-     * Proxy status
-     * \`Off\`
-     * Set the proxy status to \`off\` to avoid issues during setup.
+     - Proxy status
+     - \`Off\`
+     - Set the proxy status to \`off\` to avoid issues during setup.
      {% /table %}
 
 `;
