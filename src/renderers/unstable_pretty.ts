@@ -212,15 +212,15 @@ function* renderNode(n: Node, o: Options = {}) {
           increment(no, n.attributes.ordered ? `1. `.length : '- '.length)
         );
         // TODO do we need this newline?
-        if (!indent) yield NL;
+        if (!no.indent) yield NL;
       }
       break;
     }
     case 'item': {
       for (let i = 0; i < n.children.length; i++) {
         yield* render(n.children[i], { ...no, itemIndex: i });
-        yield* renderAnnotations(n);
       }
+      yield* renderAnnotations(n);
       break;
     }
     case 'strong': {
