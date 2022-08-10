@@ -89,8 +89,10 @@ fdescribe('[Unstable] Pretty renderer', function () {
     stable(expected);
   });
 
-  it('nested tags', () => {
+  fit('nested tags', () => {
     const source = `
+{% key /%}
+  
 {% checkout %}
   {% if true %}
   Yes!
@@ -98,6 +100,8 @@ fdescribe('[Unstable] Pretty renderer', function () {
 {% /checkout %}
     `;
     const expected = `
+{% key /%}
+
 {% checkout %}
 {% if true %}
 Yes!

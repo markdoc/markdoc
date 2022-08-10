@@ -172,14 +172,20 @@ function* renderNode(n: Node, o: Options = {}) {
       yield OPEN + SPACE;
       yield n.tag;
       yield* renderAttributes(n);
-      yield SPACE + CLOSE;
-      yield* renderChildren(n, no.allowIndentation ? increment(no) : no);
-      if (!n.inline) {
-        yield indent;
+      if (n.children.length) {
+        yield SPACE + CLOSE;
+        yield* renderChildren(n, no.allowIndentation ? increment(no) : no);
+        if (!n.inline) {
+          yield indent;
+        }
+        yield OPEN + SPACE + '/';
+        yield n.tag;
+        yield SPACE + CLOSE;
       }
-      yield OPEN + SPACE + '/';
-      yield n.tag;
-      yield SPACE + CLOSE;
+      // Self-closing
+      else {
+        yield SPACE + '/' + CLOSE;
+      }
       if (!n.inline) {
         yield NL;
       }
