@@ -1,4 +1,4 @@
-import type { Function, Node, NodeType, Value } from '../types';
+import type { AttributeValue, Function, Node, NodeType, Value } from '../types';
 import type Variable from '../ast/variable';
 
 type Options = {
@@ -24,47 +24,28 @@ function* renderTableRow(items: Array<string>) {
   yield `| ${items.join(' | ')} |`;
 }
 
-// TODO dedup this and renderAnnotations
+function renderAnnotationValue(a: AttributeValue): string {
+  if (a.name === 'primary') return a.value;
+  if (a.name === 'id') return '#' + a.value;
+  if (a.type === 'class') return '.' + a.name;
+  return `${a.name}=${JSON.stringify(a.value)}`;
+}
+
 function* renderAttributes(n: Node) {
   for (const [key, value] of Object.entries(n.attributes)) {
     yield ' ';
-    switch (key) {
-      case 'primary': {
-        yield JSON.stringify(value);
-        break;
-      }
-      case 'id': {
-        yield '#' + value;
-        break;
-      }
-      case 'class': {
-        yield Object.keys(value)
-          .map((key) => `.${key}`)
-          .join(' ');
-        break;
-      }
-      default: {
-        yield `${key}=${JSON.stringify(value)}`;
-        break;
-      }
-    }
+    if (key === 'class')
+      yield Object.keys(value)
+        .map((name) => renderAnnotationValue({ type: 'class', name, value }))
+        .join(' ');
+    else yield renderAnnotationValue({ type: 'attribute', name: key, value });
   }
 }
 
 function* renderAnnotations(n: Node) {
   if (n.annotations.length) {
     yield '{% ';
-    yield n.annotations
-      .map((a) => {
-        if (a.type === 'class') {
-          return '.' + a.name;
-        }
-        if (a.name === 'id') {
-          return '#' + a.value;
-        }
-        return `${a.name}=${JSON.stringify(a.value)}`;
-      })
-      .join(SPACE);
+    yield n.annotations.map(renderAnnotationValue).join(SPACE);
     yield ' %}';
   }
 }
