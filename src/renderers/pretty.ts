@@ -111,10 +111,10 @@ function* renderNode(n: Node, o: Options = {}) {
     }
     case 'link': {
       yield '[';
-      yield* render(n.attributes.href, no);
+      yield* renderChildren(n, no);
       yield ']';
       yield '(';
-      yield* renderChildren(n, no);
+      yield* render(n.attributes.href, no);
       yield ')';
       break;
     }

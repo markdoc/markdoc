@@ -44,7 +44,7 @@ title: What is Markdoc?
 
 # {% $markdoc.frontmatter.title %} {% #overview %}
 
-Markdoc is a **Markdown**-based \`syntax\` and _toolchain_ for creating custom documentation sites. Stripe created Markdoc to power [http://stripe.com/docs](our public docs).
+Markdoc is a **Markdown**-based \`syntax\` and _toolchain_ for creating custom documentation sites. Stripe created Markdoc to power [our public docs](http://stripe.com/docs).
 
 > Blockquote {% .special %}
 
@@ -53,7 +53,7 @@ Markdoc is a **Markdown**-based \`syntax\` and _toolchain_ for creating custom d
 ![Alt](/image)
 
 {% callout #id .class a="check" b={"e":5} c=8 d=[1,2,3] %}
-Markdoc is open-source—check out it's [http://github.com/markdoc/markdoc](source) to see how it works.
+Markdoc is open-source—check out it's [source](http://github.com/markdoc/markdoc) to see how it works.
 {% /callout %}
 
 \`\`\`js {% .class #id x="test" render=false %}
@@ -79,53 +79,57 @@ function check(source, expected, options = {}) {
   throw d;
 }
 
+function stable(source) {
+  return check(source, source);
+}
+
 fdescribe('Pretty renderer', function () {
   it('basics', function () {
     check(source, expected);
+    stable(expected);
   });
 
   it('nested tags', () => {
-    check(
-      `
+    const source = `
 {% checkout %}
   {% if true %}
   Yes!
   {% /if %}
 {% /checkout %}
-    `,
-      `
+    `;
+    const expected = `
 {% checkout %}
 {% if true %}
 Yes!
 {% /if %}
 {% /checkout %}
-`
-    );
+`;
+    check(source, expected);
+    stable(expected);
   });
 
   it('nested tags — allowIndentation: true', () => {
-    check(
-      `
+    const source = `
 {% checkout %}
   {% if true %}
   Yes!
   {% /if %}
 {% /checkout %}
-    `,
-      `
+    `;
+
+    const expected = `
 {% checkout %}
   {% if true %}
     Yes!
   {% /if %}
 {% /checkout %}
-`,
-      { allowIndentation: true }
-    );
+`;
+
+    check(source, expected, { allowIndentation: true });
   });
 
   it('tables', () => {
-    check(
-      `
+    const source = `
 | Syntax      | Description |
 | ------ | ---- |
 | Header      | Title  |
@@ -148,8 +152,8 @@ Yes!
 - H1
 - H2
 {% /table %}
-    `,
-      `
+    `;
+    const expected = `
 | Syntax      | Description |
 | ----------- | ----------- |
 | Header      | Title       |
@@ -168,13 +172,14 @@ Yes!
 * H1
 * H2
 {% /table %}
-`
-    );
+`;
+
+    check(source, expected);
+    stable(expected);
   });
 
   it('lists', () => {
-    check(
-      `
+    const source = `
 - [Install Markdoc](/docs/getting-started)
 - [Try it out online](/sandbox)
 
@@ -185,10 +190,10 @@ Yes!
 - A
 - B
   - B2
-- C`,
-      `
-- [/docs/getting-started](Install Markdoc)
-- [/sandbox](Try it out online)
+- C`;
+    const expected = `
+- [Install Markdoc](/docs/getting-started)
+- [Try it out online](/sandbox)
 
 1. One {% align="left" %}
 2. Two
@@ -198,12 +203,12 @@ Yes!
 - B
   - B2
 - C
-`
-    );
+`;
+    check(source, expected);
+    stable(expected);
   });
   it('"loose" lists', () => {
-    check(
-      `
+    const source = `
 - One
 
   My first paragraph
@@ -225,8 +230,8 @@ Yes!
   
   ## Indented header
 
-  > Indented blockquote`,
-      `
+  > Indented blockquote`;
+    const expected = `
 - One
 
   My first paragraph
@@ -250,8 +255,10 @@ Yes!
 
   > Indented blockquote
 
-`
-    );
+`;
+
+    check(source, expected);
+    stable(expected);
   });
 
   it('complicated nested lists', () => {
