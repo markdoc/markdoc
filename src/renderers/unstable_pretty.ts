@@ -30,10 +30,10 @@ function* renderTableRow(items: Array<string>) {
   yield `| ${items.join(' | ')} |`;
 }
 
+// TODO combine with `render`
 function renderValue(v: Value) {
   return Ast.isAst(v)
-    ? // TODO yield
-      [...render(v)].join('')
+    ? [...render(v)].join('')
     : // TODO improve formatting
       inspect(v, { depth: null })
         .replace(/(?<!\\)'/g, '"')
