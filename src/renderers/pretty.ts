@@ -13,7 +13,10 @@ const SPACE = ' ';
 const NL = '\n';
 
 const max = (a: number, b: number) => Math.max(a, b);
-const increment = (o: Options) => ({ ...o, indent: (o.indent || 0) + 1 });
+const increment = (o: Options, n = 1) => ({
+  ...o,
+  indent: (o.indent || 0) + n,
+});
 
 function* renderChildren(a: Node, options: Options) {
   for (const child of a.children) {
@@ -187,7 +190,17 @@ function* renderNode(n: Node, o: Options = {}) {
       for (let i = 0; i < n.children.length; i++) {
         yield indent;
         yield n.attributes.ordered ? `1. ` : '- ';
-        yield* render(n.children[i], increment(no));
+        yield* render(
+          n.children[i],
+          increment(
+            no,
+            n.attributes.ordered
+              ? // Use an extra space since "1." is two characters
+                // TODO should we use 2 indents for ordered lists?
+                1.5
+              : 1
+          )
+        );
         // TODO do we need this newline?
         if (!indent) yield NL;
       }
