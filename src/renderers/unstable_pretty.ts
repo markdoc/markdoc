@@ -87,7 +87,6 @@ function* renderNode(n: Node, o: Options = {}) {
 
   switch (n.type as NodeType) {
     case 'document': {
-      // TODO check for n.errors here?
       if (n.attributes.frontmatter && n.attributes.frontmatter.length) {
         yield `---\n${n.attributes.frontmatter}\n---\n`;
       }
@@ -304,11 +303,8 @@ function* renderNode(n: Node, o: Options = {}) {
       yield* renderChildren(n, no);
       break;
     }
-    case 'error': {
-      // TODO
-      console.error(n);
-      break;
-    }
+    // TODO
+    case 'error':
     default: {
       throw new Error(`Unimplemented: "${n.type}"`);
     }
