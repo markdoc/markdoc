@@ -1,4 +1,4 @@
-import { isPromise } from '../transformer';
+import { isPromise } from '../utils';
 
 import type { Node, RenderableTreeNode, Schema, Value } from '../types';
 

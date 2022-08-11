@@ -13,6 +13,10 @@ enum STATES {
 export const OPEN = '{%';
 export const CLOSE = '%}';
 
+export function isPromise(a: any): a is Promise<any> {
+  return a && typeof a === 'object' && typeof a.then === 'function';
+}
+
 export function findTagEnd(content: string, start = 0) {
   let state = STATES.normal;
   for (let pos = start; pos < content.length; pos++) {
