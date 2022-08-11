@@ -1,13 +1,6 @@
 import Ast from '../ast';
 import { OPEN, CLOSE } from '../utils';
-import type {
-  AttributeValue,
-  Function,
-  Node,
-  NodeType,
-  Value,
-  Variable,
-} from '../types';
+import type { AttributeValue, Function, Node, Value, Variable } from '../types';
 
 type Options = {
   allowIndentation?: boolean;
@@ -110,7 +103,7 @@ function* renderNode(n: Node, o: Options = {}) {
   const no = { ...o, parent: n };
   const indent = SPACE.repeat(no.indent || 0);
 
-  switch (n.type as NodeType) {
+  switch (n.type) {
     case 'document': {
       if (n.attributes.frontmatter && n.attributes.frontmatter.length) {
         yield '---' + NL + n.attributes.frontmatter + NL + '---' + NL + NL;
@@ -257,6 +250,12 @@ function* renderNode(n: Node, o: Options = {}) {
       yield '`';
       break;
     }
+    case 's': {
+      yield '~~';
+      yield* renderChildren(n, no);
+      yield '~~';
+      break;
+    }
     case 'hardbreak': {
       yield '\\\n';
       yield indent;
@@ -320,11 +319,12 @@ function* renderNode(n: Node, o: Options = {}) {
       yield* renderChildren(n, no);
       break;
     }
-    // TODO
-    case 'error':
-    default: {
-      throw new Error(`Unimplemented: "${n.type}"`);
+    case 'error': {
+      console.error(n);
+      break;
     }
+    case 'node':
+      break;
   }
 }
 

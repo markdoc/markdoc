@@ -12,7 +12,7 @@ title: What is Markdoc?
 
 # {% $markdoc.frontmatter.title %} {% #overview %}
 
-Markdoc is a **Markdown**-based \`syntax\` and _toolchain_ for creating custom documentation sites. Stripe created Markdoc to power [our public docs](http://stripe.com/docs).
+Markdoc is a **Markdown**-based \`syntax\` and _toolchain_ for creating ~~custom~~ documentation sites. Stripe created Markdoc to power [our public docs](http://stripe.com/docs).
 
 > Blockquote {% .special %}
 
@@ -44,7 +44,7 @@ title: What is Markdoc?
 
 # {% $markdoc.frontmatter.title %} {% #overview %}
 
-Markdoc is a **Markdown**-based \`syntax\` and _toolchain_ for creating custom documentation sites. Stripe created Markdoc to power [our public docs](http://stripe.com/docs).
+Markdoc is a **Markdown**-based \`syntax\` and _toolchain_ for creating ~~custom~~ documentation sites. Stripe created Markdoc to power [our public docs](http://stripe.com/docs).
 
 > Blockquote {% .special %}
 
