@@ -6,6 +6,8 @@ import type Variable from './ast/variable';
 export type { Node, Tag, Variable };
 export declare type Function = Func;
 
+export type MaybePromise<T> = T | Promise<T>;
+
 export interface AstType {
   readonly $$mdtype: 'Function' | 'Node' | 'Variable';
   resolve(config: Config): any;
@@ -91,9 +93,6 @@ export type Primitive = null | boolean | number | string;
 
 export type RenderableTreeNode = Tag | string | null;
 export type RenderableTreeNodes = RenderableTreeNode | RenderableTreeNode[];
-export type RenderableTreeNodesPromise =
-  | RenderableTreeNodes
-  | Promise<RenderableTreeNodes>;
 
 export type Scalar = Primitive | Scalar[] | { [key: string]: Scalar };
 
@@ -102,7 +101,7 @@ export type Schema<C extends Config = Config, R = string> = {
   children?: string[];
   attributes?: Record<string, SchemaAttribute>;
   selfClosing?: boolean;
-  transform?(node: Node, config: C): RenderableTreeNodesPromise;
+  transform?(node: Node, config: C): MaybePromise<RenderableTreeNodes>;
   validate?(node: Node, config: C): ValidationError[];
 };
 
@@ -119,7 +118,7 @@ export type SchemaMatches = RegExp | string[] | null;
 
 export interface Transformer {
   findSchema(node: Node, config: Config): Schema | undefined;
-  node(node: Node, config: Config): RenderableTreeNodesPromise;
+  node(node: Node, config: Config): MaybePromise<RenderableTreeNodes>;
   attributes(node: Node, config: Config): Record<string, any>;
   children(node: Node, config: Config): RenderableTreeNode[];
 }

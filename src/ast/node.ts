@@ -5,9 +5,10 @@ import type {
   AttributeValue,
   Config,
   Location,
+  MaybePromise,
   NodeType,
   RenderableTreeNode,
-  RenderableTreeNodesPromise,
+  RenderableTreeNodes,
   Schema,
   ValidationError,
 } from '../types';
@@ -69,7 +70,7 @@ export default class Node implements AstType {
     return transformer.children(this, config);
   }
 
-  transform(config: Config): RenderableTreeNodesPromise {
+  transform(config: Config): MaybePromise<RenderableTreeNodes> {
     return transformer.node(this, config);
   }
 }
