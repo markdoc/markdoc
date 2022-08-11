@@ -259,7 +259,7 @@ function* renderNode(n: Node, o: Options = {}) {
       break;
     }
     case 'table': {
-      const table = [...renderChildren(n, no)] as unknown as string[][];
+      const table = [...renderChildren(n, increment(no))] as any as string[][];
       if (o.parent && o.parent.type === 'tag' && o.parent.tag === 'table') {
         for (const row of table) {
           yield NL;
@@ -303,7 +303,9 @@ function* renderNode(n: Node, o: Options = {}) {
     }
     case 'td':
     case 'th': {
-      yield [...renderChildren(n, no), ...renderAnnotations(n)].join('');
+      yield [...renderChildren(n, no), ...renderAnnotations(n)]
+        .join('')
+        .trimStart();
       break;
     }
     case 'tbody': {
