@@ -184,8 +184,8 @@ function* renderNode(n: Node, o: Options = {}) {
       yield OPEN + SPACE;
       yield n.tag;
       yield* renderAttributes(n);
+      yield SPACE + (n.children.length ? '' : '/') + CLOSE;
       if (n.children.length) {
-        yield SPACE + CLOSE;
         yield* renderChildren(n, no.allowIndentation ? increment(no) : no);
         if (!n.inline) {
           yield indent;
@@ -193,10 +193,6 @@ function* renderNode(n: Node, o: Options = {}) {
         yield OPEN + SPACE + '/';
         yield n.tag;
         yield SPACE + CLOSE;
-      }
-      // Self-closing
-      else {
-        yield SPACE + '/' + CLOSE;
       }
       if (!n.inline) {
         yield NL;
@@ -207,11 +203,9 @@ function* renderNode(n: Node, o: Options = {}) {
       yield NL;
       for (let i = 0; i < n.children.length; i++) {
         yield indent;
-        yield n.attributes.ordered ? `1. ` : '- ';
-        yield* render(
-          n.children[i],
-          increment(no, n.attributes.ordered ? `1. `.length : '- '.length)
-        );
+        const prefix = n.attributes.ordered ? `1. ` : '- ';
+        yield prefix;
+        yield* render(n.children[i], increment(no, prefix.length));
         // TODO do we need this newline?
         if (!no.indent) yield NL;
       }
