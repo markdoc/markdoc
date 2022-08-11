@@ -30,11 +30,26 @@ function* renderTableRow(items: Array<string>) {
   yield `| ${items.join(' | ')} |`;
 }
 
-function renderValue(v: Value) {
-  return Ast.isAst(v)
-    ? UNSTABLE_DO_NOT_USE_pretty_render(v)
-    : // TODO improve formatting
-      JSON.stringify(v);
+function renderValue(v: Value): string {
+  if (v === null) {
+    return '';
+  }
+  if (Ast.isAst(v)) {
+    return UNSTABLE_DO_NOT_USE_pretty_render(v);
+  }
+  if (Array.isArray(v)) {
+    return '[' + v.map(renderValue).join(', ') + ']';
+  }
+  if (typeof v === 'object') {
+    return (
+      '{' +
+      Object.entries(v)
+        .map(([key, value]) => `${key}: ${renderValue(value)}`)
+        .join(', ') +
+      '}'
+    );
+  }
+  return JSON.stringify(v);
 }
 
 function renderAnnotationValue(a: AttributeValue): string {
