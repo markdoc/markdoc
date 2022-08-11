@@ -195,10 +195,11 @@ function* renderNode(n: Node, o: Options = {}) {
       }
       const open = OPEN + SPACE;
       const tag = [open + n.tag, ...renderAttributes(n)];
-      if (tag.reduce((a, c) => a + c.length, 0) > MAX_TAG_HEAD_LENGTH) {
+      const inlineTag = tag.join(SPACE);
+      if (inlineTag.length + open.length * 2 > MAX_TAG_HEAD_LENGTH) {
         yield tag.join('\n' + SPACE.repeat(open.length) + indent);
       } else {
-        yield tag.join(SPACE);
+        yield inlineTag;
       }
       yield SPACE + (n.children.length ? '' : '/') + CLOSE;
       if (n.children.length) {
