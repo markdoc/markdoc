@@ -1,4 +1,3 @@
-import { inspect } from 'util';
 import Ast from '../ast';
 import { OPEN, CLOSE } from '../utils';
 import type { AttributeValue, Function, Node, NodeType, Value } from '../types';
@@ -12,6 +11,8 @@ type Options = {
 
 const SPACE = ' ';
 const NL = '\n';
+
+const MAX_TAG_HEAD_LENGTH = 80;
 
 const max = (a: number, b: number) => Math.max(a, b);
 const increment = (o: Options, n = 2) => ({
@@ -45,11 +46,10 @@ function renderAnnotationValue(a: AttributeValue): string {
 
 function* renderAttributes(n: Node) {
   for (const [key, value] of Object.entries(n.attributes)) {
-    yield ' ';
     if (key === 'class' && !Ast.isAst(value))
-      yield Object.keys(value)
-        .map((name) => renderAnnotationValue({ type: 'class', name, value }))
-        .join(' ');
+      for (const name of Object.keys(value)) {
+        yield renderAnnotationValue({ type: 'class', name, value });
+      }
     else yield renderAnnotationValue({ type: 'attribute', name: key, value });
   }
 }
@@ -176,9 +176,13 @@ function* renderNode(n: Node, o: Options = {}) {
         yield NL;
         yield indent;
       }
-      yield OPEN + SPACE;
-      yield n.tag;
-      yield* renderAttributes(n);
+      const open = OPEN + SPACE;
+      const tag = [open + n.tag, ...renderAttributes(n)];
+      if (tag.reduce((a, c) => a + c.length, 0) > MAX_TAG_HEAD_LENGTH) {
+        yield tag.join('\n' + SPACE.repeat(open.length) + indent);
+      } else {
+        yield tag.join(SPACE);
+      }
       yield SPACE + (n.children.length ? '' : '/') + CLOSE;
       if (n.children.length) {
         yield* renderChildren(n, no.allowIndentation ? increment(no) : no);

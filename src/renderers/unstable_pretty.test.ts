@@ -149,6 +149,21 @@ Yes!
     stable(expected);
   });
 
+  it('long tags', () => {
+    const source = `
+{% tag a=true b="My very long text well over 80 characters in total" c=123456789 d=false /%}
+    `;
+    const expected = `
+{% tag
+   a=true
+   b="My very long text well over 80 characters in total"
+   c=123456789
+   d=false /%}
+`;
+    check(source, expected);
+    stable(expected);
+  });
+
   it('nested tags — allowIndentation: true', () => {
     const source = `
 {% checkout %}
