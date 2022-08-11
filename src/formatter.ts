@@ -36,7 +36,7 @@ function renderValue(v: Value): string {
     return '';
   }
   if (Ast.isAst(v)) {
-    return UNSTABLE_DO_NOT_USE_pretty_render(v);
+    return format(v);
   }
   if (Array.isArray(v)) {
     return '[' + v.map(renderValue).join(', ') + ']';
@@ -370,10 +370,7 @@ function* render(
   return true;
 }
 
-export default function UNSTABLE_DO_NOT_USE_pretty_render(
-  v: Value,
-  options?: Options
-): string {
+export default function format(v: Value, options?: Options): string {
   let doc = '';
   for (const s of trimStart(render(v, options))) doc += s;
   return doc;
