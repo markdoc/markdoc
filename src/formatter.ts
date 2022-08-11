@@ -1,6 +1,6 @@
-import Ast from '../ast';
-import { OPEN, CLOSE } from '../utils';
-import type { AttributeValue, Function, Node, Value, Variable } from '../types';
+import Ast from './ast';
+import { OPEN, CLOSE } from './utils';
+import type { AttributeValue, Function, Node, Value, Variable } from './types';
 
 type Options = {
   allowIndentation?: boolean;

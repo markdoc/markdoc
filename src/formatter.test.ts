@@ -1,7 +1,7 @@
 import { diff } from 'jest-diff';
 
-import Markdoc from '../../index';
-import render from './unstable_pretty';
+import Markdoc from '../index';
+import format from './formatter';
 
 const source = `---
 
@@ -72,7 +72,7 @@ Markdoc uses…
 
 function check(source, expected, options = {}) {
   const a = expected.trimStart();
-  const b = render(Markdoc.parse(source), options);
+  const b = format(Markdoc.parse(source), options);
   // console.log(a, b);
   const d = diff(a, b);
   if (d && d.includes('Compared values have no visual difference.')) return;
@@ -83,7 +83,7 @@ function stable(source) {
   return check(source, source);
 }
 
-describe('[Unstable] Pretty renderer', () => {
+describe('Formatter', () => {
   it('basics', () => {
     check(source, expected);
     stable(expected);

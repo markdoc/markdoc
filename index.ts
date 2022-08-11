@@ -1,4 +1,5 @@
 import Ast from './src/ast';
+import UNSTABLE_DO_NOT_USE_format from './src/formatter';
 import functions from './src/functions';
 import parser from './src/parser';
 import * as nodes from './src/schema';
@@ -120,6 +121,7 @@ export {
   transformer,
   validator,
   truthy,
+  UNSTABLE_DO_NOT_USE_format,
 };
 
 export default class Markdoc {
@@ -140,6 +142,7 @@ export default class Markdoc {
   static validate = validate;
   static createElement = createElement;
   static truthy = truthy;
+  static UNSTABLE_DO_NOT_USE_format = UNSTABLE_DO_NOT_USE_format;
 
   config;
   constructor(config: Config) {
