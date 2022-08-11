@@ -375,6 +375,6 @@ export default function UNSTABLE_DO_NOT_USE_pretty_render(
   options?: Options
 ): string {
   let doc = '';
-  for (const s of render(v, options)) doc += s;
+  for (const s of trimStart(render(v, options))) doc += s;
   return doc;
 }
