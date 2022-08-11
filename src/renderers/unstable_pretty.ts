@@ -79,9 +79,13 @@ function* renderFunction(f: Function) {
   yield ')';
 }
 
-// TODO handle trimStart without creating intermediate array
-function trimStart(g: Generator): string {
-  return [...g].join('').trimStart();
+function* trimStart(g: Generator) {
+  let n;
+  do {
+    n = g.next().value.trimStart();
+  } while (!n.length);
+  yield n;
+  yield* g;
 }
 
 function* renderNode(n: Node, o: Options = {}) {
@@ -93,7 +97,7 @@ function* renderNode(n: Node, o: Options = {}) {
       if (n.attributes.frontmatter && n.attributes.frontmatter.length) {
         yield '---' + NL + n.attributes.frontmatter + NL + '---' + NL + NL;
       }
-      yield trimStart(renderChildren(n, no));
+      yield* trimStart(renderChildren(n, no));
       break;
     }
     case 'heading': {
@@ -137,7 +141,7 @@ function* renderNode(n: Node, o: Options = {}) {
       yield NL;
       yield indent;
       yield '> ';
-      yield trimStart(renderChildren(n, no));
+      yield* trimStart(renderChildren(n, no));
       break;
     }
     case 'hr': {
@@ -214,7 +218,7 @@ function* renderNode(n: Node, o: Options = {}) {
       break;
     }
     case 'item': {
-      yield trimStart(renderChildren(n, no));
+      yield* trimStart(renderChildren(n, no));
       yield* renderAnnotations(n);
       break;
     }
