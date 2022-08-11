@@ -33,12 +33,7 @@ function renderValue(v: Value) {
   return Ast.isAst(v)
     ? UNSTABLE_DO_NOT_USE_pretty_render(v)
     : // TODO improve formatting
-      inspect(v, { depth: null })
-        .replace(/(?<!\\)'/g, '"')
-        .replace(/\[ /g, '[')
-        .replace(/ \]/g, ']')
-        .replace(/\{ /g, '{')
-        .replace(/ \}/g, '}');
+      JSON.stringify(v);
 }
 
 function renderAnnotationValue(a: AttributeValue): string {
