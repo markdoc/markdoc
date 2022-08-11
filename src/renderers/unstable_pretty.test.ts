@@ -201,6 +201,14 @@ Yes!
 - Three
 - Four {% align="end" %}
 
+---
+
+* **Five**
+*
+  A bunch of words
+  
+  And more words
+
 {% /table %}
 
 {% table %}
@@ -221,6 +229,11 @@ Yes!
 ---
 - Three
 - Four {% align="end" %}
+---
+- **Five**
+- A bunch of words
+
+  And more words
 {% /table %}
 
 {% table %}

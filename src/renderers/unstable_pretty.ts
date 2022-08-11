@@ -10,7 +10,9 @@ type Options = {
 };
 
 const SPACE = ' ';
-const NL = '\n';
+const NL = '\n'; //  Newline
+const OL = '1. '; // Ordered list
+const UL = '- '; //  Unordered list
 
 const MAX_TAG_HEAD_LENGTH = 80;
 
@@ -217,7 +219,7 @@ function* renderNode(n: Node, o: Options = {}) {
       yield NL;
       for (let i = 0; i < n.children.length; i++) {
         yield indent;
-        const prefix = n.attributes.ordered ? `1. ` : '- ';
+        const prefix = n.attributes.ordered ? OL : UL;
         yield prefix;
         yield* render(n.children[i], increment(no, prefix.length));
         // TODO do we need this newline?
@@ -264,7 +266,8 @@ function* renderNode(n: Node, o: Options = {}) {
         for (const row of table) {
           yield NL;
           for (const d of row) {
-            yield indent + '- ' + d;
+            // TODO see if we should move trim() to `td`
+            yield indent + UL + d.trim();
             yield NL;
           }
           if (row !== table[table.length - 1]) {
@@ -303,9 +306,7 @@ function* renderNode(n: Node, o: Options = {}) {
     }
     case 'td':
     case 'th': {
-      yield [...renderChildren(n, no), ...renderAnnotations(n)]
-        .join('')
-        .trimStart();
+      yield [...renderChildren(n, no), ...renderAnnotations(n)].join('');
       break;
     }
     case 'tbody': {
