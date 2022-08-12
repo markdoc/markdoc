@@ -1,12 +1,9 @@
 import Tag from './tag';
 import { Class } from './schema-types/class';
+import { isPromise } from './utils';
 import type { Config, Node, NodeType, Schema, Transformer } from './types';
 
 type AttributesSchema = Schema['attributes'];
-
-function isPromise(a: any): a is Promise<any> {
-  return a && typeof a === 'object' && typeof a.then === 'function';
-}
 
 export const globalAttributes: AttributesSchema = {
   class: { type: Class, render: true },
