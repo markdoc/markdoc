@@ -21,31 +21,31 @@ const increment = (o: Options, n = 2) => ({
   indent: (o.indent || 0) + n,
 });
 
-function* renderChildren(a: Node, options: Options) {
+function* formatChildren(a: Node, options: Options) {
   for (const child of a.children) {
-    yield* render(child, options);
+    yield* formatValue(child, options);
   }
 }
 
-function* renderTableRow(items: Array<string>) {
+function* formatTableRow(items: Array<string>) {
   yield `| ${items.join(' | ')} |`;
 }
 
-function renderValue(v: Value): string {
-  if (v === null) {
-    return '';
-  }
+function formatScalar(v: Value): string {
   if (Ast.isAst(v)) {
     return format(v);
   }
+  if (v === null) {
+    return '';
+  }
   if (Array.isArray(v)) {
-    return '[' + v.map(renderValue).join(', ') + ']';
+    return '[' + v.map(formatScalar).join(', ') + ']';
   }
   if (typeof v === 'object') {
     return (
       '{' +
       Object.entries(v)
-        .map(([key, value]) => `${key}: ${renderValue(value)}`)
+        .map(([key, value]) => `${key}: ${formatScalar(value)}`)
         .join(', ') +
       '}'
     );
@@ -53,40 +53,40 @@ function renderValue(v: Value): string {
   return JSON.stringify(v);
 }
 
-function renderAnnotationValue(a: AttributeValue): string {
+function formatAnnotationValue(a: AttributeValue): string {
   if (a.name === 'primary') return a.value;
   if (a.name === 'id' && typeof a.value === 'string') return '#' + a.value;
   if (a.type === 'class') return '.' + a.name;
-  return `${a.name}=${renderValue(a.value)}`;
+  return `${a.name}=${formatScalar(a.value)}`;
 }
 
-function* renderAttributes(n: Node) {
+function* formatAttributes(n: Node) {
   for (const [key, value] of Object.entries(n.attributes)) {
     if (key === 'class' && !Ast.isAst(value))
       for (const name of Object.keys(value)) {
-        yield renderAnnotationValue({ type: 'class', name, value });
+        yield formatAnnotationValue({ type: 'class', name, value });
       }
-    else yield renderAnnotationValue({ type: 'attribute', name: key, value });
+    else yield formatAnnotationValue({ type: 'attribute', name: key, value });
   }
 }
 
-function* renderAnnotations(n: Node) {
+function* formatAnnotations(n: Node) {
   if (n.annotations.length) {
     yield OPEN + SPACE;
-    yield n.annotations.map(renderAnnotationValue).join(SPACE);
+    yield n.annotations.map(formatAnnotationValue).join(SPACE);
     yield SPACE + CLOSE;
   }
 }
 
-function* renderVariable(v: Variable) {
+function* formatVariable(v: Variable) {
   yield '$';
   yield v.path.join('.');
 }
 
-function* renderFunction(f: Function) {
+function* formatFunction(f: Function) {
   yield f.name;
   yield '(';
-  yield Object.values(f.parameters).map(renderValue).join(', ');
+  yield Object.values(f.parameters).map(formatScalar).join(', ');
   yield ')';
 }
 
@@ -99,7 +99,7 @@ function* trimStart(g: Generator) {
   yield* g;
 }
 
-function* renderNode(n: Node, o: Options = {}) {
+function* formatNode(n: Node, o: Options = {}) {
   const no = { ...o, parent: n };
   const indent = SPACE.repeat(no.indent || 0);
 
@@ -108,7 +108,7 @@ function* renderNode(n: Node, o: Options = {}) {
       if (n.attributes.frontmatter && n.attributes.frontmatter.length) {
         yield '---' + NL + n.attributes.frontmatter + NL + '---' + NL + NL;
       }
-      yield* trimStart(renderChildren(n, no));
+      yield* trimStart(formatChildren(n, no));
       break;
     }
     case 'heading': {
@@ -116,35 +116,35 @@ function* renderNode(n: Node, o: Options = {}) {
       yield indent;
       yield '#'.repeat(n.attributes.level || 1);
       yield SPACE;
-      yield* renderChildren(n, no);
-      yield* renderAnnotations(n);
+      yield* formatChildren(n, no);
+      yield* formatAnnotations(n);
       yield NL;
       break;
     }
     case 'paragraph': {
       yield NL;
       yield indent;
-      yield* renderChildren(n, no);
-      yield* renderAnnotations(n);
+      yield* formatChildren(n, no);
+      yield* formatAnnotations(n);
       yield NL;
       break;
     }
     case 'inline': {
-      yield* renderChildren(n, no);
+      yield* formatChildren(n, no);
       break;
     }
     case 'link': {
       yield '[';
-      yield* renderChildren(n, no);
+      yield* formatChildren(n, no);
       yield ']';
       yield '(';
-      yield* render(n.attributes.href, no);
+      yield* formatValue(n.attributes.href, no);
       yield ')';
       break;
     }
     case 'text': {
       if (Ast.isAst(n.attributes.content)) yield OPEN + SPACE;
-      yield* render(n.attributes.content, no);
+      yield* formatValue(n.attributes.content, no);
       if (Ast.isAst(n.attributes.content)) yield SPACE + CLOSE;
       break;
     }
@@ -152,7 +152,7 @@ function* renderNode(n: Node, o: Options = {}) {
       yield NL;
       yield indent;
       yield '> ';
-      yield* trimStart(renderChildren(n, no));
+      yield* trimStart(formatChildren(n, no));
       break;
     }
     case 'hr': {
@@ -165,10 +165,10 @@ function* renderNode(n: Node, o: Options = {}) {
     case 'image': {
       yield '!';
       yield '[';
-      yield* render(n.attributes.alt, no);
+      yield* formatValue(n.attributes.alt, no);
       yield ']';
       yield '(';
-      yield* render(n.attributes.src, no);
+      yield* formatValue(n.attributes.src, no);
       yield ')';
       break;
     }
@@ -178,10 +178,10 @@ function* renderNode(n: Node, o: Options = {}) {
       yield '```';
       yield (n.attributes.language || '').toLowerCase();
       if (n.annotations.length) yield SPACE;
-      yield* renderAnnotations(n);
+      yield* formatAnnotations(n);
       yield NL;
       yield indent;
-      yield* renderChildren(n, no);
+      yield* formatChildren(n, no);
       yield indent;
       yield '```';
       yield NL;
@@ -193,7 +193,7 @@ function* renderNode(n: Node, o: Options = {}) {
         yield indent;
       }
       const open = OPEN + SPACE;
-      const tag = [open + n.tag, ...renderAttributes(n)];
+      const tag = [open + n.tag, ...formatAttributes(n)];
       const inlineTag = tag.join(SPACE);
       if (inlineTag.length + open.length * 2 > MAX_TAG_HEAD_LENGTH) {
         yield tag.join('\n' + SPACE.repeat(open.length) + indent);
@@ -202,7 +202,7 @@ function* renderNode(n: Node, o: Options = {}) {
       }
       yield SPACE + (n.children.length ? '' : '/') + CLOSE;
       if (n.children.length) {
-        yield* renderChildren(n, no.allowIndentation ? increment(no) : no);
+        yield* formatChildren(n, no.allowIndentation ? increment(no) : no);
         if (!n.inline) {
           yield indent;
         }
@@ -221,38 +221,38 @@ function* renderNode(n: Node, o: Options = {}) {
         yield indent;
         const prefix = n.attributes.ordered ? OL : UL;
         yield prefix;
-        yield* render(n.children[i], increment(no, prefix.length));
+        yield* formatValue(n.children[i], increment(no, prefix.length));
         // TODO do we need this newline?
         if (!no.indent) yield NL;
       }
       break;
     }
     case 'item': {
-      yield* trimStart(renderChildren(n, no));
-      yield* renderAnnotations(n);
+      yield* trimStart(formatChildren(n, no));
+      yield* formatAnnotations(n);
       break;
     }
     case 'strong': {
       yield '**';
-      yield* renderChildren(n, no);
+      yield* formatChildren(n, no);
       yield '**';
       break;
     }
     case 'em': {
       yield '_';
-      yield* renderChildren(n, no);
+      yield* formatChildren(n, no);
       yield '_';
       break;
     }
     case 'code': {
       yield '`';
-      yield* render(n.attributes.content, no);
+      yield* formatValue(n.attributes.content, no);
       yield '`';
       break;
     }
     case 's': {
       yield '~~';
-      yield* renderChildren(n, no);
+      yield* formatChildren(n, no);
       yield '~~';
       break;
     }
@@ -267,7 +267,7 @@ function* renderNode(n: Node, o: Options = {}) {
       break;
     }
     case 'table': {
-      const table = [...renderChildren(n, increment(no))] as any as string[][];
+      const table = [...formatChildren(n, increment(no))] as any as string[][];
       if (o.parent && o.parent.type === 'tag' && o.parent.tag === 'table') {
         for (const row of table) {
           yield NL;
@@ -288,12 +288,12 @@ function* renderNode(n: Node, o: Options = {}) {
           .map((arr) => arr.map((s) => s.length).reduce(max))
           .reduce(max);
 
-        yield* renderTableRow(head.map((h) => h + SPACE.repeat(ml - h.length)));
+        yield* formatTableRow(head.map((h) => h + SPACE.repeat(ml - h.length)));
         yield NL;
-        yield* renderTableRow(head.map(() => '-'.repeat(ml)));
+        yield* formatTableRow(head.map(() => '-'.repeat(ml)));
         yield NL;
         for (const row of rows) {
-          yield* renderTableRow(
+          yield* formatTableRow(
             row.map((r) => r + SPACE.repeat(ml - r.length))
           );
           yield NL;
@@ -302,21 +302,21 @@ function* renderNode(n: Node, o: Options = {}) {
       break;
     }
     case 'thead': {
-      const [head] = [...renderChildren(n, no)];
+      const [head] = [...formatChildren(n, no)];
       yield head || [];
       break;
     }
     case 'tr': {
-      yield [...renderChildren(n, no)];
+      yield [...formatChildren(n, no)];
       break;
     }
     case 'td':
     case 'th': {
-      yield [...renderChildren(n, no), ...renderAnnotations(n)].join('');
+      yield [...formatChildren(n, no), ...formatAnnotations(n)].join('');
       break;
     }
     case 'tbody': {
-      yield* renderChildren(n, no);
+      yield* formatChildren(n, no);
       break;
     }
     case 'error': {
@@ -328,7 +328,7 @@ function* renderNode(n: Node, o: Options = {}) {
   }
 }
 
-function* render(
+function* formatValue(
   v: Value,
   o: Options = {}
 ): Generator<string, boolean, unknown> {
@@ -345,20 +345,20 @@ function* render(
       if (v === null) break;
       if (Array.isArray(v)) {
         for (const n of v) {
-          yield* render(n, o);
+          yield* formatValue(n, o);
         }
         break;
       }
       switch (v.$$mdtype) {
         case 'Function': {
-          yield* renderFunction(v as Function);
+          yield* formatFunction(v as Function);
           break;
         }
         case 'Node':
-          yield* renderNode(v as Node, o);
+          yield* formatNode(v as Node, o);
           break;
         case 'Variable': {
-          yield* renderVariable(v as Variable);
+          yield* formatVariable(v as Variable);
           break;
         }
         default:
@@ -372,6 +372,6 @@ function* render(
 
 export default function format(v: Value, options?: Options): string {
   let doc = '';
-  for (const s of trimStart(render(v, options))) doc += s;
+  for (const s of trimStart(formatValue(v, options))) doc += s;
   return doc;
 }
