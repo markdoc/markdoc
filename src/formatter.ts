@@ -9,6 +9,7 @@ type Options = {
 };
 
 const SPACE = ' ';
+const SEP = ', '; // Value separator
 const NL = '\n'; //  Newline
 const OL = '1. '; // Ordered list
 const UL = '- '; //  Unordered list
@@ -39,14 +40,14 @@ function formatScalar(v: Value): string {
     return '';
   }
   if (Array.isArray(v)) {
-    return '[' + v.map(formatScalar).join(', ') + ']';
+    return '[' + v.map(formatScalar).join(SEP) + ']';
   }
   if (typeof v === 'object') {
     return (
       '{' +
       Object.entries(v)
         .map(([key, value]) => `${key}: ${formatScalar(value)}`)
-        .join(', ') +
+        .join(SEP) +
       '}'
     );
   }
@@ -86,7 +87,7 @@ function* formatVariable(v: Variable) {
 function* formatFunction(f: Function) {
   yield f.name;
   yield '(';
-  yield Object.values(f.parameters).map(formatScalar).join(', ');
+  yield Object.values(f.parameters).map(formatScalar).join(SEP);
   yield ')';
 }
 
@@ -196,7 +197,7 @@ function* formatNode(n: Node, o: Options = {}) {
       const tag = [open + n.tag, ...formatAttributes(n)];
       const inlineTag = tag.join(SPACE);
       if (inlineTag.length + open.length * 2 > MAX_TAG_HEAD_LENGTH) {
-        yield tag.join('\n' + SPACE.repeat(open.length) + indent);
+        yield tag.join(NL + SPACE.repeat(open.length) + indent);
       } else {
         yield inlineTag;
       }
@@ -256,7 +257,7 @@ function* formatNode(n: Node, o: Options = {}) {
       break;
     }
     case 'hardbreak': {
-      yield '\\\n';
+      yield '\\' + NL;
       yield indent;
       break;
     }
