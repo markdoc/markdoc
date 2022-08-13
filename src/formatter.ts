@@ -330,7 +330,7 @@ function* formatNode(n: Node, o: Options = {}) {
 function* formatValue(
   v: Value,
   o: Options = {}
-): Generator<string, boolean, unknown> {
+): Generator<string, void, unknown> {
   switch (typeof v) {
     case 'undefined':
       break;
@@ -364,7 +364,6 @@ function* formatValue(
       break;
     }
   }
-  return true;
 }
 
 export default function format(v: Value, options?: Options): string {
