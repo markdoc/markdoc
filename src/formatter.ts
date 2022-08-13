@@ -217,12 +217,11 @@ function* formatNode(n: Node, o: Options = {}) {
       break;
     }
     case 'list': {
+      const prefix = n.attributes.ordered ? OL : UL;
       yield NL;
-      for (let i = 0; i < n.children.length; i++) {
-        yield indent;
-        const prefix = n.attributes.ordered ? OL : UL;
-        yield prefix;
-        yield format(n.children[i], increment(no, prefix.length)).trim();
+      for (const child of n.children) {
+        const d = format(child, increment(no, prefix.length)).trim();
+        yield indent + prefix + d;
         yield NL;
       }
       break;
@@ -344,9 +343,7 @@ function* formatValue(
     case 'object': {
       if (v === null) break;
       if (Array.isArray(v)) {
-        for (const n of v) {
-          yield* formatValue(n, o);
-        }
+        for (const n of v) yield* formatValue(n, o);
         break;
       }
       switch (v.$$mdtype) {
