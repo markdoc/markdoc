@@ -221,14 +221,13 @@ function* formatNode(n: Node, o: Options = {}) {
         yield indent;
         const prefix = n.attributes.ordered ? OL : UL;
         yield prefix;
-        yield* formatValue(n.children[i], increment(no, prefix.length));
-        // TODO do we need this newline?
-        if (!no.indent) yield NL;
+        yield format(n.children[i], increment(no, prefix.length)).trim();
+        yield NL;
       }
       break;
     }
     case 'item': {
-      yield* trimStart(formatChildren(n, no));
+      yield* formatChildren(n, no);
       yield* formatAnnotations(n);
       break;
     }
