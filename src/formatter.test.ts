@@ -313,7 +313,6 @@ Yes!
   \`\`\`
   {% $code %}
   \`\`\`
-
 - Two
 
   My second paragraph
@@ -323,7 +322,6 @@ Yes!
   ## Indented header
 
   > Indented blockquote
-
 `;
 
     check(source, expected);
@@ -394,7 +392,6 @@ Yes!
      - \`Off\`
      - Set the proxy status to \`off\` to avoid issues during setup.
      {% /table %}
-
 `;
 
     check(source, expected);

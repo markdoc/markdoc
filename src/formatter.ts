@@ -9,6 +9,7 @@ type Options = {
 };
 
 const SPACE = ' ';
+const SEP = ', '; // Value separator
 const NL = '\n'; //  Newline
 const OL = '1. '; // Ordered list
 const UL = '- '; //  Unordered list
@@ -39,14 +40,14 @@ function formatScalar(v: Value): string {
     return '';
   }
   if (Array.isArray(v)) {
-    return '[' + v.map(formatScalar).join(', ') + ']';
+    return '[' + v.map(formatScalar).join(SEP) + ']';
   }
   if (typeof v === 'object') {
     return (
       '{' +
       Object.entries(v)
         .map(([key, value]) => `${key}: ${formatScalar(value)}`)
-        .join(', ') +
+        .join(SEP) +
       '}'
     );
   }
@@ -86,7 +87,7 @@ function* formatVariable(v: Variable) {
 function* formatFunction(f: Function) {
   yield f.name;
   yield '(';
-  yield Object.values(f.parameters).map(formatScalar).join(', ');
+  yield Object.values(f.parameters).map(formatScalar).join(SEP);
   yield ')';
 }
 
@@ -196,7 +197,7 @@ function* formatNode(n: Node, o: Options = {}) {
       const tag = [open + n.tag, ...formatAttributes(n)];
       const inlineTag = tag.join(SPACE);
       if (inlineTag.length + open.length * 2 > MAX_TAG_HEAD_LENGTH) {
-        yield tag.join('\n' + SPACE.repeat(open.length) + indent);
+        yield tag.join(NL + SPACE.repeat(open.length) + indent);
       } else {
         yield inlineTag;
       }
@@ -216,19 +217,17 @@ function* formatNode(n: Node, o: Options = {}) {
       break;
     }
     case 'list': {
+      const prefix = n.attributes.ordered ? OL : UL;
       yield NL;
-      for (let i = 0; i < n.children.length; i++) {
-        yield indent;
-        const prefix = n.attributes.ordered ? OL : UL;
-        yield prefix;
-        yield* formatValue(n.children[i], increment(no, prefix.length));
-        // TODO do we need this newline?
-        if (!no.indent) yield NL;
+      for (const child of n.children) {
+        const d = format(child, increment(no, prefix.length)).trim();
+        yield indent + prefix + d;
+        yield NL;
       }
       break;
     }
     case 'item': {
-      yield* trimStart(formatChildren(n, no));
+      yield* formatChildren(n, no);
       yield* formatAnnotations(n);
       break;
     }
@@ -257,7 +256,7 @@ function* formatNode(n: Node, o: Options = {}) {
       break;
     }
     case 'hardbreak': {
-      yield '\\\n';
+      yield '\\' + NL;
       yield indent;
       break;
     }
@@ -331,7 +330,7 @@ function* formatNode(n: Node, o: Options = {}) {
 function* formatValue(
   v: Value,
   o: Options = {}
-): Generator<string, boolean, unknown> {
+): Generator<string, void, unknown> {
   switch (typeof v) {
     case 'undefined':
       break;
@@ -344,9 +343,7 @@ function* formatValue(
     case 'object': {
       if (v === null) break;
       if (Array.isArray(v)) {
-        for (const n of v) {
-          yield* formatValue(n, o);
-        }
+        for (const n of v) yield* formatValue(n, o);
         break;
       }
       switch (v.$$mdtype) {
@@ -367,11 +364,10 @@ function* formatValue(
       break;
     }
   }
-  return true;
 }
 
 export default function format(v: Value, options?: Options): string {
   let doc = '';
-  for (const s of trimStart(formatValue(v, options))) doc += s;
+  for (const s of formatValue(v, options)) doc += s;
   return doc;
 }
