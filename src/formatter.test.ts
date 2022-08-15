@@ -71,7 +71,7 @@ Markdoc uses…
 `;
 
 function check(source, expected, options = {}) {
-  const a = expected.trimStart();
+  const a = expected?.trimStart();
   const b = format(Markdoc.parse(source), options);
   // console.log(a, b);
   const d = diff(a, b);
@@ -84,6 +84,10 @@ function stable(source) {
 }
 
 describe('Formatter', () => {
+  it('null', () => {
+    expect(format(null)).toBe('');
+  });
+
   it('basics', () => {
     check(source, expected);
     stable(expected);
