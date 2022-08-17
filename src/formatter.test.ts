@@ -133,6 +133,15 @@ describe('Formatter', () => {
   it('tags', () => {
     const source = `
 {% key /%}
+
+{% a %}{% /a %}
+
+{% a %}
+{% /a %}
+
+{% a %}
+
+{% /a %}
   
 {% checkout %}
   {% if true %}
@@ -142,6 +151,12 @@ describe('Formatter', () => {
     `;
     const expected = `
 {% key /%}
+
+{% a /%}
+
+{% a /%}
+
+{% a /%}
 
 {% checkout %}
 {% if true %}
