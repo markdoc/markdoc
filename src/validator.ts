@@ -1,5 +1,6 @@
 import { globalAttributes } from './transformer';
 import Ast from './ast/index';
+import { isPromise } from './utils';
 
 import type {
   Node,
@@ -120,7 +121,7 @@ function validateFunction(fn: Function, config: Config): ValidationError[] {
   return errors;
 }
 
-export default function validate(node: Node, config: Config) {
+export default function validator(node: Node, config: Config) {
   const schema = node.findSchema(config);
   const errors: ValidationError[] = [...(node.errors || [])];
 
@@ -147,8 +148,6 @@ export default function validate(node: Node, config: Config) {
     ...globalAttributes,
     ...schema.attributes,
   };
-
-  if (schema.validate) errors.push(...schema.validate(node, config));
 
   for (let [key, value] of Object.entries(node.attributes)) {
     const attrib = attributes[key];
@@ -246,6 +245,15 @@ export default function validate(node: Node, config: Config) {
         level: 'warning',
         message: `Can't nest '${type}' in '${node.tag || node.type}'`,
       });
+  }
+
+  if (schema.validate) {
+    const schemaErrors = schema.validate(node, config);
+    if (isPromise(schemaErrors)) {
+      return schemaErrors.then((e) => errors.concat(e));
+    }
+
+    errors.push(...schemaErrors);
   }
 
   return errors;

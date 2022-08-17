@@ -10,10 +10,10 @@ import { truthy } from './src/tags/conditional';
 import Tokenizer from './src/tokenizer';
 import transformer, { globalAttributes } from './src/transformer';
 import transforms from './src/transforms';
-import { parseTags } from './src/utils';
+import { parseTags, isPromise } from './src/utils';
 import validator from './src/validator';
 
-import type { Node } from './src/types';
+import type { MaybePromise, Node } from './src/types';
 import type Token from 'markdown-it/lib/token';
 import type { Config, RenderableTreeNode, ValidateError } from './src/types';
 
@@ -83,17 +83,29 @@ export function transform<C extends Config = Config>(
 }
 
 export function validate<C extends Config = Config>(
-  content: Node,
+  node: Node,
   options?: C
-): ValidateError[] {
+): ValidateError[];
+export function validate<C extends Config = Config>(
+  content: any,
+  options?: C
+): any {
   const config = mergeConfig(options);
 
-  const output = [];
+  let output: MaybePromise<ValidateError[]> = [];
   for (const node of [content, ...content.walk()]) {
     const { type, lines, location } = node;
     const errors = validator(node, config);
 
-    for (const error of errors) output.push({ type, lines, location, error });
+    if (isPromise(output) || isPromise(errors)) {
+      output = Promise.all([output, errors]).then(([o, e]) =>
+        o.concat(e.map((error) => ({ type, lines, location, error })))
+      );
+    } else {
+      output = output.concat(
+        errors.map((error) => ({ type, lines, location, error }))
+      );
+    }
   }
 
   return output;
