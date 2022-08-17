@@ -13,7 +13,7 @@ import transforms from './src/transforms';
 import { parseTags, isPromise } from './src/utils';
 import validator from './src/validator';
 
-import type { MaybePromise, Node } from './src/types';
+import type { Node } from './src/types';
 import type Token from 'markdown-it/lib/token';
 import type { Config, RenderableTreeNode, ValidateError } from './src/types';
 
@@ -92,23 +92,24 @@ export function validate<C extends Config = Config>(
 ): any {
   const config = mergeConfig(options);
 
-  let output: MaybePromise<ValidateError[]> = [];
-  for (const node of [content, ...content.walk()]) {
+  const output = [content, ...content.walk()].map((node) => {
     const { type, lines, location } = node;
     const errors = validator(node, config);
 
-    if (isPromise(output) || isPromise(errors)) {
-      output = Promise.all([output, errors]).then(([o, e]) =>
-        o.concat(e.map((error) => ({ type, lines, location, error })))
-      );
-    } else {
-      output = output.concat(
-        errors.map((error) => ({ type, lines, location, error }))
+    if (isPromise(errors)) {
+      return errors.then((e) =>
+        e.map((error) => ({ type, lines, location, error }))
       );
     }
+
+    return errors.map((error) => ({ type, lines, location, error }));
+  });
+
+  if (output.some(isPromise)) {
+    return Promise.all(output).then((o) => o.flat());
   }
 
-  return output;
+  return output.flat();
 }
 
 export function createElement(
