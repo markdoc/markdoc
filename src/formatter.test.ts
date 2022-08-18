@@ -378,7 +378,13 @@ Yes!
       * Proxy status
       * \`Off\`
       * Set the proxy status to \`off\` to avoid issues during setup.
-      {% /table %}`;
+      {% /table %}
+    1. foo\\
+       baz
+    
+       Soft 
+         break
+       Markdoc uses…`;
 
     const expected = `
 - Create your CNAME record
@@ -411,6 +417,12 @@ Yes!
      - \`Off\`
      - Set the proxy status to \`off\` to avoid issues during setup.
      {% /table %}
+  1. foo\\
+     baz
+
+     Soft
+     break
+     Markdoc uses…
 `;
 
     check(source, expected);

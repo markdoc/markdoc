@@ -369,5 +369,5 @@ function* formatValue(
 export default function format(v: Value, options?: Options): string {
   let doc = '';
   for (const s of formatValue(v, options)) doc += s;
-  return doc;
+  return doc.trimStart();
 }
