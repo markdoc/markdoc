@@ -4,7 +4,7 @@ import type { AttributeValue, Function, Node, Value, Variable } from './types';
 
 type Options = {
   allowIndentation?: boolean;
-  maxOpenTagWidth?: number;
+  maxTagOpeningWidth?: number;
   parent?: Node;
   indent?: number;
 };
@@ -15,7 +15,7 @@ const NL = '\n'; //  Newline
 const OL = '1. '; // Ordered list
 const UL = '- '; //  Unordered list
 
-const MAX_OPEN_TAG_WIDTH = 80;
+const MAX_TAG_OPENING_WIDTH = 80;
 
 const max = (a: number, b: number) => Math.max(a, b);
 const increment = (o: Options, n = 2) => ({
@@ -199,7 +199,7 @@ function* formatNode(n: Node, o: Options = {}) {
       const inlineTag = tag.join(SPACE);
       if (
         inlineTag.length + open.length * 2 >
-        (o.maxOpenTagWidth || MAX_OPEN_TAG_WIDTH)
+        (o.maxTagOpeningWidth || MAX_TAG_OPENING_WIDTH)
       ) {
         yield tag.join(NL + SPACE.repeat(open.length) + indent);
       } else {
