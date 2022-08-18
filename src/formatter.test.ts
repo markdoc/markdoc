@@ -79,8 +79,8 @@ function check(source, expected, options = {}) {
   throw d;
 }
 
-function stable(source) {
-  return check(source, source);
+function stable(source, options?) {
+  return check(source, source, options);
 }
 
 describe('Formatter', () => {
@@ -128,6 +128,7 @@ describe('Formatter', () => {
 `;
 
     check(source, expected);
+    stable(expected, expected);
   });
 
   it('tags', () => {
@@ -201,6 +202,7 @@ Yes!
 `;
 
     check(source, expected, { allowIndentation: true });
+    stable(expected, { allowIndentation: true });
   });
 
   it('tables', () => {
