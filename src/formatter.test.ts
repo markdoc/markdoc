@@ -184,6 +184,13 @@ Yes!
     stable(expected);
   });
 
+  it('long tags with maxTagOpeningWidth=Infinity', () => {
+    const source = `
+{% tag a=true b="My very long text well over 80 characters in total" c=123456789 d=false /%}
+`;
+    check(source, source, { maxTagOpeningWidth: Infinity });
+  });
+
   it('nested tags — allowIndentation: true', () => {
     const source = `
 {% checkout %}
