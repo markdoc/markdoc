@@ -220,14 +220,14 @@ export default function validate(node: Node, config: Config) {
         level: errorLevel || 'error',
         message: `Attribute '${key}' must match one of ${JSON.stringify(
           matches
-        )}`,
+        )}. Got '${value}' instead.`,
       });
 
     if (matches instanceof RegExp && !matches.test(value))
       errors.push({
         id: 'attribute-value-invalid',
         level: errorLevel || 'error',
-        message: `Attribute '${key}' must match ${matches}`,
+        message: `Attribute '${key}' must match ${matches}. Got '${value}' instead.`,
       });
   }
 
