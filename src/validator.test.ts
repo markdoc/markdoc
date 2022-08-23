@@ -234,7 +234,7 @@ describe('validate', function () {
 
   describe('attribute validation', () => {
     it('should return error on failure to match array', () => {
-      const example = '{% foo bar=baz() /%}';
+      const example = '{% foo jawn="cat" /%}';
       const schema = {
         tags: {
           foo: {
@@ -248,7 +248,7 @@ describe('validate', function () {
         },
       };
 
-      expect(validate('{% foo jawn="cat" /%}', schema)).toDeepEqualSubset([
+      expect(validate(example, schema)).toDeepEqualSubset([
         {
           type: 'tag',
           error: {
