@@ -232,6 +232,34 @@ describe('validate', function () {
     });
   });
 
+  describe('attribute validation', () => {
+    it('should return error on failure to match array', () => {
+      const example = '{% foo jawn="cat" /%}';
+      const schema = {
+        tags: {
+          foo: {
+            attributes: {
+              jawn: {
+                type: String,
+                matches: ['bar', 'baz', 'bat'],
+              },
+            },
+          },
+        },
+      };
+
+      expect(validate(example, schema)).toDeepEqualSubset([
+        {
+          type: 'tag',
+          error: {
+            id: 'attribute-value-invalid',
+            message: `Attribute 'jawn' must match one of ["bar","baz","bat"]. Got 'cat' instead.`,
+          },
+        },
+      ]);
+    });
+  });
+
   describe('custom type registration example', () => {
     class Link {
       validate(value) {
