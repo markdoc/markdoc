@@ -105,10 +105,17 @@ describe('Formatter', () => {
 
   it('variables', () => {
     const source = `
+{% if $primary %}
+X
+{% /if %}
 {% $user.name %}
 {% key x=$user.name new=$flag /%}
 `;
     const expected = `
+{% if $primary %}
+X
+{% /if %}
+
 {% $user.name %}
 
 {% key x=$user.name new=$flag /%}
@@ -268,6 +275,34 @@ Yes!
 ---
 - H1
 - H2
+{% /table %}
+`;
+
+    check(source, expected);
+    stable(expected);
+  });
+
+  it('tables with tags', () => {
+    const source = `
+{% table %}
+* H1
+* H2
+{% if $var %}
+---
+* H3
+* H4
+{% /if %}
+{% /table %}
+    `;
+    const expected = `
+{% table %}
+- H1
+- H2
+{% if $var %}
+---
+- H3
+- H4
+{% /if %}
 {% /table %}
 `;
 

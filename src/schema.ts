@@ -226,7 +226,7 @@ export const hardbreak: Schema = {
 };
 
 export const softbreak: Schema = {
-  transform(_node, _config) {
+  transform() {
     return ' ';
   },
 };

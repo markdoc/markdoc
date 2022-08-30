@@ -56,7 +56,7 @@ function formatScalar(v: Value): string {
 }
 
 function formatAnnotationValue(a: AttributeValue): string {
-  if (a.name === 'primary') return a.value;
+  if (a.name === 'primary') return formatScalar(a.value);
   if (a.name === 'id' && typeof a.value === 'string') return '#' + a.value;
   if (a.type === 'class') return '.' + a.name;
   return `${a.name}=${formatScalar(a.value)}`;
@@ -197,23 +197,25 @@ function* formatNode(n: Node, o: Options = {}) {
       const open = OPEN + SPACE;
       const tag = [open + n.tag, ...formatAttributes(n)];
       const inlineTag = tag.join(SPACE);
+
+      let tagOpening = '';
       if (
         inlineTag.length + open.length * 2 >
         (o.maxTagOpeningWidth || MAX_TAG_OPENING_WIDTH)
       ) {
-        yield tag.join(NL + SPACE.repeat(open.length) + indent);
+        tagOpening += tag.join(NL + SPACE.repeat(open.length) + indent);
       } else {
-        yield inlineTag;
+        tagOpening += inlineTag;
       }
-      yield SPACE + (n.children.length ? '' : '/') + CLOSE;
+      tagOpening += SPACE + (n.children.length ? '' : '/') + CLOSE;
+      yield tagOpening;
+
       if (n.children.length) {
         yield* formatChildren(n, no.allowIndentation ? increment(no) : no);
         if (!n.inline) {
           yield indent;
         }
-        yield OPEN + SPACE + '/';
-        yield n.tag;
-        yield SPACE + CLOSE;
+        yield OPEN + SPACE + '/' + n.tag + SPACE + CLOSE;
       }
       if (!n.inline) {
         yield NL;
@@ -270,25 +272,36 @@ function* formatNode(n: Node, o: Options = {}) {
       break;
     }
     case 'table': {
-      const table = [...formatChildren(n, increment(no))] as any as string[][];
+      const table = [...formatChildren(n, increment(no))] as any as any[];
       if (o.parent && o.parent.type === 'tag' && o.parent.tag === 'table') {
-        for (const row of table) {
-          yield NL;
-          for (const d of row) {
-            // TODO see if we should move trim() to `td`
-            yield indent + UL + d.trim();
-            yield NL;
-          }
-          if (row !== table[table.length - 1]) {
-            yield indent + '---';
+        for (let i = 0; i < table.length; i++) {
+          const row = table[i];
+          // format tags like "if" in the middle of a table list
+          if (typeof row === 'string') {
+            if (row.trim().length) {
+              yield NL;
+              yield row;
+            }
+          } else {
+            if (i !== 0) {
+              yield NL;
+              yield indent + '---';
+            }
+            for (let j = 0; j < row.length; j++) {
+              const d = row[j];
+              yield NL;
+              // TODO see if we should move trim() to `td`
+              yield indent + UL + d.trim();
+            }
           }
         }
+        yield NL;
       } else {
         yield NL;
-        const [head, ...rows] = table;
+        const [head, ...rows] = table as string[][];
 
         const ml = table
-          .map((arr) => arr.map((s) => s.length).reduce(max))
+          .map((arr) => arr.map((s: string) => s.length).reduce(max))
           .reduce(max);
 
         yield* formatTableRow(head.map((h) => h + SPACE.repeat(ml - h.length)));
