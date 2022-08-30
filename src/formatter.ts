@@ -198,23 +198,24 @@ function* formatNode(n: Node, o: Options = {}) {
       const tag = [open + n.tag, ...formatAttributes(n)];
       const inlineTag = tag.join(SPACE);
 
-      let tagOpening = '';
-      if (
+      const isLongTagOpening =
         inlineTag.length + open.length * 2 >
-        (o.maxTagOpeningWidth || MAX_TAG_OPENING_WIDTH)
-      ) {
-        tagOpening += tag.join(NL + SPACE.repeat(open.length) + indent);
-      } else {
-        tagOpening += inlineTag;
-      }
-      tagOpening += SPACE + (n.children.length ? '' : '/') + CLOSE;
-      yield tagOpening;
+        (o.maxTagOpeningWidth || MAX_TAG_OPENING_WIDTH);
+
+      // {% tag attributes={...} %}
+      yield (isLongTagOpening
+        ? tag.join(NL + SPACE.repeat(open.length) + indent)
+        : inlineTag) +
+        SPACE +
+        (n.children.length ? '' : '/') +
+        CLOSE;
 
       if (n.children.length) {
         yield* formatChildren(n, no.allowIndentation ? increment(no) : no);
         if (!n.inline) {
           yield indent;
         }
+        // {% /tag %}
         yield OPEN + SPACE + '/' + n.tag + SPACE + CLOSE;
       }
       if (!n.inline) {
