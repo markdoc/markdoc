@@ -1,6 +1,6 @@
 name: Bug report
 description: Create a report to help us fix Markdoc bugs
-labels: ["bug"]
+labels: ['bug']
 # title: ''
 # assignees:
 body:

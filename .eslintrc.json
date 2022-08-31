@@ -5,10 +5,7 @@
     "node": true,
     "jasmine": true
   },
-  "extends": [
-    "eslint:recommended",
-    "plugin:@typescript-eslint/recommended"
-  ],
+  "extends": ["eslint:recommended", "plugin:@typescript-eslint/recommended"],
   "parser": "@typescript-eslint/parser",
   "parserOptions": {
     "ecmaVersion": "latest",
@@ -18,12 +15,18 @@
   "rules": {
     "@typescript-eslint/ban-types": "off",
     "@typescript-eslint/no-explicit-any": "off",
-    "@typescript-eslint/no-unused-vars": ["error", {
-      "argsIgnorePattern": "^_" 
-    }],
-    "prefer-const": ["error", {
-      "destructuring": "all"
-    }]
+    "@typescript-eslint/no-unused-vars": [
+      "error",
+      {
+        "argsIgnorePattern": "^_"
+      }
+    ],
+    "prefer-const": [
+      "error",
+      {
+        "destructuring": "all"
+      }
+    ]
   },
-  "ignorePatterns": [ "src/grammar/tag.js", "dist", "build.js"]
+  "ignorePatterns": ["src/grammar/tag.js", "dist", "build.js"]
 }

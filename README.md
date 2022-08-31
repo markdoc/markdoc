@@ -62,6 +62,11 @@ Contributions and feedback are welcome and encouraged. Check out our [contributi
 1. Run `npm run build`
 1. Run the tests using `npm test`
 
+### Static Analysis / Formatting
+
+1. Run linting tools: `npm run lint`
+1. Run formatters: `npm run fmt`
+
 ## Code of conduct
 
 This project has adopted the Stripe [Code of conduct](.github/CODE_OF_CONDUCT.md).

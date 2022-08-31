@@ -21,7 +21,8 @@
     "build": "npm run build:common && npm run build:types",
     "build:common": "node build.js",
     "build:types": "tsc --emitDeclarationOnly --outDir dist",
-    "lint": "eslint .",
+    "lint": "trunk check",
+    "fmt": "trunk fmt",
     "grammar": "pegjs -o src/grammar/tag.js src/grammar/tag.pegjs",
     "postgrammar": "prettier --write src/grammar/tag.js",
     "prettier": "prettier --write index.ts src spec",
@@ -33,6 +34,7 @@
     "node": ">=14.7.0"
   },
   "devDependencies": {
+    "@trunkio/launcher": "^1.0.5",
     "@types/jasmine": "^3.10.2",
     "@types/markdown-it": "^12.2.3",
     "@types/node": "^16.11.12",

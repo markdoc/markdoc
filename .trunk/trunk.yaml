@@ -1,0 +1,20 @@
+version: 0.1
+cli:
+  version: 0.17.0-beta
+plugins:
+  sources:
+    - id: trunk
+      ref: v0.0.4
+      uri: https://github.com/trunk-io/plugins
+lint:
+  enabled:
+    - actionlint@1.6.9
+    - eslint@8.23.0
+    - git-diff-check@SYSTEM
+    - gitleaks@8.8.7
+    - markdownlint@0.32.2
+    - prettier@2.7.1
+  ignore:
+    - linters: [ALL]
+      paths:
+        - patches
