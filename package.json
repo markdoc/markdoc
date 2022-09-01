@@ -25,8 +25,6 @@
     "fmt": "npm exec trunk fmt",
     "grammar": "pegjs -o src/grammar/tag.js src/grammar/tag.pegjs",
     "postgrammar": "prettier --write src/grammar/tag.js",
-    "prettier": "prettier --write index.ts src spec",
-    "prettier:check": "prettier --check index.ts src spec",
     "type:check": "tsc --noEmit",
     "typedoc": "typedoc index.ts --includeVersion --readme none --excludePrivate --excludeExternals --excludeInternal --sort source-order --out types"
   },

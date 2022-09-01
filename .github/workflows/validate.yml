@@ -20,8 +20,8 @@ jobs:
         run: |
           npm ci
           npm run build
-          npm run prettier:check
-          npm run lint
           npm run type:check
           npm run test
           npm run marktest
+      - name: trunk check
+        uses: trunk-io/trunk-action@v1
