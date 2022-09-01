@@ -34,7 +34,7 @@
     "node": ">=14.7.0"
   },
   "devDependencies": {
-    "@trunkio/launcher": "1.0.5",
+    "@trunkio/launcher": "^1.2.1",
     "@types/jasmine": "^3.10.2",
     "@types/markdown-it": "^12.2.3",
     "@types/node": "^16.11.12",
