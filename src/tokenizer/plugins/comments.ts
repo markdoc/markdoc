@@ -45,6 +45,6 @@ function inline(state: StateInline, silent: boolean): boolean {
 }
 
 export default function plugin(md: MarkdownIt) {
-  md.block.ruler.before('table', 'comment', block, {alt: ['paragraph']});
+  md.block.ruler.before('table', 'comment', block, { alt: ['paragraph'] });
   md.inline.ruler.push('comment', inline);
 }

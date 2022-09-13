@@ -235,7 +235,7 @@ export const softbreak: Schema = {
 
 export const comment = {
   attributes: {
-    content: {type: String, required: true}
+    content: { type: String, required: true },
   },
 };
 

@@ -18,7 +18,10 @@ class Loader extends yaml.loader.Loader {
   }
 }
 
-const tokenizer = new markdoc.Tokenizer({ allowIndentation: true, allowComments: true });
+const tokenizer = new markdoc.Tokenizer({
+  allowIndentation: true,
+  allowComments: true,
+});
 
 function parse(content: string, file?: string) {
   const tokens = tokenizer.tokenize(content);
