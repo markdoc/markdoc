@@ -35,8 +35,8 @@
   "devDependencies": {
     "@types/jasmine": "^3.10.2",
     "@types/markdown-it": "^12.2.3",
-    "@types/node": "^16.11.12",
-    "@types/react": "^17.0.38",
+    "@types/node": "^16.11.58",
+    "@types/react": "^17.0.49",
     "@typescript-eslint/eslint-plugin": "^5.12.0",
     "@typescript-eslint/parser": "^5.12.0",
     "deep-assert": "0.3.0",
