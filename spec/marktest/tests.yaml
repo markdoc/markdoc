@@ -438,6 +438,51 @@
   expected: |
     <article><h1 class="foo bar">This is a test </h1></article>
 
+- name: Ignoring tags in fenced code blocks
+  code: |
+    ```javascript {% process=false %}
+    foo
+    {% bar %}
+    ```
+  expected:
+    - tag: pre
+      attributes:
+        data-language: javascript
+      children:
+        - "foo\n{% bar %}\n"
+
+- name: Using a backtick in a fenced code block string attribute
+  config:
+    nodes:
+      fence:
+        render: pre
+        attributes:
+          content:
+            type: String
+            render: false
+            required: true
+          language:
+            type: String
+            render: 'data-language'
+          process:
+            type: Boolean
+            render: false
+            default: true
+          title:
+            type: String
+
+  code: |
+    ~~~yaml {% title="this is a `test`" %}
+    example
+    ~~~
+  expected:
+    - tag: pre
+      attributes:
+        data-language: yaml
+        title: 'this is a `test`'
+      children:
+        - "example\n"
+
 - name: Conditional and variable in code example
   config:
     variables:
@@ -1503,3 +1548,47 @@
       children:
         - tag: p
           children: [testing]
+
+- name: Ignoring comments
+  code: |
+    # Example <!-- foo -->
+
+    This is a test <!-- bar
+    -->
+
+    <!--
+    baz
+    -->
+  expected:
+    - tag: h1
+      children: ['Example ']
+    - tag: p
+      children: ['This is a test ']
+
+- name: Escaped quotes in tag strings
+  config:
+    tags:
+      foo:
+        render: foo
+        attributes:
+          bar:
+            type: String
+  code: |
+    {% foo bar="this is a test of \"quoted\" strings" /%}
+  expected:
+    - tag: foo
+      attributes:
+        bar: 'this is a test of "quoted" strings'
+
+- name: Escaped quotes in tag strings with html renderer
+  renderer: html
+  config:
+    tags:
+      foo:
+        render: foo
+        attributes:
+          bar:
+            type: String
+  code: |
+    {% foo bar="this is a test of \"quoted\" strings" /%}
+  expected: <article><foo bar="this is a test of &quot;quoted&quot; strings"></foo></article>

@@ -11,6 +11,7 @@ export const document: Schema = {
     'tag',
     'fence',
     'blockquote',
+    'comment',
     'list',
     'hr',
   ],
@@ -189,6 +190,7 @@ export const inline: Schema = {
     'image',
     'hardbreak',
     'softbreak',
+    'comment',
   ],
 };
 
@@ -228,6 +230,12 @@ export const hardbreak: Schema = {
 export const softbreak: Schema = {
   transform() {
     return ' ';
+  },
+};
+
+export const comment = {
+  attributes: {
+    content: {type: String, required: true}
   },
 };
 
