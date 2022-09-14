@@ -1,4 +1,4 @@
-import Markdoc from '../index';
+import Markdoc, { nodes } from '../index';
 import type { ValidationError } from './types';
 
 function validate(string, config) {
@@ -382,5 +382,34 @@ describe('validate', function () {
     const output = validate(example, {});
 
     expect(output).toEqual([]);
+  });
+
+  describe('async support', () => {
+    it('should allow async validators', async () => {
+      const doc = `![img](/src)`;
+
+      const config = {
+        nodes: {
+          image: {
+            ...nodes.image,
+            async validate() {
+              const message = await new Promise((res) => res('Error!'));
+              return [{ message }];
+            },
+          },
+        },
+      };
+
+      const errors = await validate(doc, config);
+
+      expect(errors).toDeepEqualSubset([
+        {
+          type: 'image',
+          lines: [0, 1],
+          location: {},
+          error: { message: 'Error!' },
+        },
+      ]);
+    });
   });
 });

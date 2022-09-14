@@ -10,7 +10,7 @@ import { truthy } from './src/tags/conditional';
 import Tokenizer from './src/tokenizer';
 import transformer, { globalAttributes } from './src/transformer';
 import transforms from './src/transforms';
-import { parseTags } from './src/utils';
+import { parseTags, isPromise } from './src/utils';
 import validator from './src/validator';
 
 import type { Node } from './src/types';
@@ -83,20 +83,33 @@ export function transform<C extends Config = Config>(
 }
 
 export function validate<C extends Config = Config>(
-  content: Node,
+  node: Node,
   options?: C
-): ValidateError[] {
+): ValidateError[];
+export function validate<C extends Config = Config>(
+  content: any,
+  options?: C
+): any {
   const config = mergeConfig(options);
 
-  const output = [];
-  for (const node of [content, ...content.walk()]) {
+  const output = [content, ...content.walk()].map((node) => {
     const { type, lines, location } = node;
     const errors = validator(node, config);
 
-    for (const error of errors) output.push({ type, lines, location, error });
+    if (isPromise(errors)) {
+      return errors.then((e) =>
+        e.map((error) => ({ type, lines, location, error }))
+      );
+    }
+
+    return errors.map((error) => ({ type, lines, location, error }));
+  });
+
+  if (output.some(isPromise)) {
+    return Promise.all(output).then((o) => o.flat());
   }
 
-  return output;
+  return output.flat();
 }
 
 export function createElement(
