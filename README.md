@@ -52,6 +52,19 @@ return Markdoc.renderers.react(content, React);
 
 Check out [our docs](https://markdoc.dev/docs) for more guidance on how to use Markdoc.
 
+### TypeScript
+This is the minimal `tsconfig.json` in order to use Markdoc in your TypeScript project
+
+```json
+{
+  "compilerOptions": {
+    "moduleResolution": "node",
+    "target": "esnext", // works with es2015 or greater
+    "esModuleInterop": true
+  }
+}
+```
+
 ## Contributing
 
 Contributions and feedback are welcome and encouraged. Check out our [contributing guidelines](.github/CONTRIBUTING.md) on how to do so.
