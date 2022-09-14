@@ -34,9 +34,9 @@
   },
   "devDependencies": {
     "@types/jasmine": "^3.10.2",
-    "@types/markdown-it": "^12.2.3",
+    "@types/markdown-it": "*",
     "@types/node": "^16.11.58",
-    "@types/react": "^17.0.49",
+    "@types/react": "*",
     "@typescript-eslint/eslint-plugin": "^5.12.0",
     "@typescript-eslint/parser": "^5.12.0",
     "deep-assert": "0.3.0",
@@ -53,6 +53,10 @@
     "typedoc": "^0.22.13",
     "typescript": "^4.5.4",
     "yaml-js": "^0.2.3"
+  },
+  "peerDependencies": {
+    "@types/markdown-it": "*",
+    "@types/react": "*"
   },
   "repository": {
     "type": "git",
