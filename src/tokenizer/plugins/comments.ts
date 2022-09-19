@@ -37,8 +37,9 @@ function inline(state: StateInline, silent: boolean): boolean {
   if (!close) return false;
   if (silent) return true;
 
+  const content = state.src.slice(state.pos + OPEN.length, close);
   const token = state.push('comment', '', 0);
-  token.content = state.src.slice(state.pos + OPEN.length, close).trim();
+  token.content = content.trim();
   state.pos = close + CLOSE.length;
 
   return true;
