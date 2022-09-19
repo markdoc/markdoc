@@ -24,7 +24,7 @@ function block(
   const token = state.push('comment', '', 0);
   token.content = content.trim();
   token.map = [startLine, startLine + lines];
-  state.line = close;
+  state.line += lines;
 
   return true;
 }

@@ -47,6 +47,9 @@ describe('MarkdownIt Comments plugin', function () {
       { type: 'inline' },
       { type: 'paragraph_close' },
       { type: 'comment', content: 'example comment' },
+      { type: 'paragraph_open' },
+      { type: 'inline', content: 'foo' },
+      { type: 'paragraph_close' },
     ];
 
     it('simple block comment after a paragraph', function () {
@@ -56,6 +59,8 @@ describe('MarkdownIt Comments plugin', function () {
       <!--
       example comment
       -->
+      
+      foo
       `);
 
       expect(example).toDeepEqualSubset(output);
@@ -67,6 +72,8 @@ describe('MarkdownIt Comments plugin', function () {
 
       <!--
       example comment -->
+
+      foo
       `);
 
       expect(example).toDeepEqualSubset(output);
@@ -77,6 +84,8 @@ describe('MarkdownIt Comments plugin', function () {
       this is a test
 
       <!-- example comment -->
+
+      foo
       `);
 
       expect(example).toDeepEqualSubset(output);
