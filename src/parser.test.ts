@@ -7,7 +7,7 @@ import { any } from 'deep-assert';
 
 describe('Markdown parser', function () {
   const fence = '```';
-  const tokenizer = new Tokenizer();
+  const tokenizer = new Tokenizer({ allowComments: true });
 
   function convert(example) {
     const content = example.replace(/\n\s+/gm, '\n').trim();
@@ -635,5 +635,21 @@ describe('Markdown parser', function () {
 {% /tag1 %}
     `);
     }).not.toThrow();
+  });
+
+  it('parsing comments', function () {
+    const example = convert(`
+    this is a test
+
+    <!-- foo -->
+    `);
+
+    expect(example).toDeepEqualSubset({
+      type: 'document',
+      children: [
+        { type: 'paragraph' },
+        { type: 'comment', attributes: { content: 'foo' } },
+      ],
+    });
   });
 });
