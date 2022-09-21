@@ -1,7 +1,7 @@
 {
   "name": "@markdoc/markdoc",
   "author": "Ryan Paul",
-  "version": "0.1.8",
+  "version": "0.1.9",
   "description": "A text markup language for documentation",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
