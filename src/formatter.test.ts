@@ -488,4 +488,26 @@ Yes!
     check(source, expected);
     stable(expected);
   });
+
+  it('fences with block level tags', () => {
+    const source = `{% tab %}
+\`\`\`json {% filename="package.json" %}
+{
+  "dependencies": {
+    ...
+    {% highlight type="remove" %}
+    "beta": "1.2.3",
+    {% /highlight %}
+    {% highlight type="add" %}
+    "main": "1.2.4",
+    {% /highlight %}
+    ...
+  }
+}
+\`\`\`
+{% /tab %}
+`;
+
+    check(source, source);
+  });
 });
