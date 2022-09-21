@@ -185,7 +185,8 @@ function* formatNode(n: Node, o: Options = {}) {
       yield* formatAnnotations(n);
       yield NL;
       yield indent;
-      yield* formatChildren(n, no);
+      // TODO use formatChildren once we can differentiate inline from block tags within fences
+      yield n.attributes.content; // yield* formatChildren(n, no);
       yield indent;
       yield '```';
       yield NL;
