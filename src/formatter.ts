@@ -92,10 +92,12 @@ function* formatFunction(f: Function) {
   yield ')';
 }
 
-function* trimStart(g: Generator) {
+function* trimStart(g: Generator<string>) {
   let n;
   do {
-    n = g.next().value.trimStart();
+    const { value, done } = g.next();
+    if (done) return;
+    n = value.trimStart();
   } while (!n.length);
   yield n;
   yield* g;
