@@ -32,7 +32,7 @@
   "engines": {
     "node": ">=14.7.0"
   },
-  "dependencies": {
+  "peerDependencies": {
     "@types/markdown-it": "*",
     "@types/react": "*"
   },

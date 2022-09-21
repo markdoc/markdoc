@@ -53,7 +53,14 @@ return Markdoc.renderers.react(content, React);
 Check out [our docs](https://markdoc.dev/docs) for more guidance on how to use Markdoc.
 
 ### TypeScript
-This is the minimal `tsconfig.json` in order to use Markdoc in your TypeScript project
+
+When using TypeScript, install Markdoc with:
+
+```sh
+npm install @markdoc/markdoc @types/react @types/markdown-it
+```
+
+Additionally, this is the minimal `tsconfig.json` required to use Markdoc in your TypeScript project:
 
 ```json
 {
