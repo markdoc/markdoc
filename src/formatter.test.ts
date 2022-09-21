@@ -88,9 +88,25 @@ describe('Formatter', () => {
     expect(format(null)).toBe('');
   });
 
+  it('empty', () => {
+    check('', '');
+    stable('');
+  });
+
   it('basics', () => {
     check(source, expected);
     stable(expected);
+  });
+
+  it('frontmatter', () => {
+    const source = `---
+title: Title
+subtitle: Subtitle
+---
+
+`;
+    check(source, source);
+    stable(source);
   });
 
   it('attribute edge cases', () => {
