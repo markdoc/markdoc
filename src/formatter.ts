@@ -1,5 +1,5 @@
 import Ast from './ast';
-import { OPEN, CLOSE } from './utils';
+import { OPEN, CLOSE, isIdentifier } from './utils';
 import type { AttributeValue, Function, Node, Value, Variable } from './types';
 
 type Options = {
@@ -16,9 +16,7 @@ const OL = '1. '; // Ordered list
 const UL = '- '; //  Unordered list
 
 const MAX_TAG_OPENING_WIDTH = 80;
-const IDENTIFIER_REGEX = /^[a-zA-Z0-9_-]+$/;
 
-const isIdentifier = (s: string) => IDENTIFIER_REGEX.test(s);
 const max = (a: number, b: number) => Math.max(a, b);
 const increment = (o: Options, n = 2) => ({
   ...o,
