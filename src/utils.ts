@@ -13,6 +13,12 @@ enum STATES {
 export const OPEN = '{%';
 export const CLOSE = '%}';
 
+export const IDENTIFIER_REGEX = /^[a-zA-Z0-9_-]+$/;
+
+export function isIdentifier(s: string): boolean {
+  return IDENTIFIER_REGEX.test(s);
+}
+
 export function isPromise(a: any): a is Promise<any> {
   return a && typeof a === 'object' && typeof a.then === 'function';
 }
