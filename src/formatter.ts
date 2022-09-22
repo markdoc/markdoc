@@ -47,7 +47,10 @@ function formatScalar(v: Value): string {
     return (
       '{' +
       Object.entries(v)
-        .map(([key, value]) => `${key}: ${formatScalar(value)}`)
+        .map(
+          ([key, value]) =>
+            `${isIdentifier(key) ? key : `"${key}"`}: ${formatScalar(value)}`
+        )
         .join(SEP) +
       '}'
     );
