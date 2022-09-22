@@ -84,13 +84,11 @@ function stable(source, options?) {
 }
 
 describe('Formatter', () => {
-  it('null', () => {
-    expect(format(null)).toBe('');
-  });
-
   it('empty', () => {
+    expect(format(null)).toBe('');
     check('', '');
-    stable('');
+    check('\n\n\t\n   \n  \n\n', '');
+    stable('\n\n\t\n   \n  \n\n');
   });
 
   it('basics', () => {
@@ -109,6 +107,16 @@ subtitle: Subtitle
     stable(source);
   });
 
+  it('complex attributes', () => {
+    const source = `{% if $gates["<string_key>"].test["@var"] id="id with space" class="class with space" /%}`;
+    const expected = `{% if
+   $gates["<string_key>"].test["@var"]
+   id="id with space"
+   class="class with space" /%}
+`;
+    check(source, expected);
+  });
+
   it('attribute edge cases', () => {
     const source = `{% key id=$user.name class=default($y, "test") %}Child{% /key %}`;
     const expected = `
@@ -121,6 +129,7 @@ subtitle: Subtitle
 
   it('variables', () => {
     const source = `
+{% tag "complex primary" /%}
 {% if $primary %}
 X
 {% /if %}
@@ -128,6 +137,8 @@ X
 {% key x=$user.name new=$flag /%}
 `;
     const expected = `
+{% tag "complex primary" /%}
+
 {% if $primary %}
 X
 {% /if %}

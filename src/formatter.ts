@@ -16,7 +16,9 @@ const OL = '1. '; // Ordered list
 const UL = '- '; //  Unordered list
 
 const MAX_TAG_OPENING_WIDTH = 80;
+const IDENTIFIER_REGEX = /^[a-zA-Z0-9_-]+$/;
 
+const isIdentifier = (s: string) => IDENTIFIER_REGEX.test(s);
 const max = (a: number, b: number) => Math.max(a, b);
 const increment = (o: Options, n = 2) => ({
   ...o,
@@ -57,18 +59,23 @@ function formatScalar(v: Value): string {
 
 function formatAnnotationValue(a: AttributeValue): string {
   if (a.name === 'primary') return formatScalar(a.value);
-  if (a.name === 'id' && typeof a.value === 'string') return '#' + a.value;
-  if (a.type === 'class') return '.' + a.name;
+  if (a.name === 'id' && typeof a.value === 'string' && isIdentifier(a.value))
+    return '#' + a.value;
+  if (a.type === 'class' && isIdentifier(a.name)) return '.' + a.name;
   return `${a.name}=${formatScalar(a.value)}`;
 }
 
 function* formatAttributes(n: Node) {
   for (const [key, value] of Object.entries(n.attributes)) {
-    if (key === 'class' && !Ast.isAst(value))
+    /**
+     * In cases where the class attribute is not a valid identifer, we treat it as a
+     * regular attribute without the '.' sigil
+     */
+    if (key === 'class' && typeof value === 'object' && !Ast.isAst(value)) {
       for (const name of Object.keys(value)) {
         yield formatAnnotationValue({ type: 'class', name, value });
       }
-    else yield formatAnnotationValue({ type: 'attribute', name: key, value });
+    } else yield formatAnnotationValue({ type: 'attribute', name: key, value });
   }
 }
 
@@ -82,7 +89,13 @@ function* formatAnnotations(n: Node) {
 
 function* formatVariable(v: Variable) {
   yield '$';
-  yield v.path.join('.');
+  yield v.path
+    .map((p, i) => {
+      if (i === 0) return p;
+      if (isIdentifier(String(p))) return '.' + p;
+      return `["${p}"]`;
+    })
+    .join('');
 }
 
 function* formatFunction(f: Function) {
