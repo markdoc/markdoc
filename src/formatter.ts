@@ -69,11 +69,11 @@ function* formatAttributes(n: Node) {
      * In cases where the class attribute is not a valid identifer, we treat it as a
      * regular attribute without the '.' sigil
      */
-    if (key === 'class' && typeof value === 'object' && !Ast.isAst(value)) {
+    if (key === 'class' && typeof value === 'object' && !Ast.isAst(value))
       for (const name of Object.keys(value)) {
         yield formatAnnotationValue({ type: 'class', name, value });
       }
-    } else yield formatAnnotationValue({ type: 'attribute', name: key, value });
+    else yield formatAnnotationValue({ type: 'attribute', name: key, value });
   }
 }
 
