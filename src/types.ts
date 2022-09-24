@@ -64,6 +64,7 @@ export type LocationEdge = {
 export type NodeType =
   | 'blockquote'
   | 'code'
+  | 'comment'
   | 'document'
   | 'em'
   | 'error'
