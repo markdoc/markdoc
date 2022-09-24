@@ -353,10 +353,7 @@ function* formatNode(n: Node, o: Options = {}) {
       yield* formatChildren(n, no);
       break;
     }
-    case 'error': {
-      console.error(n);
-      break;
-    }
+    case 'error':
     case 'node':
       break;
   }
