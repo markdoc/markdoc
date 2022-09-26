@@ -77,9 +77,11 @@ break
 Markdoc uses…
 `;
 
+const tokenizer = new Markdoc.Tokenizer({ allowComments: true });
+
 function check(source, expected, options = {}) {
   const a = expected?.trimStart();
-  const b = format(Markdoc.parse(source), options);
+  const b = format(Markdoc.parse(tokenizer.tokenize(source)), options);
   // console.log(a, b);
   const d = diff(a, b);
   if (d && d.includes('Compared values have no visual difference.')) return;
@@ -101,6 +103,25 @@ describe('Formatter', () => {
   it('basics', () => {
     check(source, expected);
     stable(expected);
+  });
+
+  it('comments', () => {
+    const source = `<!--
+    comment -->
+
+<!-- comment
+   with more
+  than one
+line  -->
+`;
+    const expected = `<!-- comment -->
+<!-- comment
+   with more
+  than one
+line -->
+`;
+
+    check(source, expected);
   });
 
   it('frontmatter', () => {

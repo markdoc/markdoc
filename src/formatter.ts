@@ -353,6 +353,10 @@ function* formatNode(n: Node, o: Options = {}) {
       yield* formatChildren(n, no);
       break;
     }
+    case 'comment': {
+      yield '<!-- ' + n.attributes.content + ' -->\n';
+      break;
+    }
     case 'error':
     case 'node':
       break;
