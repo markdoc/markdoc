@@ -18,7 +18,7 @@ Markdoc is a **Markdown**-based \`syntax\` and _toolchain_ for creating ~~custom
 
 ---
 
-![Link](/href   "title")
+[Link](/href   "title")
     ![Alt](/image   "title")
 
 {% callout #id   .class  .class2   a="check" b={"e":{"with space": 5}} c=8 d=[1,    "2",true] %}
@@ -51,7 +51,7 @@ Markdoc is a **Markdown**-based \`syntax\` and _toolchain_ for creating ~~custom
 
 ---
 
-![Link](/href "title")
+[Link](/href "title")
 ![Alt](/image "title")
 
 {% callout
