@@ -453,6 +453,13 @@ Yes!
 * Create your CNAME record
 
   1. Click **Add record**.
+
+     \`\`\`json
+     {
+       "nested": "code block"
+     }
+     \`\`\`
+  
   1. Enter these values in the form that opens:
 
       {% table %}
@@ -491,6 +498,12 @@ Yes!
 - Create your CNAME record
 
   1. Click **Add record**.
+
+     \`\`\`json
+     {
+       "nested": "code block"
+     }
+     \`\`\`
   1. Enter these values in the form that opens:
 
      {% table %}
