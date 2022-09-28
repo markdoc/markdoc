@@ -374,7 +374,7 @@ Yes!
 
 1. One {% align="left" %}
 2. Two
-3. Three
+3. Three {% #id %}
 
 - A
 - B
@@ -386,7 +386,7 @@ Yes!
 
 1. One {% align="left" %}
 1. Two
-1. Three
+1. Three {% #id %}
 
 - A
 - B
@@ -537,6 +537,24 @@ Yes!
      Soft
      break
      Markdoc uses…
+`;
+
+    check(source, expected);
+    stable(expected);
+  });
+
+  it('lists with annotated items', () => {
+    const source = `
+- attributes: An object literal with key-value pairs that describe the attributes accepted by the tag.
+    - localizable: A boolean value (or an array) indicating whether the attribute’s value is translatable. {% #localizable %}
+        - Defaults to \`false\`
+    - description: A documentation string that describes the purpose of the attribute`;
+
+    const expected = `
+- attributes: An object literal with key-value pairs that describe the attributes accepted by the tag.
+  - localizable: A boolean value (or an array) indicating whether the attribute’s value is translatable. {% #localizable %}
+    - Defaults to \`false\`
+  - description: A documentation string that describes the purpose of the attribute
 `;
 
     check(source, expected);
