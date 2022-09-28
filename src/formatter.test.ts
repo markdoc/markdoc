@@ -374,7 +374,7 @@ Yes!
 
 1. One {% align="left" %}
 2. Two
-3. Three {% #id %}
+3. Three
 
 - A
 - B
@@ -386,7 +386,7 @@ Yes!
 
 1. One {% align="left" %}
 1. Two
-1. Three {% #id %}
+1. Three
 
 - A
 - B
@@ -545,16 +545,16 @@ Yes!
 
   it('lists with annotated items', () => {
     const source = `
-- attributes: An object literal with key-value pairs that describe the attributes accepted by the tag.
+- attributes: An object literal with key-value pairs that describe the attributes accepted by the tag. {% #id %}
     - localizable: A boolean value (or an array) indicating whether the attribute’s value is translatable. {% #localizable %}
         - Defaults to \`false\`
-    - description: A documentation string that describes the purpose of the attribute`;
+    - description: A documentation string that describes the purpose of the attribute {% align="center" %}`;
 
     const expected = `
-- attributes: An object literal with key-value pairs that describe the attributes accepted by the tag.
+- attributes: An object literal with key-value pairs that describe the attributes accepted by the tag. {% #id %}
   - localizable: A boolean value (or an array) indicating whether the attribute’s value is translatable. {% #localizable %}
     - Defaults to \`false\`
-  - description: A documentation string that describes the purpose of the attribute
+  - description: A documentation string that describes the purpose of the attribute {% align="center" %}
 `;
 
     check(source, expected);
