@@ -151,12 +151,28 @@ function* formatNode(n: Node, o: Options = {}) {
       yield* formatChildren(n, no);
       break;
     }
+    case 'image': {
+      yield '!';
+      yield '[';
+      yield* formatValue(n.attributes.alt, no);
+      yield ']';
+      yield '(';
+      yield* formatValue(n.attributes.src, no);
+      if (n.attributes.title) {
+        yield SPACE + `"${n.attributes.title}"`;
+      }
+      yield ')';
+      break;
+    }
     case 'link': {
       yield '[';
       yield* formatChildren(n, no);
       yield ']';
       yield '(';
       yield* formatValue(n.attributes.href, no);
+      if (n.attributes.title) {
+        yield SPACE + `"${n.attributes.title}"`;
+      }
       yield ')';
       break;
     }
@@ -178,16 +194,6 @@ function* formatNode(n: Node, o: Options = {}) {
       yield indent;
       yield '---';
       yield NL;
-      break;
-    }
-    case 'image': {
-      yield '!';
-      yield '[';
-      yield* formatValue(n.attributes.alt, no);
-      yield ']';
-      yield '(';
-      yield* formatValue(n.attributes.src, no);
-      yield ')';
       break;
     }
     case 'fence': {
