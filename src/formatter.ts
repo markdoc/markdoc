@@ -200,7 +200,10 @@ function* formatNode(n: Node, o: Options = {}) {
       yield NL;
       yield indent;
       yield '```';
-      yield (n.attributes.language || '').toLowerCase();
+      if (n.attributes.language && n.attributes.language !== OPEN) {
+        // TODO fix bug in parser to that ```{% doesn't treat "{%" as the language
+        yield n.attributes.language.toLowerCase();
+      }
       if (n.annotations.length) yield SPACE;
       yield* formatAnnotations(n);
       yield NL;
