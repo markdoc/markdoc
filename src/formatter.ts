@@ -225,7 +225,7 @@ function* formatNode(n: Node, o: Options = {}) {
         (o.maxTagOpeningWidth || MAX_TAG_OPENING_WIDTH);
 
       // {% tag attributes={...} %}
-      yield (isLongTagOpening
+      yield (!n.inline && isLongTagOpening
         ? tag.join(NL + SPACE.repeat(open.length) + indent)
         : inlineTag) +
         SPACE +
