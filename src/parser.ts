@@ -1,5 +1,6 @@
 import Node from './ast/node';
 import transforms from './transforms/index';
+import { OPEN } from './utils';
 
 import type { AttributeValue } from './types';
 
@@ -49,7 +50,7 @@ function handleAttrs(token: Token, type: string) {
       return { content: (token.meta || {}).variable || token.content };
     case 'fence': {
       const [language] = token.info.split(' ', 1);
-      return language === ''
+      return language === '' || language === OPEN
         ? { content: token.content }
         : { content: token.content, language };
     }
