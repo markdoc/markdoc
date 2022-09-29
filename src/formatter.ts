@@ -256,8 +256,11 @@ function* formatNode(n: Node, o: Options = {}) {
       break;
     }
     case 'item': {
-      yield* formatChildren(n, no);
-      yield* formatAnnotations(n);
+      for (let i = 0; i < n.children.length; i++) {
+        const child = n.children[i];
+        yield* formatValue(child, no);
+        if (i === 0) yield* formatAnnotations(n);
+      }
       break;
     }
     case 'strong': {

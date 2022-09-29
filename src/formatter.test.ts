@@ -543,6 +543,24 @@ Yes!
     stable(expected);
   });
 
+  it('lists with annotated items', () => {
+    const source = `
+- attributes: An object literal with key-value pairs that describe the attributes accepted by the tag. {% #id %}
+    - localizable: A boolean value (or an array) indicating whether the attribute’s value is translatable. {% #localizable %}
+        - Defaults to \`false\`
+    - description: A documentation string that describes the purpose of the attribute {% align="center" %}`;
+
+    const expected = `
+- attributes: An object literal with key-value pairs that describe the attributes accepted by the tag. {% #id %}
+  - localizable: A boolean value (or an array) indicating whether the attribute’s value is translatable. {% #localizable %}
+    - Defaults to \`false\`
+  - description: A documentation string that describes the purpose of the attribute {% align="center" %}
+`;
+
+    check(source, expected);
+    stable(expected);
+  });
+
   it('fences with block level tags', () => {
     const source = `{% tab %}
 \`\`\`json {% filename="package.json" %}
