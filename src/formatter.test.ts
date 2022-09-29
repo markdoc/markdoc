@@ -582,4 +582,20 @@ Yes!
 
     check(source, source);
   });
+
+  it('fences with no language', () => {
+    const source = `
+\`\`\`{% filename="package.json" %}
+Package.json
+\`\`\`
+`;
+
+    const expected = `
+\`\`\` {% filename="package.json" %}
+Package.json
+\`\`\`
+`;
+
+    check(source, expected);
+  });
 });
