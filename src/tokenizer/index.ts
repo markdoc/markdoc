@@ -16,11 +16,14 @@ export default class Tokenizer {
     this.parser = new MarkdownIt(config);
     this.parser.use(annotations, 'annotations', {});
     this.parser.use(frontmatter, 'frontmatter', {});
-    this.parser.disable([
-      'lheading',
-      // Disable indented `code_block` support https://spec.commonmark.org/0.30/#indented-code-block
-      'code',
-    ]);
+    
+      if (config.allowIndentation) {
+      this.parser.disable([
+        'lheading',
+        // Disable indented `code_block` support https://spec.commonmark.org/0.30/#indented-code-block
+        'code',
+      ]);
+    }
 
     if (config.allowComments) this.parser.use(comments, 'comments', {});
   }
