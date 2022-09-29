@@ -582,4 +582,20 @@ Yes!
 
     check(source, source);
   });
+
+  it('multiline inline tags', () => {
+    const source = `
+{% button
+   type="button"
+   href="https://example.com/veryyyyyyyyyyyyyyyyy-long-title" %}Click me {% /button %}
+`;
+
+    const expected = `
+{% button
+   type="button"
+   href="https://example.com/veryyyyyyyyyyyyyyyyy-long-title" %}Click me{% /button %}
+`;
+
+    check(source, expected);
+  });
 });
