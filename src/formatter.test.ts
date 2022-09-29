@@ -420,7 +420,6 @@ Yes!
   \`\`\`
   {% $code %}
   \`\`\`
-
 - Two
 
   My second paragraph
@@ -456,6 +455,21 @@ Yes!
 
     check(source, expected);
     stable(expected);
+  });
+
+  it('loose lists with direct inline children', () => {
+    const source = `
+- List
+  {% list %}
+  One
+  {% /list %}
+  Inline text:
+  {% list %}
+  Two
+  {% /list %}
+`;
+
+    check(source, source);
   });
 
   it('complicated nested lists', () => {
