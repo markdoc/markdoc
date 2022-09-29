@@ -220,14 +220,12 @@ function* formatNode(n: Node, o: Options = {}) {
       const tag = [open + n.tag, ...formatAttributes(n)];
       const inlineTag = tag.join(SPACE);
 
-      const canWrapTags = o.parent?.type !== 'inline';
-
       const isLongTagOpening =
         inlineTag.length + open.length * 2 >
         (o.maxTagOpeningWidth || MAX_TAG_OPENING_WIDTH);
 
       // {% tag attributes={...} %}
-      yield (canWrapTags && isLongTagOpening
+      yield (!n.inline && isLongTagOpening
         ? tag.join(NL + SPACE.repeat(open.length) + indent)
         : inlineTag) +
         SPACE +

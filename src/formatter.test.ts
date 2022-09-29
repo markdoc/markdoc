@@ -248,6 +248,16 @@ Yes!
     stable(expected);
   });
 
+  it('long inline tags', () => {
+    const source = `{% button type="button" href="https://example.com/a-very-long-inline-tag" %}A very long inline tag{% /button %}
+`;
+    check(source, source);
+
+    const inlineParent = `### {% image src="/src" alt="A very long alt text to test if the tag wraps or not" /%}
+`;
+    check(inlineParent, inlineParent);
+  });
+
   it('long tags with maxTagOpeningWidth=Infinity', () => {
     const source = `
 {% tag a=true b="My very long text well over 80 characters in total" c=123456789 d=false /%}
@@ -274,12 +284,6 @@ Yes!
 
     check(source, expected, { allowIndentation: true });
     stable(expected, { allowIndentation: true });
-  });
-
-  it('tags within inline parents', () => {
-    const source = `### {% image src="/src" alt="A very long alt text to test if the tag wraps or not" /%}
-`;
-    check(source, source);
   });
 
   it('tables', () => {
