@@ -276,6 +276,12 @@ Yes!
     stable(expected, { allowIndentation: true });
   });
 
+  it('tags within inline parents', () => {
+    const source = `### {% image src="/src" alt="A very long alt text to test if the tag wraps or not" /%}
+`;
+    check(source, source);
+  });
+
   it('tables', () => {
     const source = `
 | Syntax      | Description |
