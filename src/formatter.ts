@@ -313,9 +313,7 @@ function* formatNode(n: Node, o: Options = {}) {
             }
             for (let j = 0; j < row.length; j++) {
               const d = row[j];
-              yield NL;
-              // TODO see if we should move trim() to `td`
-              yield indent + UL + d.trim();
+              yield NL + indent + UL + d;
             }
           }
         }
@@ -352,9 +350,7 @@ function* formatNode(n: Node, o: Options = {}) {
     }
     case 'td':
     case 'th': {
-      yield [...trimStart(formatChildren(n, no)), ...formatAnnotations(n)].join(
-        ''
-      );
+      yield [...formatChildren(n, no), ...formatAnnotations(n)].join('').trim();
       break;
     }
     case 'tbody': {
