@@ -34,7 +34,13 @@
   },
   "peerDependencies": {
     "@types/markdown-it": "*",
-    "@types/react": "*"
+    "@types/react": "*",
+    "react": "*"
+  },
+  "peerDependenciesMeta": {
+    "@types/markdown-it": {"optional": true},
+    "@types/react": {"optional": true},
+    "react": {"optional": true}
   },
   "devDependencies": {
     "@types/jasmine": "^3.10.2",
