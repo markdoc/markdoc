@@ -276,6 +276,48 @@ describe('validate', function () {
         },
       ]);
     });
+
+    it('properly validates ids', () => {
+      const correct = validate(`# foo {% #bar %}`, {});
+      expect(correct).toEqual([]);
+
+      const number = validate(`# foo {% #1bar %}`, {});
+      expect(number[0]?.error.id).toEqual('attribute-value-invalid');
+
+      const hash = validate(`# foo {% id="#bar" %}`, {});
+      expect(hash[0]?.error.id).toEqual('attribute-value-invalid');
+    });
+
+    it('with custom validation function', () => {
+      const config = {
+        tags: {
+          foo: {
+            attributes: {
+              bar: {
+                type: String,
+                validate(value, _config) {
+                  return value === 'baz'
+                    ? []
+                    : [
+                        {
+                          id: 'attribute-should-be-baz',
+                          level: 'error',
+                          message: 'Value should be "baz"',
+                        },
+                      ];
+                },
+              },
+            },
+          },
+        },
+      };
+
+      const correct = validate(`{% foo bar="baz" /%}`, config);
+      expect(correct).toEqual([]);
+
+      const invalid = validate(`{% foo bar="qux" /%}`, config);
+      expect(invalid[0]?.error.id).toEqual('attribute-should-be-baz');
+    });
   });
 
   describe('custom type registration example', () => {

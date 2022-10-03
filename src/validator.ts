@@ -190,12 +190,6 @@ export default function validator(node: Node, config: Config) {
     }
 
     value = value as string;
-    if (key === 'id' && value.match(/^[0-9]/))
-      errors.push({
-        id: 'attribute-value-invalid',
-        level: 'error',
-        message: 'The id attribute must not start with a number',
-      });
 
     if (type) {
       const valid = validateType(type, value, config);
@@ -210,6 +204,9 @@ export default function validator(node: Node, config: Config) {
         errors.push(...valid);
       }
     }
+
+    if (typeof attrib.validate === 'function')
+      errors.push(...attrib.validate(value, config));
 
     if (typeof matches === 'function') matches = matches(config);
 

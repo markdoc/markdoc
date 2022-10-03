@@ -114,6 +114,7 @@ export type SchemaAttribute = {
   required?: boolean;
   matches?: SchemaMatches | ((config: Config) => SchemaMatches);
   errorLevel?: ValidationError['level'];
+  validate?(value: Value, config: Config): ValidationError[];
 };
 
 export type SchemaMatches = RegExp | string[] | null;
