@@ -246,12 +246,12 @@ function* formatNode(n: Node, o: Options = {}) {
       break;
     }
     case 'list': {
-      yield NL;
       const prefix = n.attributes.ordered ? OL : UL;
       for (const child of n.children) {
         const d = format(child, increment(no, prefix.length)).trim();
-        yield indent + prefix + d + NL;
+        yield NL + indent + prefix + d;
       }
+      yield NL;
       break;
     }
     case 'item': {
@@ -311,11 +311,8 @@ function* formatNode(n: Node, o: Options = {}) {
               yield NL;
               yield indent + '---';
             }
-            for (let j = 0; j < row.length; j++) {
-              const d = row[j];
-              yield NL;
-              // TODO see if we should move trim() to `td`
-              yield indent + UL + d.trim();
+            for (const d of row) {
+              yield NL + indent + UL + d;
             }
           }
         }
@@ -352,9 +349,7 @@ function* formatNode(n: Node, o: Options = {}) {
     }
     case 'td':
     case 'th': {
-      yield [...trimStart(formatChildren(n, no)), ...formatAnnotations(n)].join(
-        ''
-      );
+      yield [...formatChildren(n, no), ...formatAnnotations(n)].join('').trim();
       break;
     }
     case 'tbody': {
