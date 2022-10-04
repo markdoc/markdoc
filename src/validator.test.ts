@@ -234,50 +234,57 @@ describe('validate', function () {
 
   describe('inline rule', () => {
     const config = {
-        tags: {
-          foo: { inline: true },
-          bar: { inline: false },
-          baz: {  },
-        }
-      };
+      tags: {
+        foo: { inline: true },
+        bar: { inline: false },
+        baz: {},
+      },
+    };
 
     it('allows inline or block when undefined', () => {
       const inline = validate(`this is inline {% baz %}bar{% /baz %}`, config);
       expect(inline).toEqual([]);
 
-      const block = validate(`
+      const block = validate(
+        `
 {% baz %}
 bar
 {% /baz %}
-      `, config);
+      `,
+        config
+      );
       expect(block).toEqual([]);
-
     });
 
     it('validates inline tag', () => {
       const correct = validate(`this is inline {% foo %}bar{% /foo %}`, config);
       expect(correct).toEqual([]);
 
-      const wrong = validate(`
+      const wrong = validate(
+        `
 {% foo %}
 bar
 {% /foo %}
-      `, config);
+      `,
+        config
+      );
       expect(wrong[0]?.error.id).toEqual('tag-placement-invalid');
-      expect(wrong[0]?.error.message).toContain('should be inline'); 
+      expect(wrong[0]?.error.message).toContain('should be inline');
     });
 
-
     it('validates block tag', () => {
-      const correct = validate(`
+      const correct = validate(
+        `
 {% bar %}
 bar
 {% /bar %}
-`, config);
+`,
+        config
+      );
       expect(correct).toEqual([]);
       const wrong = validate(`this is inline {% bar %}bar{% /bar %}`, config);
       expect(wrong[0]?.error.id).toEqual('tag-placement-invalid');
-      expect(wrong[0]?.error.message).toContain('should be block'); 
+      expect(wrong[0]?.error.message).toContain('should be block');
     });
   });
 

@@ -141,8 +141,10 @@ export default function validator(node: Node, config: Config) {
     errors.push({
       id: 'tag-placement-invalid',
       level: 'critical',
-      message: `'${node.tag}' tag should be ${schema.inline ? 'inline' : 'block'}`
-    })
+      message: `'${node.tag}' tag should be ${
+        schema.inline ? 'inline' : 'block'
+      }`,
+    });
 
   if (schema.selfClosing && node.children.length > 0)
     errors.push({
