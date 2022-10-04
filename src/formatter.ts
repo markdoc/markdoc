@@ -134,20 +134,20 @@ function* formatNode(n: Node, o: Options = {}) {
       yield indent;
       yield '#'.repeat(n.attributes.level || 1);
       yield SPACE;
-      yield* formatChildren(n, no);
+      yield* trimStart(formatChildren(n, no));
       yield* formatAnnotations(n);
       yield NL;
       break;
     }
     case 'paragraph': {
       yield NL;
-      yield indent;
       yield* formatChildren(n, no);
       yield* formatAnnotations(n);
       yield NL;
       break;
     }
     case 'inline': {
+      yield indent;
       yield* formatChildren(n, no);
       break;
     }
@@ -247,18 +247,16 @@ function* formatNode(n: Node, o: Options = {}) {
     }
     case 'list': {
       const prefix = n.attributes.ordered ? OL : UL;
-      yield NL;
       for (const child of n.children) {
         const d = format(child, increment(no, prefix.length)).trim();
-        yield indent + prefix + d;
-        yield NL;
+        yield NL + indent + prefix + d;
       }
+      yield NL;
       break;
     }
     case 'item': {
       for (let i = 0; i < n.children.length; i++) {
-        const child = n.children[i];
-        yield* formatValue(child, no);
+        yield* formatValue(n.children[i], no);
         if (i === 0) yield* formatAnnotations(n);
       }
       break;
@@ -313,11 +311,8 @@ function* formatNode(n: Node, o: Options = {}) {
               yield NL;
               yield indent + '---';
             }
-            for (let j = 0; j < row.length; j++) {
-              const d = row[j];
-              yield NL;
-              // TODO see if we should move trim() to `td`
-              yield indent + UL + d.trim();
+            for (const d of row) {
+              yield NL + indent + UL + d;
             }
           }
         }
@@ -354,7 +349,7 @@ function* formatNode(n: Node, o: Options = {}) {
     }
     case 'td':
     case 'th': {
-      yield [...formatChildren(n, no), ...formatAnnotations(n)].join('');
+      yield [...formatChildren(n, no), ...formatAnnotations(n)].join('').trim();
       break;
     }
     case 'tbody': {
