@@ -18,7 +18,7 @@ export const globalAttributes: AttributesSchema = {
             {
               id: 'attribute-value-invalid',
               level: 'error',
-              message: 'The id attribute must start with a letter',
+              message: "The 'id' attribute must start with a letter",
             },
           ];
     },
