@@ -1,4 +1,4 @@
-import { Schema } from '../types';
+import type { Schema } from '../types';
 
 export const table: Schema = {
   children: ['table'],

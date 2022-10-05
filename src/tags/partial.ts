@@ -1,4 +1,4 @@
-import { Node, Config, Schema, ValidationError } from '../types';
+import type { Node, Config, Schema, ValidationError } from '../types';
 
 class PartialFile {
   validate(file: any, config: Config): ValidationError[] {
