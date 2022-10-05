@@ -1,28 +1,14 @@
 import Tag from './tag';
 import { Class } from './schema-types/class';
+import { Id } from './schema-types/id';
 import { isPromise } from './utils';
 import type { Config, Node, NodeType, Schema, Transformer } from './types';
-import { Value } from '..';
 
 type AttributesSchema = Schema['attributes'];
 
 export const globalAttributes: AttributesSchema = {
   class: { type: Class, render: true },
-  id: {
-    type: String,
-    render: true,
-    validate(value: Value, _config: Config) {
-      return typeof value === 'string' && value.match(/^[a-zA-Z]/)
-        ? []
-        : [
-            {
-              id: 'attribute-value-invalid',
-              level: 'error',
-              message: "The 'id' attribute must start with a letter",
-            },
-          ];
-    },
-  },
+  id: { type: Id, render: true },
 };
 
 export default {

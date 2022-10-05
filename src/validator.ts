@@ -214,9 +214,6 @@ export default function validator(node: Node, config: Config) {
       }
     }
 
-    if (typeof attrib.validate === 'function')
-      errors.push(...attrib.validate(value, config));
-
     if (typeof matches === 'function') matches = matches(config);
 
     if (Array.isArray(matches) && !matches.includes(value))

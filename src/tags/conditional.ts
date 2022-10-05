@@ -1,6 +1,6 @@
 import { isPromise } from '../utils';
 
-import { Node, RenderableTreeNode, Schema, Value } from '../types';
+import type { Node, RenderableTreeNode, Schema, Value } from '../types';
 
 type Condition = { condition: Value; children: Node[] };
 
