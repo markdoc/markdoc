@@ -1,5 +1,6 @@
 import Tag from './tag';
 import { Class } from './schema-types/class';
+import { Id } from './schema-types/id';
 import { isPromise } from './utils';
 import type { Config, Node, NodeType, Schema, Transformer } from './types';
 
@@ -7,7 +8,7 @@ type AttributesSchema = Schema['attributes'];
 
 export const globalAttributes: AttributesSchema = {
   class: { type: Class, render: true },
-  id: { type: String, render: true },
+  id: { type: Id, render: true },
 };
 
 export default {

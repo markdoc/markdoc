@@ -137,6 +137,15 @@ export default function validator(node: Node, config: Config) {
     return errors;
   }
 
+  if (schema.inline != undefined && node.inline !== schema.inline)
+    errors.push({
+      id: 'tag-placement-invalid',
+      level: 'critical',
+      message: `'${node.tag}' tag should be ${
+        schema.inline ? 'inline' : 'block'
+      }`,
+    });
+
   if (schema.selfClosing && node.children.length > 0)
     errors.push({
       id: 'tag-selfclosing-has-children',
@@ -190,12 +199,6 @@ export default function validator(node: Node, config: Config) {
     }
 
     value = value as string;
-    if (key === 'id' && value.match(/^[0-9]/))
-      errors.push({
-        id: 'attribute-value-invalid',
-        level: 'error',
-        message: 'The id attribute must not start with a number',
-      });
 
     if (type) {
       const valid = validateType(type, value, config);

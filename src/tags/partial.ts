@@ -19,6 +19,7 @@ class PartialFile {
 }
 
 export const partial: Schema = {
+  inline: false,
   selfClosing: true,
   attributes: {
     file: { type: PartialFile, render: false, required: true },

@@ -103,6 +103,7 @@ export type Schema<C extends Config = Config, R = string> = {
   children?: string[];
   attributes?: Record<string, SchemaAttribute>;
   selfClosing?: boolean;
+  inline?: boolean;
   transform?(node: Node, config: C): MaybePromise<RenderableTreeNodes>;
   validate?(node: Node, config: C): MaybePromise<ValidationError[]>;
 };
