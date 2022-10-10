@@ -43,6 +43,13 @@ describe('HTML renderer', function () {
     expect(render(example)).toEqual('<hr>');
   });
 
+  it('rendering a tag with numeric children', function () {
+    const content = tag('p', {}, [1]);
+
+    const html = render(content);
+    expect(html).toEqual('<p>1</p>');
+  });
+
   describe('attributes', function () {
     it('with basic value', function () {
       const example = tag('foo', { bar: 'baz' });

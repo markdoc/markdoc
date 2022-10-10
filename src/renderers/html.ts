@@ -22,7 +22,8 @@ const voidElements = new Set([
 ]);
 
 export default function render(node: RenderableTreeNodes): string {
-  if (typeof node === 'string') return escapeHtml(node);
+  if (typeof node === 'string' || typeof node === 'number')
+    return escapeHtml(node);
 
   if (Array.isArray(node)) return node.map(render).join('');
 
