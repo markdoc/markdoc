@@ -1,5 +1,6 @@
 import MarkdownIt from 'markdown-it';
-import { isTag, RenderableTreeNodes } from '../types';
+import Tag from '../tag';
+import { RenderableTreeNodes } from '../types';
 const { escapeHtml } = MarkdownIt().utils;
 
 // HTML elements that do not have a matching close tag
@@ -27,7 +28,7 @@ export default function render(node: RenderableTreeNodes): string {
 
   if (Array.isArray(node)) return node.map(render).join('');
 
-  if (node === null || typeof node !== 'object' || !isTag(node)) return '';
+  if (node === null || typeof node !== 'object' || !Tag.isTag(node)) return '';
 
   const { name, attributes, children = [] } = node;
 

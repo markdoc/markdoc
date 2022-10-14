@@ -6,6 +6,10 @@ export default class Tag<
 > {
   readonly $$mdtype = 'Tag' as const;
 
+  static isTag = (tag: any): tag is Tag => {
+    return '$$mdtype' in tag && tag.$$mdtype === 'Tag';
+  };
+
   name: N;
   attributes: A;
   children: RenderableTreeNode[];

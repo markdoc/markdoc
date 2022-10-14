@@ -1,5 +1,6 @@
 import { tagName } from './shared';
-import { isTag, RenderableTreeNode, RenderableTreeNodes } from '../../types';
+import Tag from '../../tag';
+import { RenderableTreeNode, RenderableTreeNodes } from '../../types';
 
 function renderArray(children: RenderableTreeNode[]): string {
   return children.map(render).join(', ');
@@ -26,7 +27,8 @@ function render(node: RenderableTreeNodes): string {
   if (Array.isArray(node))
     return `React.createElement(React.Fragment, null, ${renderArray(node)})`;
 
-  if (node === null || typeof node !== 'object' || !isTag(node)) return JSON.stringify(node);
+  if (node === null || typeof node !== 'object' || !Tag.isTag(node))
+    return JSON.stringify(node);
 
   const {
     name,
