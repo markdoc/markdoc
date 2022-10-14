@@ -154,3 +154,7 @@ export type ValidationType =
   | 'Array';
 
 export type Value = AstType | Scalar;
+
+export function isTag(tag: any): tag is Tag {
+  return "$$mdtype" in tag && tag.$$mdtype === 'Tag';
+}
