@@ -2,7 +2,15 @@ import Tag from './tag';
 import { Class } from './schema-types/class';
 import { Id } from './schema-types/id';
 import { isPromise } from './utils';
-import type { Config, Node, NodeType, Schema, Transformer } from './types';
+import type {
+  Config,
+  MaybePromise,
+  Node,
+  NodeType,
+  RenderableTreeNodes,
+  Schema,
+  Transformer,
+} from './types';
 
 type AttributesSchema = Schema['attributes'];
 
@@ -43,7 +51,9 @@ export default {
   },
 
   children(node: Node, config: Config = {}) {
-    const children = node.children.flatMap((child) => this.node(child, config));
+    const children = node.children.flatMap<MaybePromise<RenderableTreeNodes>>(
+      (child) => this.node(child, config)
+    );
     if (children.some(isPromise)) {
       return Promise.all(children);
     }

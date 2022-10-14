@@ -1,6 +1,13 @@
 import { isPromise } from '../utils';
 
-import type { Node, RenderableTreeNode, Schema, Value } from '../types';
+import {
+  MaybePromise,
+  Node,
+  RenderableTreeNode,
+  RenderableTreeNodes,
+  Schema,
+  Value,
+} from '../types';
 
 type Condition = { condition: Value; children: Node[] };
 
@@ -34,7 +41,9 @@ export const tagIf: Schema = {
     const conditions = renderConditions(node);
     for (const { condition, children } of conditions)
       if (truthy(condition)) {
-        const nodes = children.flatMap((child) => child.transform(config));
+        const nodes = children.flatMap<MaybePromise<RenderableTreeNodes>>(
+          (child) => child.transform(config)
+        );
         if (nodes.some(isPromise)) {
           return Promise.all(nodes).then((nodes) => nodes.flat());
         }
