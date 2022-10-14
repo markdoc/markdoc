@@ -93,7 +93,7 @@ export type NodeType =
 
 export type Primitive = null | boolean | number | string;
 
-export type RenderableTreeNode = Tag | Primitive;
+export type RenderableTreeNode = Tag | Scalar;
 export type RenderableTreeNodes = RenderableTreeNode | RenderableTreeNode[];
 
 export type Scalar = Primitive | Scalar[] | { [key: string]: Scalar };
