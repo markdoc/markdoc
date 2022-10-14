@@ -12,29 +12,32 @@ function tag(
 
 describe('HTML renderer', function () {
   it('rendering a tag', function () {
-    const example = render(tag('h1', null, ['test'])).trim();
+    const example = render(tag('h1', undefined, ['test'])).trim();
     expect(example).toEqual('<h1>test</h1>');
   });
 
   it('rendering string child nodes', function () {
-    const example = tag('h1', null, ['test ', '1']);
+    const example = tag('h1', undefined, ['test ', '1']);
     expect(render(example)).toEqual('<h1>test 1</h1>');
   });
 
   it('rendering nested tags', function () {
-    const example = tag('div', null, [tag('p', null, ['test'])]);
+    const example = tag('div', undefined, [tag('p', undefined, ['test'])]);
 
     expect(render(example)).toEqual('<div><p>test</p></div>');
   });
 
   it('rendering parallel tags', function () {
-    const example = [tag('p', null, ['foo']), tag('p', null, ['bar'])];
+    const example = [
+      tag('p', undefined, ['foo']),
+      tag('p', undefined, ['bar']),
+    ];
 
     expect(render(example)).toEqual('<p>foo</p><p>bar</p>');
   });
 
   it('rendering a tag with an invalid child', function () {
-    const example = tag('div', null, ['test', { foo: 'bar' }]);
+    const example = tag('div', undefined, ['test', { foo: 'bar' }]);
 
     expect(render(example)).toEqual('<div>test</div>');
   });
