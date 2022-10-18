@@ -1,6 +1,7 @@
 import { tagName } from './shared';
+import Tag from '../../tag';
+import { RenderableTreeNodes, Scalar } from '../../types';
 import type { createElement, Fragment, ReactNode } from 'react';
-import type { RenderableTreeNodes, Scalar } from '../../types';
 
 type ReactShape = Readonly<{
   createElement: typeof createElement;
@@ -30,7 +31,8 @@ export default function dynamic(
     if (Array.isArray(node))
       return React.createElement(React.Fragment, null, ...node.map(render));
 
-    if (node === null || typeof node !== 'object') return node;
+    if (node === null || typeof node !== 'object' || !Tag.isTag(node))
+      return node;
 
     const {
       name,
