@@ -1,6 +1,22 @@
-import { tagName } from './shared';
 import Tag from '../../tag';
 import { RenderableTreeNode, RenderableTreeNodes } from '../../types';
+
+import type { ComponentType } from 'react';
+
+type Component = ComponentType<unknown>;
+
+function tagName(
+  name: string,
+  components: Record<string, Component> | ((string: string) => Component)
+): string | Component {
+  return typeof name !== 'string'
+    ? 'Fragment'
+    : name[0] !== name[0].toUpperCase()
+    ? name
+    : components instanceof Function
+    ? components(name)
+    : components[name];
+}
 
 function renderArray(children: RenderableTreeNode[]): string {
   return children.map(render).join(', ');
