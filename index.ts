@@ -13,7 +13,7 @@ import transforms from './src/transforms';
 import { parseTags, isPromise } from './src/utils';
 import validator from './src/validator';
 
-import type { Node } from './src/types';
+import type { MaybePromise, Node } from './src/types';
 import type Token from 'markdown-it/lib/token';
 import type { Config, RenderableTreeNode, ValidateError } from './src/types';
 
@@ -65,11 +65,11 @@ export function resolve<C extends Config = Config>(
 export function transform<C extends Config = Config>(
   node: Node,
   config?: C
-): RenderableTreeNode;
+): MaybePromise<RenderableTreeNode>;
 export function transform<C extends Config = Config>(
   nodes: Node[],
   config?: C
-): RenderableTreeNode[];
+): MaybePromise<RenderableTreeNode[]>;
 export function transform<C extends Config = Config>(
   nodes: any,
   options?: C
