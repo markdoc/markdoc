@@ -137,6 +137,24 @@ subtitle: Subtitle
     stable(source);
   });
 
+  it('content edge cases', () => {
+    const source = `
+\\* Asterisk
+
+**/docs/\\***
+
+~~**a \\_sentence\\_ with \\_underscores**~~
+
+- Item with \\[brackets\\]
+
+\`\`\`
+\\*\\_[\\[]
+\`\`\`
+`;
+
+    check(source, source);
+  });
+
   it('complex attributes', () => {
     const source = `{% if $gates["<string_key>"].test["@var"] id="id with space" class="class with space" /%}`;
     const expected = `{% if

@@ -117,6 +117,12 @@ function* trimStart(g: Generator<string>) {
   yield* g;
 }
 
+function* escapeMarkdownCharacters(g: Generator<string>) {
+  for (const s of g) {
+    yield s.replace(/[_*[\]\\]/g, '\\$&');
+  }
+}
+
 function* formatNode(n: Node, o: Options = {}) {
   const no = { ...o, parent: n };
   const indent = SPACE.repeat(no.indent || 0);
@@ -178,7 +184,7 @@ function* formatNode(n: Node, o: Options = {}) {
     }
     case 'text': {
       if (Ast.isAst(n.attributes.content)) yield OPEN + SPACE;
-      yield* formatValue(n.attributes.content, no);
+      yield* escapeMarkdownCharacters(formatValue(n.attributes.content));
       if (Ast.isAst(n.attributes.content)) yield SPACE + CLOSE;
       break;
     }
