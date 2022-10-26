@@ -640,4 +640,19 @@ Package.json
 
     check(source, expected);
   });
+
+  it('nested fences', () => {
+    const source = `
+${'`'.repeat(4)}
+
+${'`'.repeat(3)}
+Fence within a fence
+${'`'.repeat(3)}
+
+
+${'`'.repeat(4)}
+`;
+
+    check(source, source);
+  });
 });
