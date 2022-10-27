@@ -641,6 +641,23 @@ Package.json
     check(source, expected);
   });
 
+  it('complex lists', () => {
+    const source = `
+* **One {% colspan=1 %}**
+* **Two {% colspan=2 %}**
+* **Three {% colspan=3 %}**
+`;
+
+    const expected = `
+- **One**{% colspan=1 %}
+- **Two**{% colspan=2 %}
+- **Three**{% colspan=3 %}
+`;
+
+    check(source, expected);
+    stable(expected);
+  });
+
   it('nested fences', () => {
     const source = `
 ${'`'.repeat(4)}

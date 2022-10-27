@@ -29,6 +29,10 @@ function* formatChildren(a: Node, options: Options) {
   }
 }
 
+function* formatInline(g: Generator<string>) {
+  yield [...g].join('').trim();
+}
+
 function* formatTableRow(items: Array<string>) {
   yield `| ${items.join(' | ')} |`;
 }
@@ -279,25 +283,25 @@ function* formatNode(n: Node, o: Options = {}) {
     }
     case 'strong': {
       yield '**';
-      yield* formatChildren(n, no);
+      yield* formatInline(formatChildren(n, no));
       yield '**';
       break;
     }
     case 'em': {
       yield '_';
-      yield* formatChildren(n, no);
+      yield* formatInline(formatChildren(n, no));
       yield '_';
       break;
     }
     case 'code': {
       yield '`';
-      yield* formatValue(n.attributes.content, no);
+      yield* formatInline(formatValue(n.attributes.content, no));
       yield '`';
       break;
     }
     case 's': {
       yield '~~';
-      yield* formatChildren(n, no);
+      yield* formatInline(formatChildren(n, no));
       yield '~~';
       break;
     }
