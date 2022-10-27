@@ -117,6 +117,12 @@ function* trimStart(g: Generator<string>) {
   yield* g;
 }
 
+function* escapeMarkdownCharacters(g: Generator<string>) {
+  for (const s of g) {
+    yield s.replace(/[_*[\]\\]/g, '\\$&');
+  }
+}
+
 function* formatNode(n: Node, o: Options = {}) {
   const no = { ...o, parent: n };
   const indent = SPACE.repeat(no.indent || 0);
@@ -178,7 +184,7 @@ function* formatNode(n: Node, o: Options = {}) {
     }
     case 'text': {
       if (Ast.isAst(n.attributes.content)) yield OPEN + SPACE;
-      yield* formatValue(n.attributes.content, no);
+      yield* escapeMarkdownCharacters(formatValue(n.attributes.content));
       if (Ast.isAst(n.attributes.content)) yield SPACE + CLOSE;
       break;
     }
@@ -199,7 +205,16 @@ function* formatNode(n: Node, o: Options = {}) {
     case 'fence': {
       yield NL;
       yield indent;
-      yield '```';
+
+      const innerFence = n.attributes.content.match(/`{3,}/g) || [];
+
+      const innerFenceLength = innerFence
+        .map((s: string) => s.length)
+        .reduce(max, 0);
+
+      const boundary = '`'.repeat(innerFenceLength ? innerFenceLength + 1 : 3);
+
+      yield boundary;
       if (n.attributes.language) yield n.attributes.language;
       if (n.annotations.length) yield SPACE;
       yield* formatAnnotations(n);
@@ -207,7 +222,7 @@ function* formatNode(n: Node, o: Options = {}) {
       yield indent;
       // TODO use formatChildren once we can differentiate inline from block tags within fences
       yield n.attributes.content.split(NL).join(NL + indent); // yield* formatChildren(n, no);
-      yield '```';
+      yield boundary;
       yield NL;
       break;
     }
