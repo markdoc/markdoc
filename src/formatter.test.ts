@@ -672,4 +672,15 @@ ${'`'.repeat(4)}
 
     check(source, source);
   });
+
+  it('non-breaking spaces', () => {
+    const source = `
+paragraph 1
+
+&nbsp;
+
+paragraph 2
+`;
+    check(source, source);
+  });
 });

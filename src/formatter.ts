@@ -123,7 +123,10 @@ function* trimStart(g: Generator<string>) {
 }
 
 function* escapeMarkdownCharacters(s: string) {
-  yield s.replace(/[_*[\]\\]/g, '\\$&');
+  yield s
+    .replace(/[_*[\]\\]/g, '\\$&')
+    // Non-breaking space (0xA0)
+    .replace(/ /g, '&nbsp;');
 }
 
 function* formatNode(n: Node, o: Options = {}) {
