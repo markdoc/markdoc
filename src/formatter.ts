@@ -117,10 +117,8 @@ function* trimStart(g: Generator<string>) {
   yield* g;
 }
 
-function* escapeMarkdownCharacters(g: Generator<string>) {
-  for (const s of g) {
-    yield s.replace(/[_*[\]\\]/g, '\\$&');
-  }
+function* escapeMarkdownCharacters(s: string) {
+  yield s.replace(/[_*[\]\\]/g, '\\$&');
 }
 
 function* formatNode(n: Node, o: Options = {}) {
@@ -183,12 +181,12 @@ function* formatNode(n: Node, o: Options = {}) {
       break;
     }
     case 'text': {
-      if (Ast.isAst(n.attributes.content)) yield OPEN + SPACE;
-      const content = formatValue(n.attributes.content, no);
+      const { content } = n.attributes;
+      if (Ast.isAst(content)) yield OPEN + SPACE;
       yield* typeof content === 'string'
         ? escapeMarkdownCharacters(content)
-        : content;
-      if (Ast.isAst(n.attributes.content)) yield SPACE + CLOSE;
+        : formatValue(content, no);
+      if (Ast.isAst(content)) yield SPACE + CLOSE;
       break;
     }
     case 'blockquote': {
