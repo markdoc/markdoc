@@ -97,7 +97,8 @@ function* formatVariable(v: Variable) {
   yield v.path
     .map((p, i) => {
       if (i === 0) return p;
-      if (isIdentifier(String(p))) return '.' + p;
+      if (isIdentifier(p)) return '.' + p;
+      if (typeof p === 'number') return `[${p}]`;
       return `["${p}"]`;
     })
     .join('');

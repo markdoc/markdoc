@@ -182,7 +182,7 @@ subtitle: Subtitle
 X
 {% /if %}
 {% $user.name %}
-{% key x=$user.name new=$flag /%}
+{% key x=$user.name y=$flag z=$array[5] /%}
 `;
     const expected = `
 {% tag "complex primary" /%}
@@ -193,7 +193,7 @@ X
 
 {% $user.name %}
 
-{% key x=$user.name new=$flag /%}
+{% key x=$user.name y=$flag z=$array[5] /%}
 `;
 
     check(source, expected);
