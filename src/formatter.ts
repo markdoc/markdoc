@@ -184,7 +184,10 @@ function* formatNode(n: Node, o: Options = {}) {
     }
     case 'text': {
       if (Ast.isAst(n.attributes.content)) yield OPEN + SPACE;
-      yield* escapeMarkdownCharacters(formatValue(n.attributes.content));
+      const content = formatValue(n.attributes.content, no);
+      yield* typeof content === 'string'
+        ? escapeMarkdownCharacters(content)
+        : content;
       if (Ast.isAst(n.attributes.content)) yield SPACE + CLOSE;
       break;
     }
