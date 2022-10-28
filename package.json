@@ -32,9 +32,16 @@
   "engines": {
     "node": ">=14.7.0"
   },
+  "optionalDependencies": {
+    "@types/markdown-it": "12.2.3"
+  },
   "peerDependencies": {
-    "@types/markdown-it": "*",
-    "@types/react": "*"
+    "@types/react": "*",
+    "react": "*"
+  },
+  "peerDependenciesMeta": {
+    "@types/react": {"optional": true},
+    "react": {"optional": true}
   },
   "devDependencies": {
     "@types/jasmine": "^3.10.2",
