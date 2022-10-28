@@ -125,6 +125,7 @@ function* trimStart(g: Generator<string>) {
 function* escapeMarkdownCharacters(s: string) {
   yield s
     .replace(/[_*[\]\\]/g, '\\$&')
+    // TODO keep &nbsp; as entity in the AST?
     // Non-breaking space (0xA0)
     .replace(new RegExp('\xa0', 'g'), '&nbsp;');
 }
