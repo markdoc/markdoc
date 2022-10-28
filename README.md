@@ -54,13 +54,7 @@ Check out [our docs](https://markdoc.dev/docs) for more guidance on how to use M
 
 ### TypeScript
 
-When using TypeScript, install Markdoc with:
-
-```sh
-npm install @markdoc/markdoc @types/react @types/markdown-it
-```
-
-Additionally, this is the minimal `tsconfig.json` required to use Markdoc in your TypeScript project:
+This is the minimal `tsconfig.json` required to use Markdoc in your TypeScript project:
 
 ```json
 {
@@ -70,6 +64,14 @@ Additionally, this is the minimal `tsconfig.json` required to use Markdoc in you
     "esModuleInterop": true
   }
 }
+```
+
+### React
+
+If you are using React, install Markdoc with:
+
+```sh
+npm install @markdoc/markdoc react @types/react
 ```
 
 ## Contributing
