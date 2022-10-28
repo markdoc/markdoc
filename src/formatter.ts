@@ -122,9 +122,9 @@ function* trimStart(g: Generator<string>) {
   yield* g;
 }
 
-function* escapeMarkdownCharacters(s: string) {
+function* escapeMarkdownCharacters(s: string, characters: RegExp) {
   yield s
-    .replace(/[_*[\]\\]/g, '\\$&')
+    .replace(characters, '\\$&')
     // TODO keep &nbsp; as entity in the AST?
     // Non-breaking space (0xA0)
     .replace(new RegExp('\xa0', 'g'), '&nbsp;');
@@ -170,7 +170,9 @@ function* formatNode(n: Node, o: Options = {}) {
       yield* formatValue(n.attributes.alt, no);
       yield ']';
       yield '(';
-      yield* formatValue(n.attributes.src, no);
+      yield* typeof n.attributes.src === 'string'
+        ? escapeMarkdownCharacters(n.attributes.src, /[()]/)
+        : formatValue(n.attributes.src, no);
       if (n.attributes.title) {
         yield SPACE + `"${n.attributes.title}"`;
       }
@@ -182,7 +184,9 @@ function* formatNode(n: Node, o: Options = {}) {
       yield* formatChildren(n, no);
       yield ']';
       yield '(';
-      yield* formatValue(n.attributes.href, no);
+      yield* typeof n.attributes.href === 'string'
+        ? escapeMarkdownCharacters(n.attributes.href, /[()]/g)
+        : formatValue(n.attributes.href, no);
       if (n.attributes.title) {
         yield SPACE + `"${n.attributes.title}"`;
       }
@@ -193,7 +197,7 @@ function* formatNode(n: Node, o: Options = {}) {
       const { content } = n.attributes;
       if (Ast.isAst(content)) yield OPEN + SPACE;
       yield* typeof content === 'string'
-        ? escapeMarkdownCharacters(content)
+        ? escapeMarkdownCharacters(content, /[_*]/g)
         : formatValue(content, no);
       if (Ast.isAst(content)) yield SPACE + CLOSE;
       break;

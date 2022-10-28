@@ -145,11 +145,16 @@ subtitle: Subtitle
 
 ~~**a \\_sentence\\_ with \\_underscores**~~
 
-- Item with \\[brackets\\]
+- Item with [brackets]
 
 \`\`\`
 \\*\\_[\\[]
 \`\`\`
+
+{% table %}
+- **[Link](https://example.com?q=()**
+- **[Link](https://example.com?q=\\()**
+{% /table %}
 `;
 
     check(source, source);
