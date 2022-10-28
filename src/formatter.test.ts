@@ -133,7 +133,7 @@ subtitle: Subtitle
 ---
 
 `;
-    check(source, source);
+    stable(source);
     stable(source);
   });
 
@@ -157,9 +157,15 @@ subtitle: Subtitle
 - ![Image](https://example.com?q=()
 - ![Image](https://example.com?q=\\()
 {% /table %}
+
+paragraph 1
+
+&nbsp;
+
+paragraph 2
 `;
 
-    check(source, source);
+    stable(source);
   });
 
   it('complex attributes', () => {
@@ -276,7 +282,7 @@ Yes!
   it('long inline tags', () => {
     const source = `{% button type="button" href="https://example.com/a-very-long-inline-tag" %}A very long inline tag{% /button %}
 `;
-    check(source, source);
+    stable(source);
 
     const inlineParent = `### {% image src="/src" alt="A very long alt text to test if the tag wraps or not" /%}
 `;
@@ -287,7 +293,7 @@ Yes!
     const source = `
 {% tag a=true b="My very long text well over 80 characters in total" c=123456789 d=false /%}
 `;
-    check(source, source, { maxTagOpeningWidth: Infinity });
+    stable(source, { maxTagOpeningWidth: Infinity });
   });
 
   it('nested tags — allowIndentation: true', () => {
@@ -494,7 +500,7 @@ Yes!
   {% /list %}
 `;
 
-    check(source, source);
+    stable(source);
   });
 
   it('complicated nested lists', () => {
@@ -629,7 +635,7 @@ Yes!
 {% /tab %}
 `;
 
-    check(source, source);
+    stable(source);
   });
 
   it('fences with no language', () => {
@@ -677,17 +683,6 @@ ${'`'.repeat(3)}
 ${'`'.repeat(4)}
 `;
 
-    check(source, source);
-  });
-
-  it('non-breaking spaces', () => {
-    const source = `
-paragraph 1
-
-&nbsp;
-
-paragraph 2
-`;
-    check(source, source);
+    stable(source);
   });
 });
