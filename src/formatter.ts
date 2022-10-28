@@ -126,7 +126,7 @@ function* escapeMarkdownCharacters(s: string) {
   yield s
     .replace(/[_*[\]\\]/g, '\\$&')
     // Non-breaking space (0xA0)
-    .replace(/ /g, '&nbsp;');
+    .replace(new RegExp('\xa0', 'g'), '&nbsp;');
 }
 
 function* formatNode(n: Node, o: Options = {}) {
