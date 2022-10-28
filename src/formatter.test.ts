@@ -137,7 +137,7 @@ subtitle: Subtitle
     stable(source);
   });
 
-  it('content edge cases', () => {
+  it('escape markdown content', () => {
     const source = `
 \\* Asterisk
 
@@ -154,6 +154,8 @@ subtitle: Subtitle
 {% table %}
 - **[Link](https://example.com?q=()**
 - **[Link](https://example.com?q=\\()**
+- ![Image](https://example.com?q=()
+- ![Image](https://example.com?q=\\()
 {% /table %}
 `;
 
