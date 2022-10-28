@@ -133,11 +133,11 @@ subtitle: Subtitle
 ---
 
 `;
-    check(source, source);
+    stable(source);
     stable(source);
   });
 
-  it('content edge cases', () => {
+  it('escape markdown content', () => {
     const source = `
 \\* Asterisk
 
@@ -145,14 +145,27 @@ subtitle: Subtitle
 
 ~~**a \\_sentence\\_ with \\_underscores**~~
 
-- Item with \\[brackets\\]
+- Item with [brackets]
 
 \`\`\`
 \\*\\_[\\[]
 \`\`\`
+
+{% table %}
+- **[Link](https://example.com?q=()**
+- **[Link](https://example.com?q=\\()**
+- ![Image](https://example.com?q=()
+- ![Image](https://example.com?q=\\()
+{% /table %}
+
+paragraph 1
+
+&nbsp;
+
+paragraph 2
 `;
 
-    check(source, source);
+    stable(source);
   });
 
   it('complex attributes', () => {
@@ -182,7 +195,7 @@ subtitle: Subtitle
 X
 {% /if %}
 {% $user.name %}
-{% key x=$user.name new=$flag /%}
+{% key x=$user.name y=$flag z=$array[5] /%}
 `;
     const expected = `
 {% tag "complex primary" /%}
@@ -193,7 +206,7 @@ X
 
 {% $user.name %}
 
-{% key x=$user.name new=$flag /%}
+{% key x=$user.name y=$flag z=$array[5] /%}
 `;
 
     check(source, expected);
@@ -269,7 +282,7 @@ Yes!
   it('long inline tags', () => {
     const source = `{% button type="button" href="https://example.com/a-very-long-inline-tag" %}A very long inline tag{% /button %}
 `;
-    check(source, source);
+    stable(source);
 
     const inlineParent = `### {% image src="/src" alt="A very long alt text to test if the tag wraps or not" /%}
 `;
@@ -280,7 +293,7 @@ Yes!
     const source = `
 {% tag a=true b="My very long text well over 80 characters in total" c=123456789 d=false /%}
 `;
-    check(source, source, { maxTagOpeningWidth: Infinity });
+    stable(source, { maxTagOpeningWidth: Infinity });
   });
 
   it('nested tags — allowIndentation: true', () => {
@@ -487,7 +500,7 @@ Yes!
   {% /list %}
 `;
 
-    check(source, source);
+    stable(source);
   });
 
   it('complicated nested lists', () => {
@@ -622,7 +635,7 @@ Yes!
 {% /tab %}
 `;
 
-    check(source, source);
+    stable(source);
   });
 
   it('fences with no language', () => {
@@ -641,6 +654,23 @@ Package.json
     check(source, expected);
   });
 
+  it('complex lists', () => {
+    const source = `
+* **One {% colspan=1 %}**
+* **Two {% colspan=2 %}**
+* **Three {% colspan=3 %}**
+`;
+
+    const expected = `
+- **One**{% colspan=1 %}
+- **Two**{% colspan=2 %}
+- **Three**{% colspan=3 %}
+`;
+
+    check(source, expected);
+    stable(expected);
+  });
+
   it('nested fences', () => {
     const source = `
 ${'`'.repeat(4)}
@@ -653,6 +683,6 @@ ${'`'.repeat(3)}
 ${'`'.repeat(4)}
 `;
 
-    check(source, source);
+    stable(source);
   });
 });

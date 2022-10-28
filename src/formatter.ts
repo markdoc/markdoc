@@ -29,6 +29,10 @@ function* formatChildren(a: Node, options: Options) {
   }
 }
 
+function* formatInline(g: Generator<string>) {
+  yield [...g].join('').trim();
+}
+
 function* formatTableRow(items: Array<string>) {
   yield `| ${items.join(' | ')} |`;
 }
@@ -93,7 +97,8 @@ function* formatVariable(v: Variable) {
   yield v.path
     .map((p, i) => {
       if (i === 0) return p;
-      if (isIdentifier(String(p))) return '.' + p;
+      if (isIdentifier(p)) return '.' + p;
+      if (typeof p === 'number') return `[${p}]`;
       return `["${p}"]`;
     })
     .join('');
@@ -117,10 +122,12 @@ function* trimStart(g: Generator<string>) {
   yield* g;
 }
 
-function* escapeMarkdownCharacters(g: Generator<string>) {
-  for (const s of g) {
-    yield s.replace(/[_*[\]\\]/g, '\\$&');
-  }
+function* escapeMarkdownCharacters(s: string, characters: RegExp) {
+  yield s
+    .replace(characters, '\\$&')
+    // TODO keep &nbsp; as entity in the AST?
+    // Non-breaking space (0xA0)
+    .replace(new RegExp('\xa0', 'g'), '&nbsp;');
 }
 
 function* formatNode(n: Node, o: Options = {}) {
@@ -163,7 +170,9 @@ function* formatNode(n: Node, o: Options = {}) {
       yield* formatValue(n.attributes.alt, no);
       yield ']';
       yield '(';
-      yield* formatValue(n.attributes.src, no);
+      yield* typeof n.attributes.src === 'string'
+        ? escapeMarkdownCharacters(n.attributes.src, /[()]/)
+        : formatValue(n.attributes.src, no);
       if (n.attributes.title) {
         yield SPACE + `"${n.attributes.title}"`;
       }
@@ -175,7 +184,9 @@ function* formatNode(n: Node, o: Options = {}) {
       yield* formatChildren(n, no);
       yield ']';
       yield '(';
-      yield* formatValue(n.attributes.href, no);
+      yield* typeof n.attributes.href === 'string'
+        ? escapeMarkdownCharacters(n.attributes.href, /[()]/g)
+        : formatValue(n.attributes.href, no);
       if (n.attributes.title) {
         yield SPACE + `"${n.attributes.title}"`;
       }
@@ -183,9 +194,12 @@ function* formatNode(n: Node, o: Options = {}) {
       break;
     }
     case 'text': {
-      if (Ast.isAst(n.attributes.content)) yield OPEN + SPACE;
-      yield* escapeMarkdownCharacters(formatValue(n.attributes.content));
-      if (Ast.isAst(n.attributes.content)) yield SPACE + CLOSE;
+      const { content } = n.attributes;
+      if (Ast.isAst(content)) yield OPEN + SPACE;
+      yield* typeof content === 'string'
+        ? escapeMarkdownCharacters(content, /[_*~]/g)
+        : formatValue(content, no);
+      if (Ast.isAst(content)) yield SPACE + CLOSE;
       break;
     }
     case 'blockquote': {
@@ -278,25 +292,25 @@ function* formatNode(n: Node, o: Options = {}) {
     }
     case 'strong': {
       yield '**';
-      yield* formatChildren(n, no);
+      yield* formatInline(formatChildren(n, no));
       yield '**';
       break;
     }
     case 'em': {
       yield '_';
-      yield* formatChildren(n, no);
+      yield* formatInline(formatChildren(n, no));
       yield '_';
       break;
     }
     case 'code': {
       yield '`';
-      yield* formatValue(n.attributes.content, no);
+      yield* formatInline(formatValue(n.attributes.content, no));
       yield '`';
       break;
     }
     case 's': {
       yield '~~';
-      yield* formatChildren(n, no);
+      yield* formatInline(formatChildren(n, no));
       yield '~~';
       break;
     }
