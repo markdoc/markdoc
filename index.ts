@@ -1,5 +1,5 @@
 import Ast from './src/ast';
-import __EXPERIMENTAL__format from './src/formatter';
+import format from './src/formatter';
 import functions from './src/functions';
 import parser from './src/parser';
 import * as nodes from './src/schema';
@@ -134,7 +134,7 @@ export {
   transformer,
   validator,
   truthy,
-  __EXPERIMENTAL__format,
+  format,
 };
 
 export default class Markdoc {
@@ -155,7 +155,7 @@ export default class Markdoc {
   static validate = validate;
   static createElement = createElement;
   static truthy = truthy;
-  static __EXPERIMENTAL__format = __EXPERIMENTAL__format;
+  static format = format;
 
   config;
   constructor(config: Config) {
