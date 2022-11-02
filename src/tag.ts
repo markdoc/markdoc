@@ -7,7 +7,7 @@ export default class Tag<
   readonly $$mdtype = 'Tag' as const;
 
   static isTag = (tag: any): tag is Tag => {
-    return '$$mdtype' in tag && tag.$$mdtype === 'Tag';
+    return !!(tag?.$$mdtype === 'Tag');
   };
 
   name: N;
