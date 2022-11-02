@@ -246,7 +246,6 @@ function* formatNode(n: Node, o: Options = {}) {
       yield* formatAnnotations(n);
       yield NL;
       yield indent;
-      // TODO use formatChildren once we can differentiate inline from block tags within fences
       yield n.attributes.content.split(NL).join(NL + indent); // yield* formatChildren(n, no);
       yield boundary;
       yield NL;
