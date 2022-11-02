@@ -197,8 +197,12 @@ function* formatNode(n: Node, o: Options = {}) {
     }
     case 'text': {
       const { content } = n.attributes;
-      if (Ast.isAst(content)) yield OPEN + SPACE;
-      if (typeof content === 'string') {
+
+      if (Ast.isAst(content)) {
+        yield OPEN + SPACE;
+        yield* formatValue(content, no);
+        yield SPACE + CLOSE;
+      } else {
         if (o.parent && WRAPPING_TYPES.includes(o.parent.type)) {
           // Escape **strong**, _em_, and ~~s~~
           yield* escapeMarkdownCharacters(content, /[*_~]/g);
@@ -206,10 +210,8 @@ function* formatNode(n: Node, o: Options = {}) {
           // Escape > blockquote, * list item, and heading
           yield* escapeMarkdownCharacters(content, /^[*>#]/);
         }
-      } else {
-        yield* formatValue(content, no);
       }
-      if (Ast.isAst(content)) yield SPACE + CLOSE;
+
       break;
     }
     case 'blockquote': {
