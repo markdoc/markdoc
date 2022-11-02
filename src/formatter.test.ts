@@ -139,7 +139,15 @@ subtitle: Subtitle
 
   it('escape markdown content', () => {
     const source = `
-\\* Asterisk
+regular_word_with_underscores
+
+\\* List item
+
+\\> Blockquote
+
+\\# Heading
+
+\\### Heading
 
 **/docs/\\***
 

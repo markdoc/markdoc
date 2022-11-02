@@ -17,6 +17,8 @@ const UL = '- '; //  Unordered list
 
 const MAX_TAG_OPENING_WIDTH = 80;
 
+const WRAPPING_TYPES = ['strong', 'em', 's'];
+
 const max = (a: number, b: number) => Math.max(a, b);
 const increment = (o: Options, n = 2) => ({
   ...o,
@@ -196,9 +198,17 @@ function* formatNode(n: Node, o: Options = {}) {
     case 'text': {
       const { content } = n.attributes;
       if (Ast.isAst(content)) yield OPEN + SPACE;
-      yield* typeof content === 'string'
-        ? escapeMarkdownCharacters(content, /[_*~]/g)
-        : formatValue(content, no);
+      if (typeof content === 'string') {
+        if (o.parent && WRAPPING_TYPES.includes(o.parent.type)) {
+          // Escape **strong**, _em_, and ~~s~~
+          yield* escapeMarkdownCharacters(content, /[*_~]/g);
+        } else {
+          // Escape > blockquote, * list item, and heading
+          yield* escapeMarkdownCharacters(content, /^[*>#]/);
+        }
+      } else {
+        yield* formatValue(content, no);
+      }
       if (Ast.isAst(content)) yield SPACE + CLOSE;
       break;
     }
