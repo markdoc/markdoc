@@ -1,7 +1,7 @@
 {
   "name": "@markdoc/markdoc",
   "author": "Ryan Paul",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "A text markup language for documentation",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
@@ -40,8 +40,12 @@
     "react": "*"
   },
   "peerDependenciesMeta": {
-    "@types/react": {"optional": true},
-    "react": {"optional": true}
+    "@types/react": {
+      "optional": true
+    },
+    "react": {
+      "optional": true
+    }
   },
   "devDependencies": {
     "@types/jasmine": "^3.10.2",
