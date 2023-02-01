@@ -44,7 +44,7 @@ function formatScalar(v: Value): string {
     return format(v);
   }
   if (v === null) {
-    return '';
+    return 'null';
   }
   if (Array.isArray(v)) {
     return '[' + v.map(formatScalar).join(SEP) + ']';
