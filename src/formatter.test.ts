@@ -693,4 +693,19 @@ ${'`'.repeat(4)}
 
     stable(source);
   });
+  it('multi-paragraph blockquotes', () => {
+    const source = `
+> Blockquote {% .class %}
+>
+> with two paragraphs`;
+
+    const expected = `
+> Blockquote {% .class %}
+> 
+> with two paragraphs
+`;
+
+    check(source, expected);
+    stable(expected);
+  });
 });
