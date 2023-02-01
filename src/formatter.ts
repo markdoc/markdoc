@@ -215,10 +215,11 @@ function* formatNode(n: Node, o: Options = {}) {
       break;
     }
     case 'blockquote': {
-      yield NL;
-      yield indent;
-      yield '> ';
-      yield* trimStart(formatChildren(n, no));
+      const prefix = '>' + SPACE;
+      yield n.children
+        .map((child) => format(child, no).trimStart())
+        .map((d) => NL + indent + prefix + d)
+        .join(indent + prefix);
       break;
     }
     case 'hr': {
