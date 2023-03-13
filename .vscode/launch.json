@@ -23,7 +23,7 @@
       "runtimeArgs": ["-r", "ts-eager/register"],
       "console": "integratedTerminal",
       "program": "${workspaceFolder}/spec/marktest/index.ts",
-      "cwd": "${workspaceFolder}/spec/marktest",
+      "cwd": "${workspaceFolder}",
       "args": ["${file}:${lineNumber}"]
     }
   ]

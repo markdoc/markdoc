@@ -2,7 +2,7 @@ import Node from './ast/node';
 import transforms from './transforms/index';
 import { OPEN } from './utils';
 
-import type { AttributeValue } from './types';
+import type { AttributeValue, ParserArgs } from './types';
 
 import type Token from 'markdown-it/lib/token';
 
@@ -88,6 +88,7 @@ function handleToken(
   token: Token,
   nodes: Node[],
   file?: string,
+  handleSlots?: boolean,
   inlineParent?: Node
 ) {
   if (token.type === 'frontmatter') {
@@ -155,7 +156,14 @@ function handleToken(
   if (attributes && ['tag', 'fence', 'image'].includes(typeName))
     annotate(node, attributes);
 
-  parent.push(node);
+  if (
+    handleSlots &&
+    tag === 'slot' &&
+    typeof node.attributes.primary === 'string'
+  )
+    parent.slots[node.attributes.primary] = node;
+  else parent.push(node);
+
   if (token.nesting > 0) nodes.push(node);
 
   if (!Array.isArray(token.children)) return;
@@ -167,17 +175,20 @@ function handleToken(
   const isLeafNode = typeName === 'image';
   if (!isLeafNode) {
     for (const child of token.children)
-      handleToken(child, nodes, file, inlineParent);
+      handleToken(child, nodes, file, handleSlots, inlineParent);
   }
 
   nodes.pop();
 }
 
-export default function parser(tokens: Token[], file?: string) {
+export default function parser(tokens: Token[], args?: string | ParserArgs) {
   const doc = new Node('document');
   const nodes = [doc];
 
-  for (const token of tokens) handleToken(token, nodes, file);
+  if (typeof args === 'string') args = { file: args };
+
+  for (const token of tokens)
+    handleToken(token, nodes, args?.file, args?.slots);
 
   if (nodes.length > 1)
     for (const node of nodes.slice(1))

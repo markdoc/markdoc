@@ -102,6 +102,7 @@ export type Schema<C extends Config = Config, R = string> = {
   render?: R;
   children?: string[];
   attributes?: Record<string, SchemaAttribute>;
+  slots?: Record<string, SchemaSlot>;
   selfClosing?: boolean;
   inline?: boolean;
   transform?(node: Node, config: C): MaybePromise<RenderableTreeNodes>;
@@ -118,6 +119,11 @@ export type SchemaAttribute = {
 };
 
 export type SchemaMatches = RegExp | string[] | null;
+
+export type SchemaSlot = {
+  render?: boolean | string;
+  required?: boolean;
+};
 
 export interface Transformer {
   findSchema(node: Node, config: Config): Schema | undefined;
@@ -154,3 +160,8 @@ export type ValidationType =
   | 'Array';
 
 export type Value = AstType | Scalar;
+
+export type ParserArgs = {
+  file?: string;
+  slots?: boolean;
+};

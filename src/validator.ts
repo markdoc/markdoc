@@ -164,6 +164,16 @@ export default function validator(node: Node, config: Config) {
     ...schema.attributes,
   };
 
+  for (const key of Object.keys(node.slots)) {
+    const slot = schema.slots?.[key];
+    if (!slot)
+      errors.push({
+        id: 'slot-undefined',
+        level: 'error',
+        message: `Invalid slot: '${key}'`,
+      });
+  }
+
   for (let [key, value] of Object.entries(node.attributes)) {
     const attrib = attributes[key];
 
@@ -247,6 +257,15 @@ export default function validator(node: Node, config: Config) {
         level: 'error',
         message: `Missing required attribute: '${key}'`,
       });
+
+  if (schema.slots)
+    for (const [key, { required }] of Object.entries(schema.slots))
+      if (required && node.slots[key] === undefined)
+        errors.push({
+          id: 'slot-missing-required',
+          level: 'error',
+          message: `Missing required slot: '${key}'`,
+        });
 
   for (const { type } of node.children) {
     if (schema.children && type !== 'error' && !schema.children.includes(type))
