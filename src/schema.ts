@@ -13,6 +13,7 @@ export const document: Schema = {
     'fence',
     'blockquote',
     'comment',
+    'html',
     'list',
     'hr',
   ],
@@ -192,6 +193,7 @@ export const inline: Schema = {
     'hardbreak',
     'softbreak',
     'comment',
+    'html',
   ],
 };
 

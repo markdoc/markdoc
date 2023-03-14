@@ -23,8 +23,9 @@ const tokenizer = new markdoc.Tokenizer({
   allowComments: true,
 });
 
-function parse(content: string, file?: string) {
-  const tokens = tokenizer.tokenize(content);
+function parse(content: string, {file, tokenizerSettings}: {file?: string, tokenizerSettings?: any}) {
+  const t = tokenizerSettings ? new markdoc.Tokenizer(tokenizerSettings) : tokenizer;
+  const tokens = t.tokenize(content);
   return markdoc.parse(tokens, file);
 }
 
@@ -36,11 +37,11 @@ function stripLines(object) {
 function render(code, config, dynamic) {
   const partials = {};
   for (const [file, content] of Object.entries(config.partials ?? {}))
-    partials[file] = parse(content as string, file);
+    partials[file] = parse(content as string, {file});
 
   const { react, reactStatic } = markdoc.renderers;
   const transformed = markdoc.transform(code, { ...config, partials });
-  return dynamic ? react(transformed, React) : eval(reactStatic(transformed));
+  return dynamic ? react(transformed, React, {}) : eval(reactStatic(transformed));
 }
 
 function checkMatch(diffs) {
@@ -105,7 +106,7 @@ function formatValidation(filename, test, validation) {
 
   let exitCode = 0;
   for (const test of tests) {
-    const code = parse(test.code || '');
+    const code = parse(test.code || '', {tokenizerSettings: test.tokenizer});
 
     const { start, end } = test.$$lines;
     if (line && (Number(line) - 1 < start || Number(line) - 1 > end)) continue;

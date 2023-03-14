@@ -1592,3 +1592,29 @@
   code: |
     {% foo bar="this is a test of \"quoted\" strings" /%}
   expected: <article><foo bar="this is a test of &quot;quoted&quot; strings"></foo></article>
+
+- name: Block HTML content
+  tokenizer:
+    html: true
+  renderer: html
+  code: |
+    # Example
+
+    This is a test
+
+    <div class="foo">
+    This is a test
+    </div>
+  expected: |
+    <article><h1>Example</h1><p>This is a test</p><div class="foo">
+    This is a test
+    </div>
+    </article>
+
+- name: Inline HTML content
+  tokenizer:
+    html: true
+  renderer: html
+  code: |
+    This is a <span class="foo">test</span> of inline HTML
+  expected: <article><p>This is a <span class="foo">test</span> of inline HTML</p></article>
