@@ -1,4 +1,5 @@
 import Tag from '../../tag';
+import Raw from '../../ast/raw';
 import { RenderableTreeNodes, Scalar } from '../../types';
 
 import type { createElement, ComponentType, Fragment, ReactNode } from 'react';
@@ -47,10 +48,10 @@ export default function dynamic(
     if (Array.isArray(node))
       return React.createElement(React.Fragment, null, ...node.map(render));
 
+    if (Raw.isRaw(node)) return raw?.(node.content, node.inline);
+
     if (node === null || typeof node !== 'object' || !Tag.isTag(node))
       return node;
-
-    if (node.$$mdtype === 'Raw') return raw?.(node.content, node.inline);
 
     const {
       name,

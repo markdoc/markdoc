@@ -1,4 +1,6 @@
 import Tag from '../../tag';
+import Raw from '../../ast/raw';
+
 import { RenderableTreeNode, RenderableTreeNodes } from '../../types';
 
 import type { ComponentType } from 'react';
@@ -48,10 +50,10 @@ export default function reactStatic(
     if (Array.isArray(node))
       return `React.createElement(React.Fragment, null, ${renderArray(node)})`;
 
-  if (node === null || typeof node !== 'object' || !Tag.isTag(node))
-    return JSON.stringify(node);
+    if (Raw.isRaw(node)) return raw?.(node.content, node.inline) ?? '';
 
-    if (node.$$mdtype === 'Raw') return raw?.(node.content, node.inline) ?? '';
+    if (node === null || typeof node !== 'object' || !Tag.isTag(node))
+      return JSON.stringify(node);
 
     const {
       name,
