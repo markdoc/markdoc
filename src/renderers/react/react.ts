@@ -1,5 +1,5 @@
 import Tag from '../../tag';
-import Raw from '../../raw';
+import UnsafeRaw from '../../raw';
 import { RenderableTreeNodes, Scalar } from '../../types';
 
 import type { createElement, ComponentType, Fragment, ReactNode } from 'react';
@@ -28,14 +28,13 @@ export default function dynamic(
   node: RenderableTreeNodes,
   React: ReactShape,
   { components = {} } = {},
-  raw?: (content: string, inline: boolean) => ReactNode
 ) {
   function deepRender(value: any): any {
     if (value == null || typeof value !== 'object') return value;
 
     if (Array.isArray(value)) return value.map((item) => deepRender(item));
 
-    if (['Tag', 'Raw'].includes(value.$$mdtype)) return render(value);
+    if (['Tag', 'UnsafeRaw'].includes(value.$$mdtype)) return render(value);
 
     if (typeof value !== 'object') return value;
 
@@ -48,7 +47,7 @@ export default function dynamic(
     if (Array.isArray(node))
       return React.createElement(React.Fragment, null, ...node.map(render));
 
-    if (Raw.isRaw(node)) return raw?.(node.content, node.inline);
+    if (UnsafeRaw.isUnsafeRaw(node)) return null;
 
     if (node === null || typeof node !== 'object' || !Tag.isTag(node))
       return node;

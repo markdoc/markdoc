@@ -1,6 +1,6 @@
 import type { Schema } from './types';
 import Tag from './tag';
-import Raw from './raw';
+import UnsafeRaw from './raw';
 
 export const document: Schema = {
   render: 'article',
@@ -249,7 +249,7 @@ export const html: Schema = {
 
   transform(node) {
     return node.attributes.content
-      ? new Raw(node.attributes.content, node.inline)
+      ? new UnsafeRaw(node.attributes.content, node.inline)
       : null;
   },
 };

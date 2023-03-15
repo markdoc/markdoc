@@ -1,5 +1,5 @@
 import Tag from '../../tag';
-import Raw from '../../raw';
+import UnsafeRaw from '../../raw';
 
 import { RenderableTreeNode, RenderableTreeNodes } from '../../types';
 
@@ -20,10 +20,7 @@ function tagName(
     : components[name];
 }
 
-export default function reactStatic(
-  node: RenderableTreeNodes,
-  raw?: (content: string, inline: boolean) => string
-): string {
+export default function reactStatic(node: RenderableTreeNodes): string {
   function renderArray(children: RenderableTreeNode[]): string {
     return children.map(render).join(', ');
   }
@@ -35,7 +32,7 @@ export default function reactStatic(
     if (Array.isArray(value))
       return `[${value.map((item) => deepRender(item)).join(', ')}]`;
 
-    if (['Tag', 'Raw'].includes(value.$$mdtype)) return render(value);
+    if (['Tag', 'UnsafeRaw'].includes(value.$$mdtype)) return render(value);
 
     if (typeof value !== 'object') return JSON.stringify(value);
 
@@ -50,7 +47,7 @@ export default function reactStatic(
     if (Array.isArray(node))
       return `React.createElement(React.Fragment, null, ${renderArray(node)})`;
 
-    if (Raw.isRaw(node)) return raw?.(node.content, node.inline) ?? '';
+    if (UnsafeRaw.isUnsafeRaw(node)) return 'null';
 
     if (node === null || typeof node !== 'object' || !Tag.isTag(node))
       return JSON.stringify(node);

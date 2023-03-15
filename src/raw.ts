@@ -1,8 +1,8 @@
-export default class Raw {
-  readonly $$mdtype = 'Raw' as const;
+export default class UnsafeRaw {
+  readonly $$mdtype = 'UnsafeRaw' as const;
 
-  static isRaw = (node: any): node is Raw => {
-    return !!(node?.$$mdtype === 'Raw');
+  static isUnsafeRaw = (node: any): node is UnsafeRaw => {
+    return !!(node?.$$mdtype === 'UnsafeRaw');
   };
 
   content: string;

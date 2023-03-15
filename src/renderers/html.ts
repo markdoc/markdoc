@@ -1,6 +1,6 @@
 import MarkdownIt from 'markdown-it';
 import Tag from '../tag';
-import Raw from '../raw';
+import UnsafeRaw from '../raw';
 import type { RenderableTreeNodes } from '../types';
 const { escapeHtml } = MarkdownIt().utils;
 
@@ -29,7 +29,7 @@ export default function render(node: RenderableTreeNodes): string {
 
   if (Array.isArray(node)) return node.map(render).join('');
 
-  if (Raw.isRaw(node)) return node.content;
+  if (UnsafeRaw.isUnsafeRaw(node)) return node.content;
 
   if (node === null || typeof node !== 'object' || !Tag.isTag(node)) return '';
 

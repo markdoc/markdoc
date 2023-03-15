@@ -1,7 +1,7 @@
 import type Func from './ast/function';
 import type Node from './ast/node';
 import type Var from './ast/variable';
-import type Raw from './raw';
+import type UnsafeRaw from './raw';
 import type Tag from './tag';
 
 export type { Node, Tag };
@@ -95,7 +95,7 @@ export type NodeType =
 
 export type Primitive = null | boolean | number | string;
 
-export type RenderableTreeNode = Tag | Raw | Scalar;
+export type RenderableTreeNode = Tag | UnsafeRaw | Scalar;
 export type RenderableTreeNodes = RenderableTreeNode | RenderableTreeNode[];
 
 export type Scalar = Primitive | Scalar[] | { [key: string]: Scalar };

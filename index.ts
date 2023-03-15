@@ -6,7 +6,7 @@ import * as nodes from './src/schema';
 import renderers from './src/renderers';
 import Node from './src/ast/node';
 import Tag from './src/tag';
-import Raw from './src/raw';
+import UnsafeRaw from './src/raw';
 import tags from './src/tags';
 import { truthy } from './src/tags/conditional';
 import Tokenizer from './src/tokenizer';
@@ -130,7 +130,7 @@ export {
   renderers,
   Ast,
   Tag,
-  Raw,
+  UnsafeRaw,
   Tokenizer,
   parseTags,
   transformer,
@@ -148,7 +148,7 @@ export default class Markdoc {
   static transforms = transforms;
   static Ast = Ast;
   static Tag = Tag;
-  static Raw = Raw;
+  static UnsafeRaw = UnsafeRaw;
   static Tokenizer = Tokenizer;
   static parseTags = parseTags;
   static transformer = transformer;
