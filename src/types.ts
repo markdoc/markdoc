@@ -3,8 +3,9 @@ import type Node from './ast/node';
 import type Var from './ast/variable';
 import type UnsafeRaw from './raw';
 import type Tag from './tag';
+import type Token from 'markdown-it/lib/token';
 
-export type { Node, Tag };
+export type { Node, Tag, Token };
 export declare type Function = Func;
 export declare type Variable = Var;
 
