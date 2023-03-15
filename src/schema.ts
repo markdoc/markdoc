@@ -248,9 +248,7 @@ export const html: Schema = {
   },
 
   transform(node) {
-    return node.attributes.content
-      ? new UnsafeRaw(node.attributes.content, node.inline)
-      : null;
+    return new UnsafeRaw(node.attributes.content, node.inline);
   },
 };
 

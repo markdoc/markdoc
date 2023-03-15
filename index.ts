@@ -4,7 +4,6 @@ import functions from './src/functions';
 import parser from './src/parser';
 import * as nodes from './src/schema';
 import renderers from './src/renderers';
-import Node from './src/ast/node';
 import Tag from './src/tag';
 import UnsafeRaw from './src/raw';
 import tags from './src/tags';
@@ -15,6 +14,7 @@ import transforms from './src/transforms';
 import { parseTags, isPromise } from './src/utils';
 import validator from './src/validator';
 
+import type { Node } from './src/types';
 import type Token from 'markdown-it/lib/token';
 import type { Config, RenderableTreeNode, ValidateError } from './src/types';
 

@@ -27,7 +27,7 @@ function tagName(
 export default function dynamic(
   node: RenderableTreeNodes,
   React: ReactShape,
-  { components = {} } = {},
+  { components = {} } = {}
 ) {
   function deepRender(value: any): any {
     if (value == null || typeof value !== 'object') return value;
