@@ -1,6 +1,6 @@
 import MarkdownIt from 'markdown-it';
 import Tag from '../tag';
-import Raw from '../ast/raw';
+import Raw from '../raw';
 import type { RenderableTreeNodes } from '../types';
 const { escapeHtml } = MarkdownIt().utils;
 

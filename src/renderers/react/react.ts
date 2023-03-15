@@ -1,5 +1,5 @@
 import Tag from '../../tag';
-import Raw from '../../ast/raw';
+import Raw from '../../raw';
 import { RenderableTreeNodes, Scalar } from '../../types';
 
 import type { createElement, ComponentType, Fragment, ReactNode } from 'react';

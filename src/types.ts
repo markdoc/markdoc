@@ -1,7 +1,7 @@
 import type Func from './ast/function';
 import type Node from './ast/node';
 import type Var from './ast/variable';
-import type Raw from './ast/raw';
+import type Raw from './raw';
 import type Tag from './tag';
 
 export type { Node, Tag };
@@ -66,6 +66,7 @@ export type NodeType =
   | 'blockquote'
   | 'code'
   | 'comment'
+  | 'html'
   | 'document'
   | 'em'
   | 'error'

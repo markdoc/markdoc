@@ -4,7 +4,9 @@ import functions from './src/functions';
 import parser from './src/parser';
 import * as nodes from './src/schema';
 import renderers from './src/renderers';
+import Node from './src/ast/node';
 import Tag from './src/tag';
+import Raw from './src/raw';
 import tags from './src/tags';
 import { truthy } from './src/tags/conditional';
 import Tokenizer from './src/tokenizer';
@@ -13,7 +15,6 @@ import transforms from './src/transforms';
 import { parseTags, isPromise } from './src/utils';
 import validator from './src/validator';
 
-import type { Node } from './src/types';
 import type Token from 'markdown-it/lib/token';
 import type { Config, RenderableTreeNode, ValidateError } from './src/types';
 
@@ -129,6 +130,7 @@ export {
   renderers,
   Ast,
   Tag,
+  Raw,
   Tokenizer,
   parseTags,
   transformer,
@@ -146,6 +148,7 @@ export default class Markdoc {
   static transforms = transforms;
   static Ast = Ast;
   static Tag = Tag;
+  static Raw = Raw;
   static Tokenizer = Tokenizer;
   static parseTags = parseTags;
   static transformer = transformer;
