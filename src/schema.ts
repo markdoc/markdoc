@@ -101,7 +101,7 @@ export const list: Schema = {
   children: ['item'],
   attributes: {
     ordered: { type: Boolean, render: false, required: true },
-    marker: { type: String, render: false }
+    marker: { type: String, render: false },
   },
   transform(node, config) {
     return new Tag(
