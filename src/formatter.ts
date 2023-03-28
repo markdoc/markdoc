@@ -287,10 +287,12 @@ function* formatNode(n: Node, o: Options = {}) {
       break;
     }
     case 'list': {
-      const prefix = n.attributes.ordered ? OL : UL;
+      const prefix = n.attributes.ordered
+        ? `1${n.attributes.marker ?? '.'}`
+        : n.attributes.marker ?? '*';
       for (const child of n.children) {
-        const d = format(child, increment(no, prefix.length)).trim();
-        yield NL + indent + prefix + d;
+        const d = format(child, increment(no, prefix.length + 1)).trim();
+        yield NL + indent + prefix + ' ' + d;
       }
       yield NL;
       break;

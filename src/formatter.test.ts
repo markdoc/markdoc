@@ -445,6 +445,41 @@ Yes!
     check(source, expected);
     stable(expected);
   });
+
+  it('preserving list marker', () => {
+    const source = `
+- foo
+- bar
+* baz
+* qux
+
+
+1) foo
+2) bar
+3) baz
+1. foo
+2. bar
+3. baz
+`;
+    const expected = `
+- foo
+- bar
+
+* baz
+* qux
+
+1) foo
+1) bar
+1) baz
+
+1. foo
+1. bar
+1. baz
+`;
+    check(source, expected);
+    stable(expected);
+  });
+
   it('"loose" lists', () => {
     const source = `
 - One
@@ -558,7 +593,7 @@ Yes!
        Markdoc uses…`;
 
     const expected = `
-- Create your CNAME record
+* Create your CNAME record
 
   1. Click **Add record**.
 
@@ -632,9 +667,9 @@ Yes!
 `;
 
     const expected = `
-- **One**{% colspan=1 %}
-- **Two**{% colspan=2 %}
-- **Three**{% colspan=3 %}
+* **One**{% colspan=1 %}
+* **Two**{% colspan=2 %}
+* **Three**{% colspan=3 %}
 `;
 
     check(source, expected);

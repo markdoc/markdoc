@@ -31,7 +31,10 @@ function handleAttrs(token: Token, type: string) {
     case 'heading':
       return { level: Number(token.tag.replace('h', '')) };
     case 'list':
-      return { ordered: token.type.startsWith('ordered') };
+      return {
+        ordered: token.type.startsWith('ordered'),
+        marker: token.markup,
+      };
     case 'link': {
       const attrs = Object.fromEntries(token.attrs);
       return attrs.title
