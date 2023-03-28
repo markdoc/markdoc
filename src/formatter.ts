@@ -12,8 +12,8 @@ type Options = {
 const SPACE = ' ';
 const SEP = ', '; // Value separator
 const NL = '\n'; //  Newline
-const OL = '1. '; // Ordered list
-const UL = '- '; //  Unordered list
+const OL = '.'; // Ordered list
+const UL = '-'; //  Unordered list
 
 const MAX_TAG_OPENING_WIDTH = 80;
 
@@ -288,8 +288,8 @@ function* formatNode(n: Node, o: Options = {}) {
     }
     case 'list': {
       const prefix = n.attributes.ordered
-        ? `1${n.attributes.marker ?? '.'}`
-        : n.attributes.marker ?? '*';
+        ? `1${n.attributes.marker ?? OL}`
+        : n.attributes.marker ?? UL;
       for (const child of n.children) {
         const d = format(child, increment(no, prefix.length + 1)).trim();
         yield NL + indent + prefix + ' ' + d;
@@ -355,7 +355,7 @@ function* formatNode(n: Node, o: Options = {}) {
               yield indent + '---';
             }
             for (const d of row) {
-              yield NL + indent + UL + d;
+              yield NL + indent + UL + ' ' + d;
             }
           }
         }
