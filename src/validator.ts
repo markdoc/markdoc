@@ -121,6 +121,12 @@ function validateFunction(fn: Function, config: Config): ValidationError[] {
   return errors;
 }
 
+function displayMatches(matches: any[], n: number) {
+  if (matches.length <= n) return JSON.stringify(matches);
+  const items = matches.slice(0, n).map((item) => JSON.stringify(item));
+  return `[${items.join(',')}, ... ${matches.length - n} more]`;
+}
+
 export default function validator(node: Node, config: Config) {
   const schema = node.findSchema(config);
   const errors: ValidationError[] = [...(node.errors || [])];
@@ -220,8 +226,9 @@ export default function validator(node: Node, config: Config) {
       errors.push({
         id: 'attribute-value-invalid',
         level: errorLevel || 'error',
-        message: `Attribute '${key}' must match one of ${JSON.stringify(
-          matches
+        message: `Attribute '${key}' must match one of ${displayMatches(
+          matches,
+          8
         )}. Got '${value}' instead.`,
       });
 
