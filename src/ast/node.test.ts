@@ -28,6 +28,53 @@ describe('Node object', function () {
       expect(output.length).toEqual(6);
     });
   });
+
+  it('without slots', function () {
+    const example = `
+{% example %}
+# bar
+
+baz
+{% /example %}
+    `;
+
+    const ast = markdoc.parse(example, { slots: true });
+    const iter = Array.from(ast.walk());
+    expect(iter.map((n) => n.tag ?? n.type)).toEqual([
+      'example',
+      'heading',
+      'inline',
+      'text',
+      'paragraph',
+      'inline',
+      'text',
+    ]);
+  });
+
+  it('with slots', function () {
+    const example = `
+{% example %}
+# bar
+
+{% slot "foo" %}
+baz
+{% /slot %}
+{% /example %}
+    `;
+
+    const ast = markdoc.parse(example, { slots: true });
+    const iter = Array.from(ast.walk());
+    expect(iter.map((n) => n.tag ?? n.type)).toEqual([
+      'example',
+      'slot',
+      'paragraph',
+      'inline',
+      'text',
+      'heading',
+      'inline',
+      'text',
+    ]);
+  });
 });
 
 describe('transform', function () {

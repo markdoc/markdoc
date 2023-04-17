@@ -17,6 +17,7 @@ export default class Node implements AstType {
   readonly $$mdtype = 'Node';
 
   attributes: Record<string, any>;
+  slots: Record<string, Node>;
   children: Node[];
   errors: ValidationError[] = [];
   lines: number[] = [];
@@ -38,10 +39,11 @@ export default class Node implements AstType {
     this.type = type;
     this.tag = tag;
     this.annotations = [];
+    this.slots = {};
   }
 
   *walk(): Generator<Node, void, unknown> {
-    for (const child of this.children) {
+    for (const child of [...Object.values(this.slots), ...this.children]) {
       yield child;
       yield* child.walk();
     }

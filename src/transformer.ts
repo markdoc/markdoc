@@ -47,6 +47,13 @@ export default {
       output[name] = value;
     }
 
+    if (schema.slots) {
+      for (const [key, slot] of Object.entries(schema.slots)) {
+        const name = typeof slot.render === 'string' ? slot.render : key;
+        if (node.slots[key]) output[name] = this.node(node.slots[key], config);
+      }
+    }
+
     return output;
   },
 

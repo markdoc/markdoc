@@ -9,11 +9,49 @@ describe('Markdown parser', function () {
   const fence = '```';
   const tokenizer = new Tokenizer({ allowComments: true });
 
-  function convert(example) {
+  function convert(example, options?) {
     const content = example.replace(/\n\s+/gm, '\n').trim();
     const tokens = tokenizer.tokenize(content);
-    return parser(tokens);
+    return parser(tokens, options);
   }
+
+  describe('handling options', function () {
+    it('no args', function () {
+      const example = convert(`# This is a test`);
+      expect(example.children[0]).toDeepEqual({
+        ...any(),
+        type: 'heading',
+        location: {
+          ...any(),
+          file: undefined,
+        },
+      });
+    });
+
+    it('filename as string', function () {
+      const example = convert(`# This is a test`, 'foo.md');
+      expect(example.children[0]).toDeepEqual({
+        ...any(),
+        type: 'heading',
+        location: {
+          ...any(),
+          file: 'foo.md',
+        },
+      });
+    });
+
+    it('filename as property', function () {
+      const example = convert(`# This is a test`, { file: 'foo.md' });
+      expect(example.children[0]).toDeepEqual({
+        ...any(),
+        type: 'heading',
+        location: {
+          ...any(),
+          file: 'foo.md',
+        },
+      });
+    });
+  });
 
   describe('handling frontmatter', function () {
     it('simple frontmatter', function () {

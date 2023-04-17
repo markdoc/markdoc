@@ -23,9 +23,9 @@ const tokenizer = new markdoc.Tokenizer({
   allowComments: true,
 });
 
-function parse(content: string, file?: string) {
+function parse(content: string, slots?: boolean, file?: string) {
   const tokens = tokenizer.tokenize(content);
-  return markdoc.parse(tokens, file);
+  return markdoc.parse(tokens, { file, slots });
 }
 
 function stripLines(object) {
@@ -36,7 +36,7 @@ function stripLines(object) {
 function render(code, config, dynamic) {
   const partials = {};
   for (const [file, content] of Object.entries(config.partials ?? {}))
-    partials[file] = parse(content as string, file);
+    partials[file] = parse(content as string, false, file);
 
   const { react, reactStatic } = markdoc.renderers;
   const transformed = markdoc.transform(code, { ...config, partials });
@@ -105,7 +105,7 @@ function formatValidation(filename, test, validation) {
 
   let exitCode = 0;
   for (const test of tests) {
-    const code = parse(test.code || '');
+    const code = parse(test.code || '', test.slots);
 
     const { start, end } = test.$$lines;
     if (line && (Number(line) - 1 < start || Number(line) - 1 > end)) continue;

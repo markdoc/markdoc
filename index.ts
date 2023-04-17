@@ -13,7 +13,7 @@ import transforms from './src/transforms';
 import { parseTags, isPromise } from './src/utils';
 import validator from './src/validator';
 
-import type { Node } from './src/types';
+import type { Node, ParserArgs } from './src/types';
 import type Token from 'markdown-it/lib/token';
 import type { Config, RenderableTreeNode, ValidateError } from './src/types';
 
@@ -39,9 +39,12 @@ function mergeConfig(config: Config = {}): Config {
   };
 }
 
-export function parse(content: string | Token[], file?: string): Node {
+export function parse(
+  content: string | Token[],
+  args?: string | ParserArgs
+): Node {
   if (typeof content === 'string') content = tokenizer.tokenize(content);
-  return parser(content, file);
+  return parser(content, args);
 }
 
 export function resolve<C extends Config = Config>(
