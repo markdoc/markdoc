@@ -4,9 +4,9 @@ import { table } from './table';
 import { slot } from './slot';
 
 export default {
-  if: tagIf,
   else: tagElse,
+  if: tagIf,
   partial,
-  table,
   slot,
+  table,
 };

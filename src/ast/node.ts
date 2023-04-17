@@ -43,12 +43,7 @@ export default class Node implements AstType {
   }
 
   *walk(): Generator<Node, void, unknown> {
-    for (const slot of Object.values(this.slots)) {
-      yield slot;
-      yield* slot.walk();
-    }
-
-    for (const child of this.children) {
+    for (const child of [...Object.values(this.slots), ...this.children]) {
       yield child;
       yield* child.walk();
     }
