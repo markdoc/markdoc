@@ -315,6 +315,33 @@ bar
       ]);
     });
 
+    it('Elides excess values in matches check', () => {
+      const example = '{% foo jawn="cat" /%}';
+      const schema = {
+        tags: {
+          foo: {
+            attributes: {
+              jawn: {
+                type: String,
+                matches: Array.from('foobarbazqux'),
+              },
+            },
+          },
+        },
+      };
+
+      const output = validate(example, schema);
+      expect(output).toDeepEqualSubset([
+        {
+          type: 'tag',
+          error: {
+            id: 'attribute-value-invalid',
+            message: `Attribute 'jawn' must match one of ["f","o","o","b","a","r","b","a", ... 4 more]. Got 'cat' instead.`,
+          },
+        },
+      ]);
+    });
+
     // https://github.com/markdoc/markdoc/issues/122
     it('should validate partial file attributes', () => {
       const example = `{% partial file="non-existent.md" /%}`;
