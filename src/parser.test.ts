@@ -115,6 +115,26 @@ describe('Markdown parser', function () {
       expect(ordered.children[0].attributes.ordered).toEqual(true);
     });
 
+    it('for list item', function () {
+      const unordered = convert(`
+      * Example 1
+      * Example 2
+      * Example 3
+      `);
+
+      const numbered = convert(`
+      3. Example 1
+      4. Example 2
+      5. Example 3
+      `);
+
+      const values = (list) =>
+        list.children[0].children.map((child) => child.attributes.value);
+
+      expect(values(unordered)).toDeepEqual([undefined, undefined, undefined]);
+      expect(values(numbered)).toDeepEqual(['3', '4', '5']);
+    });
+
     it('for link with one word', function () {
       const document = convert(`
       [foo](/bar)

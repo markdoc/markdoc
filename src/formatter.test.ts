@@ -421,9 +421,9 @@ Yes!
 - [Install Markdoc](/docs/getting-started)
 - [Try it out online](/sandbox)
 
-1. One {% align="left" %}
-2. Two
-3. Three
+3. One {% align="left" %}
+4. Two
+5. Three
 
 - A
 - B
@@ -433,9 +433,9 @@ Yes!
 - [Install Markdoc](/docs/getting-started)
 - [Try it out online](/sandbox)
 
-1. One {% align="left" %}
-1. Two
-1. Three
+3. One {% align="left" %}
+4. Two
+5. Three
 
 - A
 - B
@@ -454,12 +454,12 @@ Yes!
 * qux
 
 
-1) foo
-2) bar
-3) baz
-1. foo
-2. bar
-3. baz
+7) foo
+8) bar
+9) baz
+3. foo
+4. bar
+5. baz
 `;
     const expected = `
 - foo
@@ -468,13 +468,13 @@ Yes!
 * baz
 * qux
 
-1) foo
-1) bar
-1) baz
+7) foo
+8) bar
+9) baz
 
-1. foo
-1. bar
-1. baz
+3. foo
+4. bar
+5. baz
 `;
     check(source, expected);
     stable(expected);
