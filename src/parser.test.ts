@@ -138,7 +138,7 @@ describe('Markdown parser', function () {
       expect(ordered.children[0].attributes.ordered).toEqual(true);
     });
 
-    it('for list item', function () {
+    it('for ordered list start', function () {
       const unordered = convert(`
       * Example 1
       * Example 2
@@ -151,11 +151,17 @@ describe('Markdown parser', function () {
       5. Example 3
       `);
 
-      const values = (list) =>
-        list.children[0].children.map((child) => child.attributes.value);
+      const numberedStartAtOne = convert(`
+      1. Example 1
+      4. Example 2
+      5. Example 3
+      `);
 
-      expect(values(unordered)).toDeepEqual([undefined, undefined, undefined]);
-      expect(values(numbered)).toDeepEqual(['3', '4', '5']);
+      const start = (list) => list.children[0].attributes.start;
+
+      expect(start(unordered)).toEqual(undefined);
+      expect(start(numbered)).toEqual(3);
+      expect(start(numberedStartAtOne)).toEqual(undefined);
     });
 
     it('for link with one word', function () {
