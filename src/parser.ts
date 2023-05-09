@@ -47,6 +47,9 @@ function handleAttrs(token: Token, type: string) {
         ? { alt: token.content, src: attrs.src, title: attrs.title }
         : { alt: token.content, src: attrs.src };
     }
+    case 'em':
+    case 'strong':
+      return { marker: token.markup };
     case 'text':
     case 'code':
     case 'comment':

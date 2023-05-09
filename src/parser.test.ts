@@ -93,6 +93,29 @@ describe('Markdown parser', function () {
   });
 
   describe('handling attributes', function () {
+    it('for emphasis', function () {
+      const items = (doc, n = 0) =>
+        doc.children[0].children[0].children[n].attributes.marker;
+
+      const example1 = convert(`a*b*c`);
+      expect(items(example1, 1)).toEqual('*');
+
+      const example1a = convert(`a**b**c`);
+      expect(items(example1a, 1)).toEqual('**');
+
+      const example2 = convert(`_foo_ bar`);
+      expect(items(example2)).toEqual('_');
+
+      const example2a = convert(`__foo__ bar`);
+      expect(items(example2a)).toEqual('__');
+
+      const example3 = convert(`foo *bar* baz`);
+      expect(items(example3, 1)).toEqual('*');
+
+      const example3a = convert(`foo **bar** baz`);
+      expect(items(example3a, 1)).toEqual('**');
+    });
+
     it('for heading', function () {
       const document = convert(`# Sample Heading`);
       expect(document.children[0].attributes).toDeepEqual({ level: 1 });
