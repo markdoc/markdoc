@@ -35,6 +35,8 @@ function handleAttrs(token: Token, type: string) {
         ordered: token.type.startsWith('ordered'),
         marker: token.markup,
       };
+    case 'item':
+      return token.info ? { value: token.info } : {};
     case 'link': {
       const attrs = Object.fromEntries(token.attrs);
       return attrs.title

@@ -1,4 +1,4 @@
-import type { Schema } from './types';
+import type { Node, Schema } from './types';
 import Tag from './tag';
 
 export const document: Schema = {
@@ -95,7 +95,16 @@ export const item: Schema = {
     'list',
     'hr',
   ],
+  attributes: {
+    value: { type: String, render: false },
+  },
 };
+
+function findListStart(node: Node) {
+  if (node.attributes.ordered)
+    for (const child of node.walk())
+      if (child.type === 'item') return child.attributes.value;
+}
 
 export const list: Schema = {
   children: ['item'],
@@ -104,9 +113,11 @@ export const list: Schema = {
     marker: { type: String, render: false },
   },
   transform(node, config) {
+    const start = findListStart(node);
+    const attrs = node.transformAttributes(config);
     return new Tag(
       node.attributes.ordered ? 'ol' : 'ul',
-      node.transformAttributes(config),
+      start ? { start, ...attrs } : attrs,
       node.transformChildren(config)
     );
   },
