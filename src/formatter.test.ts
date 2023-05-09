@@ -176,6 +176,23 @@ paragraph 2
     stable(source);
   });
 
+  it('emphasis marks', () => {
+    const examples = [
+      '*foo* bar baz',
+      '**foo** bar baz',
+      '_foo_ bar baz',
+      '__foo__ bar baz',
+      'foo*bar*baz',
+      'foo_bar_baz',
+    ];
+
+    examples.forEach((example) => {
+      const ast = Markdoc.parse(example.trim());
+      const out = Markdoc.format(ast);
+      expect(example).toEqual(out.trim());
+    });
+  });
+
   it('complex attributes', () => {
     const source = `{% if $gates["<string_key>"].test["@var"] id="id with space" class="class with space" /%}`;
     const expected = `{% if

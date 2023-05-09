@@ -305,15 +305,15 @@ function* formatNode(n: Node, o: Options = {}) {
       break;
     }
     case 'strong': {
-      yield '**';
+      yield n.attributes.marker ?? '**';
       yield* formatInline(formatChildren(n, no));
-      yield '**';
+      yield n.attributes.marker ?? '**';
       break;
     }
     case 'em': {
-      yield '_';
+      yield n.attributes.marker ?? '*';
       yield* formatInline(formatChildren(n, no));
-      yield '_';
+      yield n.attributes.marker ?? '*';
       break;
     }
     case 'code': {
