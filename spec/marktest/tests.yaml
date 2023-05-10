@@ -15,8 +15,23 @@
     3. baz
   expected:
     - tag: ol
+      children:
+        - tag: li
+          children: [foo]
+        - tag: li
+          children: [bar]
+        - tag: li
+          children: [baz]
+
+- name: Ordered list with start
+  code: |
+    2. foo
+    3. bar
+    4. baz
+  expected:
+    - tag: ol
       attributes:
-        start: '1'
+        start: 2
       children:
         - tag: li
           children: [foo]

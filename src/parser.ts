@@ -30,13 +30,13 @@ function handleAttrs(token: Token, type: string) {
   switch (type) {
     case 'heading':
       return { level: Number(token.tag.replace('h', '')) };
-    case 'list':
-      return {
-        ordered: token.type.startsWith('ordered'),
-        marker: token.markup,
-      };
-    case 'item':
-      return token.info ? { value: token.info } : {};
+    case 'list': {
+      const attrs = token.attrs ? Object.fromEntries(token.attrs) : undefined;
+      const ordered = token.type.startsWith('ordered');
+      return ordered && attrs?.start
+        ? { ordered: true, start: attrs.start, marker: token.markup }
+        : { ordered, marker: token.markup };
+    }
     case 'link': {
       const attrs = Object.fromEntries(token.attrs);
       return attrs.title

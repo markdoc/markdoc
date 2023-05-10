@@ -451,8 +451,8 @@ Yes!
 - [Try it out online](/sandbox)
 
 3. One {% align="left" %}
-4. Two
-5. Three
+1. Two
+1. Three
 
 - A
 - B
@@ -472,11 +472,14 @@ Yes!
 
 
 7) foo
-8) bar
-9) baz
+1) bar
+1) baz
 3. foo
-4. bar
-5. baz
+1. bar
+1. baz
+1) foo
+4) bar
+9) baz
 `;
     const expected = `
 - foo
@@ -486,12 +489,16 @@ Yes!
 * qux
 
 7) foo
-8) bar
-9) baz
+1) bar
+1) baz
 
 3. foo
-4. bar
-5. baz
+1. bar
+1. baz
+
+1) foo
+1) bar
+1) baz
 `;
     check(source, expected);
     stable(expected);
