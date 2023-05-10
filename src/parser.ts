@@ -126,7 +126,7 @@ function handleToken(
   }
 
   if (token.nesting < 0) {
-    if (parent.type === typeName) {
+    if (parent.type === typeName && parent.tag === tag) {
       if (parent.lines && token.map) parent.lines.push(...token.map);
       return nodes.pop();
     }
