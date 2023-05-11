@@ -739,4 +739,34 @@ describe('Markdown parser', function () {
       ],
     });
   });
+
+  describe('handles structural errors correctly', function () {
+    it('with unmatched closing tag', function () {
+      const example = convert(`
+    {% foo %}
+    Test
+    {% /bar %}
+    `);
+
+      expect(example.children[0].errors[0].id).toEqual('missing-closing');
+    });
+
+    it('missing opening', function () {
+      const example = convert(`
+      This a test
+      {% /foo %}
+      `);
+
+      expect(example.children[1].errors[0].id).toEqual('missing-opening');
+    });
+
+    it('with missing closing tag', function () {
+      const example = convert(`
+    {% foo %}
+    Test
+    `);
+
+      expect(example.children[0].errors[0].id).toEqual('missing-closing');
+    });
+  });
 });
