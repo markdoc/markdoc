@@ -248,6 +248,11 @@ export default function validator(node: Node, config: Config) {
         level: errorLevel || 'error',
         message: `Attribute '${key}' must match ${matches}. Got '${value}' instead.`,
       });
+
+    if (typeof attrib.validate === 'function') {
+      const attribErrors = attrib.validate(value, config);
+      if (Array.isArray(attribErrors)) errors.push(...attribErrors);
+    }
   }
 
   for (const [key, { required }] of Object.entries(attributes))

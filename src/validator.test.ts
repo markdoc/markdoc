@@ -289,6 +289,44 @@ bar
   });
 
   describe('attribute validation', () => {
+    describe('with a validate function', () => {
+      it('using simple conditional', () => {
+        const schema = {
+          tags: {
+            foo: {
+              attributes: {
+                bar: {
+                  type: Number,
+                  validate(value, _config) {
+                    return value > 10
+                      ? []
+                      : [
+                          {
+                            id: 'attribute-should-be-greater-than-ten',
+                            message:
+                              'Attribute "bar" must have value greater than 10.',
+                          },
+                        ];
+                  },
+                },
+              },
+            },
+          },
+        };
+
+        expect(validate(`{% foo bar=20 /%}`, schema)).toEqual([]);
+        expect(validate(`{% foo bar=5 /%}`, schema)).toDeepEqualSubset([
+          {
+            type: 'tag',
+            error: {
+              id: 'attribute-should-be-greater-than-ten',
+              message: 'Attribute "bar" must have value greater than 10.',
+            },
+          },
+        ]);
+      });
+    });
+
     it('should return error on failure to match array', () => {
       const example = '{% foo jawn="cat" /%}';
       const schema = {
