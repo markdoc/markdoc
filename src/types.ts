@@ -115,6 +115,7 @@ export type SchemaAttribute = {
   default?: any;
   required?: boolean;
   matches?: SchemaMatches | ((config: Config) => SchemaMatches);
+  validate?(value: any, config: Config): ValidationError[];
   errorLevel?: ValidationError['level'];
 };
 
