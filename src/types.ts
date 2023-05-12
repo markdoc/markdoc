@@ -107,6 +107,7 @@ export type Schema<C extends Config = Config, R = string> = {
   inline?: boolean;
   transform?(node: Node, config: C): MaybePromise<RenderableTreeNodes>;
   validate?(node: Node, config: C): MaybePromise<ValidationError[]>;
+  description?: string;
 };
 
 export type SchemaAttribute = {
@@ -116,6 +117,7 @@ export type SchemaAttribute = {
   required?: boolean;
   matches?: SchemaMatches | ((config: Config) => SchemaMatches);
   errorLevel?: ValidationError['level'];
+  description?: string;
 };
 
 export type SchemaMatches = RegExp | string[] | null;
