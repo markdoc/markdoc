@@ -506,6 +506,12 @@ Yes!
 
   it('"loose" lists', () => {
     const source = `
+- a
+
+- b
+
+---
+
 - One
 
   My first paragraph
@@ -528,6 +534,12 @@ Yes!
 
   > Indented blockquote`;
     const expected = `
+- a
+
+- b
+
+---
+
 - One
 
   My first paragraph
@@ -540,6 +552,7 @@ Yes!
   \`\`\`
   {% $code %}
   \`\`\`
+
 - Two
 
   My second paragraph
@@ -626,6 +639,7 @@ Yes!
        "nested": "code block"
      }
      \`\`\`
+
   1. Enter these values in the form that opens:
 
      {% table %}
@@ -653,6 +667,7 @@ Yes!
      - \`Off\`
      - Set the proxy status to \`off\` to avoid issues during setup.
      {% /table %}
+
   1. foo\\
      baz
 

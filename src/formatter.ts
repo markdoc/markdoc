@@ -287,16 +287,22 @@ function* formatNode(n: Node, o: Options = {}) {
       break;
     }
     case 'list': {
+      const isLoose = n.children.some((n) =>
+        n.children.some((c) => c.type === 'paragraph')
+      );
+
       for (let i = 0; i < n.children.length; i++) {
         const prefix = n.attributes.ordered
           ? `${i === 0 ? n.attributes.start ?? '1' : '1'}${
               n.attributes.marker ?? OL
             }`
           : n.attributes.marker ?? UL;
-        const d = format(
-          n.children[i],
-          increment(no, prefix.length + 1)
-        ).trim();
+        let d = format(n.children[i], increment(no, prefix.length + 1));
+
+        if (!isLoose || i === n.children.length - 1) {
+          d = d.trim();
+        }
+
         yield NL + indent + prefix + ' ' + d;
       }
       yield NL;
