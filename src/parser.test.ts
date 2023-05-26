@@ -740,6 +740,93 @@ describe('Markdown parser', function () {
     });
   });
 
+  it('displays error for annotations in a fence', function () {
+    const example = convert(`
+    ~~~
+    test
+    {% #foo %}
+    test
+    ~~~
+    `);
+
+    expect(Object.values(example.annotations).length).toEqual(0);
+    expect(example.children[0].errors[0]?.id).toEqual('no-inline-annotations');
+  });
+
+  it('correctly identifies inlines', function () {
+    const example = convert(`
+    # This is a test
+
+    {% foo %}
+    Another {% bar %}test{% /bar %} test
+    {% /foo %}
+
+    * bar
+    `);
+
+    expect(example).toDeepEqualSubset({
+      type: 'document',
+      inline: false,
+      children: [
+        {
+          type: 'heading',
+          inline: false,
+          children: [
+            {
+              type: 'inline',
+              inline: false,
+              children: [{ type: 'text', inline: true }],
+            },
+          ],
+        },
+        {
+          type: 'tag',
+          tag: 'foo',
+          inline: false,
+          children: [
+            {
+              type: 'paragraph',
+              inline: false,
+              children: [
+                {
+                  type: 'inline',
+                  inline: false,
+                  children: [
+                    { type: 'text', inline: true },
+                    {
+                      type: 'tag',
+                      tag: 'bar',
+                      inline: true,
+                      children: [{ type: 'text', inline: true }],
+                    },
+                    { type: 'text', inline: true },
+                  ],
+                },
+              ],
+            },
+          ],
+        },
+        {
+          type: 'list',
+          inline: false,
+          children: [
+            {
+              type: 'item',
+              inline: false,
+              children: [
+                {
+                  type: 'inline',
+                  inline: false,
+                  children: [{ type: 'text', inline: true }],
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    });
+  });
+
   describe('handles structural errors correctly', function () {
     it('with unmatched closing tag', function () {
       const example = convert(`
