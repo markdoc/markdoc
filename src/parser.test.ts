@@ -740,6 +740,76 @@ describe('Markdown parser', function () {
     });
   });
 
+  describe('handles attribute errors correctly', function () {
+    it('with error for duplicate attributes', function () {
+      const example = convert(`{% foo bar=1 bar=2 bar=3 bar=4 /%}`);
+      expect(example.children[0].errors.length).toBe(3);
+      expect(example).toDeepEqualSubset({
+        type: 'document',
+        children: [
+          {
+            tag: 'foo',
+            errors: [
+              { id: 'duplicate-attribute' },
+              { id: 'duplicate-attribute' },
+              { id: 'duplicate-attribute' },
+            ],
+          },
+        ],
+      });
+    });
+
+    it('with error for duplicate ids', function () {
+      const example = convert(`{% foo #bar #baz #qux /%}`);
+      expect(example.children[0].errors.length).toBe(2);
+      expect(example).toDeepEqualSubset({
+        type: 'document',
+        children: [
+          {
+            tag: 'foo',
+            errors: [
+              { id: 'duplicate-attribute' },
+              { id: 'duplicate-attribute' },
+            ],
+          },
+        ],
+      });
+    });
+
+    it('with annotation values', function () {
+      const example = convert(`testing {% foo=1 foo=2 %}`);
+      expect(example.children[0].errors.length).toBe(1);
+      expect(example).toDeepEqualSubset({
+        type: 'document',
+        children: [
+          {
+            type: 'paragraph',
+            errors: [{ id: 'duplicate-attribute' }],
+          },
+        ],
+      });
+    });
+
+    it('across annotations on the same node', function () {
+      const example = convert(`testing {% foo=1 %} another test {% foo=1 %}`);
+      expect(example.children[0].errors.length).toBe(1);
+      expect(example).toDeepEqualSubset({
+        type: 'document',
+        children: [
+          {
+            type: 'paragraph',
+            errors: [{ id: 'duplicate-attribute' }],
+          },
+        ],
+      });
+    });
+
+    it('with no error for multiple classes', function () {
+      const example = convert(`{% foo .bar .baz .qux /%}`);
+      expect(example.children[0].errors.length).toBe(0);
+    });
+  });
+
   describe('handles structural errors correctly', function () {
     it('with unmatched closing tag', function () {
       const example = convert(`
