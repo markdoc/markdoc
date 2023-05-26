@@ -19,8 +19,15 @@ function annotate(node: Node, attributes: AttributeValue[]) {
     node.annotations.push(attribute);
 
     const { name, value, type } = attribute;
-    if (type === 'attribute') node.attributes[name] = value;
-    else if (type === 'class')
+    if (type === 'attribute') {
+      if (node.attributes[name] !== undefined)
+        node.errors.push({
+          id: 'duplicate-attribute',
+          level: 'warning',
+          message: `Attribute '${name}' already set`,
+        });
+      node.attributes[name] = value;
+    } else if (type === 'class')
       if (node.attributes.class) node.attributes.class[name] = value;
       else node.attributes.class = { [name]: value };
   }
