@@ -180,7 +180,7 @@ function handleToken(
 
   if (!Array.isArray(token.children)) return;
 
-  inlineParent = parent;
+  if (node.type === 'inline') inlineParent = parent;
 
   nodes.push(node);
 
