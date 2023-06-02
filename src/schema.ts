@@ -136,8 +136,8 @@ export const td: Schema = {
     'hr',
   ],
   attributes: {
-    colspan: { type: Number },
-    rowspan: { type: Number },
+    colspan: { type: Number, render: 'colSpan' },
+    rowspan: { type: Number, render: 'rowSpan' },
     align: { type: String },
   },
 };
