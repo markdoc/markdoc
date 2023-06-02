@@ -36,7 +36,7 @@ export default function render(node: RenderableTreeNodes): string {
 
   let output = `<${name}`;
   for (const [k, v] of Object.entries(attributes ?? {}))
-    output += ` ${k}="${escapeHtml(String(v))}"`;
+    output += ` ${k.toLowerCase()}="${escapeHtml(String(v))}"`;
   output += '>';
 
   if (voidElements.has(name)) return output;

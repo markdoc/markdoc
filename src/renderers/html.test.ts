@@ -54,6 +54,13 @@ describe('HTML renderer', function () {
     expect(html).toEqual('<p>1</p>');
   });
 
+  it('lowercase attributes', function () {
+    const content = tag('td', { colSpan: 2, rowSpan: 3 }, ['Data']);
+
+    const html = render(content);
+    expect(html).toEqual('<td colspan="2" rowspan="3">Data</td>');
+  });
+
   describe('attributes', function () {
     it('with basic value', function () {
       const example = tag('foo', { bar: 'baz' });
