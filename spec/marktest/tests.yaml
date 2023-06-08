@@ -1805,3 +1805,41 @@
         bar:
           - tag: p
             children: [test]
+
+- name: Multiline block tags
+  config:
+    tags:
+      foo:
+        render: foo
+  code: |
+    {% 
+    foo
+    #bar
+    %}
+    This is a test
+    {% /foo %}
+  expected:
+    - tag: foo
+      attributes:
+        id: bar
+      children:
+        - tag: p
+          children: [This is a test]
+
+- name: Multiline block tags with closing on line with content
+  config:
+    tags:
+      foo:
+        render: foo
+  code: |
+    {% foo
+    #bar %}
+    This is a test
+    {% /foo %}
+  expected:
+    - tag: foo
+      attributes:
+        id: bar
+      children:
+        - tag: p
+          children: [This is a test]
