@@ -66,7 +66,9 @@ function block(
 
   const contentStart = start + OPEN.length;
   const content = state.src.slice(contentStart, tagEnd).trim();
-  const lines = content.split('\n').length;
+  const lines = state.src
+    .slice(start, tagEnd + CLOSE.length)
+    .split('\n').length;
 
   if (content[0] === '$') return false;
 
