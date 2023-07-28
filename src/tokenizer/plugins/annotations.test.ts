@@ -111,6 +111,29 @@ describe('MarkdownIt Annotations plugin', function () {
     });
 
     describe('multiline', function () {
+      const basicExample = [
+        {
+          type: 'tag_open',
+          nesting: 1,
+          meta: {
+            attributes: [
+              { type: 'attribute', name: 'id', value: 'foo' },
+              { type: 'class', name: 'bar', value: true },
+              { type: 'attribute', name: 'baz', value: 1 },
+            ],
+            tag: 'test',
+          },
+        },
+        { type: 'paragraph_open', tag: 'p', nesting: 1 },
+        {
+          type: 'inline',
+          nesting: 0,
+          children: [{ type: 'text', nesting: 0, content: 'This is a test' }],
+        },
+        { type: 'paragraph_close', tag: 'p', nesting: -1 },
+        { type: 'tag_close', nesting: -1, meta: { tag: 'test' } },
+      ];
+
       it('basic', function () {
         const example = parse(`
         {% test #foo .bar
@@ -119,29 +142,28 @@ describe('MarkdownIt Annotations plugin', function () {
         {% /test %}
         `);
 
-        expect(example).toDeepEqualSubset([
-          {
-            type: 'tag_open',
-            nesting: 1,
-            meta: {
-              attributes: [
-                { type: 'attribute', name: 'id', value: 'foo' },
-                { type: 'class', name: 'bar', value: true },
-                { type: 'attribute', name: 'baz', value: 1 },
-              ],
-              tag: 'test',
-            },
-          },
-          { type: 'paragraph_open', tag: 'p', nesting: 1 },
-          {
-            type: 'inline',
-            nesting: 0,
-            children: [{ type: 'text', nesting: 0, content: 'This is a test' }],
-          },
-          { type: 'paragraph_close', tag: 'p', nesting: -1 },
-          { type: 'tag_close', nesting: -1, meta: { tag: 'test' } },
-        ]);
+        expect(example).toDeepEqualSubset(basicExample);
+        expect(example[0].map).toDeepEqual([0, 2]);
+        expect(example[1].map).toDeepEqual([2, 3]);
+        expect(example[4].map).toDeepEqual([3, 4]);
+        expect(example.length).toEqual(5);
+        expect(example[2].children.length).toEqual(1);
+      });
 
+      it('basic with symbols on separate lines', function () {
+        const example = parse(`
+        {%
+          test #foo .bar
+          baz=1
+        %}
+        This is a test
+        {% /test %}
+        `);
+
+        expect(example).toDeepEqualSubset(basicExample);
+        expect(example[0].map).toDeepEqual([0, 4]);
+        expect(example[2].map).toDeepEqual([4, 5]);
+        expect(example[4].map).toDeepEqual([5, 6]);
         expect(example.length).toEqual(5);
         expect(example[2].children.length).toEqual(1);
       });
