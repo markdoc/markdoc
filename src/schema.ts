@@ -136,9 +136,9 @@ export const td: Schema = {
     'hr',
   ],
   attributes: {
+    align: { type: String },
     colspan: { type: Number, render: 'colSpan' },
     rowspan: { type: Number, render: 'rowSpan' },
-    align: { type: String },
   },
 };
 
@@ -147,6 +147,8 @@ export const th: Schema = {
   attributes: {
     width: { type: Number },
     align: { type: String },
+    colspan: { type: Number, render: 'colSpan' },
+    rowspan: { type: Number, render: 'rowSpan' },
   },
 };
 
