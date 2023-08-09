@@ -81,7 +81,6 @@ function formatAnnotationValue(a: AttributeValue): string | undefined {
   // The Markdoc parser does not support undefined attribute
   // values. Filter those values out.
   return undefined;
-
 }
 
 function* formatAttributes(n: Node) {
@@ -270,7 +269,9 @@ function* formatNode(n: Node, o: Options = {}) {
         yield indent;
       }
       const open = OPEN + SPACE;
-      const attributes = [...formatAttributes(n)].filter((v) => v !== undefined);
+      const attributes = [...formatAttributes(n)].filter(
+        (v) => v !== undefined
+      );
       const tag = [open + n.tag, ...attributes];
       const inlineTag = tag.join(SPACE);
 
