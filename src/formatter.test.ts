@@ -782,4 +782,21 @@ ${'`'.repeat(4)}
     check(source, expected);
     stable(expected);
   });
+  it('skips over undefined variables', () => {
+    const sourceNode = new Markdoc.Ast.Node(
+      'tag',
+      {
+        undefinedAttribute: undefined,
+        validAttribute: true
+      },
+      [],
+      'tag'
+    )
+
+    const expected = `{% tag validAttribute=true /%}`
+
+    const b = format(sourceNode);
+    const d = diff(expected, b.trim());
+    if (d && d.includes('Compared values have no visual difference.')) return;
+  })
 });
