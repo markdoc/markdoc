@@ -787,16 +787,16 @@ ${'`'.repeat(4)}
       'tag',
       {
         undefinedAttribute: undefined,
-        validAttribute: true
+        validAttribute: true,
       },
       [],
       'tag'
-    )
+    );
 
-    const expected = `{% tag validAttribute=true /%}`
+    const expected = `{% tag validAttribute=true /%}`;
 
     const b = format(sourceNode);
     const d = diff(expected, b.trim());
     if (d && d.includes('Compared values have no visual difference.')) return;
-  })
+  });
 });

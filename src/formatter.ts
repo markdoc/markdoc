@@ -68,13 +68,12 @@ function formatScalar(v: Value): string | undefined {
 }
 
 function formatAnnotationValue(a: AttributeValue): string | undefined {
-  const formattedValue = formatScalar(a.value)
+  const formattedValue = formatScalar(a.value);
 
   if (a.name === 'primary') return formattedValue;
   if (a.name === 'id' && typeof a.value === 'string' && isIdentifier(a.value))
     return '#' + a.value;
   if (a.type === 'class' && isIdentifier(a.name)) return '.' + a.name;
-
 
   if (formattedValue !== undefined) {
     return `${a.name}=${formattedValue}`;
@@ -272,7 +271,7 @@ function* formatNode(n: Node, o: Options = {}) {
       }
       const open = OPEN + SPACE;
       const attributes = [...formatAttributes(n)];
-      const tag = [open + n.tag, ...attributes.filter(v => v !== undefined)];
+      const tag = [open + n.tag, ...attributes.filter((v) => v !== undefined)];
       const inlineTag = tag.join(SPACE);
 
       const isLongTagOpening =
