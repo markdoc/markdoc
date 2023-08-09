@@ -39,7 +39,10 @@ function* formatTableRow(items: Array<string>) {
   yield `| ${items.join(' | ')} |`;
 }
 
-function formatScalar(v: Value): string {
+function formatScalar(v: Value): string | undefined {
+  if (v === undefined) {
+    return undefined;
+  }
   if (Ast.isAst(v)) {
     return format(v);
   }
@@ -64,12 +67,16 @@ function formatScalar(v: Value): string {
   return JSON.stringify(v);
 }
 
-function formatAnnotationValue(a: AttributeValue): string {
-  if (a.name === 'primary') return formatScalar(a.value);
+function formatAnnotationValue(a: AttributeValue): string | undefined {
+  const formattedValue = formatScalar(a.value);
+
+  if (formattedValue === undefined) return undefined;
+  if (a.name === 'primary') return formattedValue;
   if (a.name === 'id' && typeof a.value === 'string' && isIdentifier(a.value))
     return '#' + a.value;
   if (a.type === 'class' && isIdentifier(a.name)) return '.' + a.name;
-  return `${a.name}=${formatScalar(a.value)}`;
+
+  return `${a.name}=${formattedValue}`;
 }
 
 function* formatAttributes(n: Node) {
@@ -258,7 +265,10 @@ function* formatNode(n: Node, o: Options = {}) {
         yield indent;
       }
       const open = OPEN + SPACE;
-      const tag = [open + n.tag, ...formatAttributes(n)];
+      const attributes = [...formatAttributes(n)].filter(
+        (v) => v !== undefined
+      );
+      const tag = [open + n.tag, ...attributes];
       const inlineTag = tag.join(SPACE);
 
       const isLongTagOpening =
