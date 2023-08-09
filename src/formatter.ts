@@ -70,17 +70,13 @@ function formatScalar(v: Value): string | undefined {
 function formatAnnotationValue(a: AttributeValue): string | undefined {
   const formattedValue = formatScalar(a.value);
 
+  if (formattedValue === undefined) return undefined;
   if (a.name === 'primary') return formattedValue;
   if (a.name === 'id' && typeof a.value === 'string' && isIdentifier(a.value))
     return '#' + a.value;
   if (a.type === 'class' && isIdentifier(a.name)) return '.' + a.name;
 
-  if (formattedValue !== undefined) {
-    return `${a.name}=${formattedValue}`;
-  }
-  // The Markdoc parser does not support undefined attribute
-  // values. Filter those values out.
-  return undefined;
+  return `${a.name}=${formattedValue}`;
 }
 
 function* formatAttributes(n: Node) {
