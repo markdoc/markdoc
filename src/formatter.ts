@@ -40,14 +40,14 @@ function* formatTableRow(items: Array<string>) {
 }
 
 function formatScalar(v: Value): string | undefined {
+  if (v === undefined) {
+    return undefined;
+  }
   if (Ast.isAst(v)) {
     return format(v);
   }
   if (v === null) {
     return 'null';
-  }
-  if (v === undefined) {
-    return undefined;
   }
   if (Array.isArray(v)) {
     return '[' + v.map(formatScalar).join(SEP) + ']';
@@ -77,11 +77,11 @@ function formatAnnotationValue(a: AttributeValue): string | undefined {
 
   if (formattedValue !== undefined) {
     return `${a.name}=${formattedValue}`;
-  } else {
-    // The Markdoc parser does not support undefined attribute
-    // values. Filter those values out.
-    return undefined;
   }
+  // The Markdoc parser does not support undefined attribute
+  // values. Filter those values out.
+  return undefined;
+
 }
 
 function* formatAttributes(n: Node) {
@@ -270,8 +270,8 @@ function* formatNode(n: Node, o: Options = {}) {
         yield indent;
       }
       const open = OPEN + SPACE;
-      const attributes = [...formatAttributes(n)];
-      const tag = [open + n.tag, ...attributes.filter((v) => v !== undefined)];
+      const attributes = [...formatAttributes(n)].filter((v) => v !== undefined);
+      const tag = [open + n.tag, ...attributes];
       const inlineTag = tag.join(SPACE);
 
       const isLongTagOpening =
