@@ -544,4 +544,63 @@ bar
       ]);
     });
   });
+
+  describe('parent validation', () => {
+    it('for deep nesting', () => {
+      const doc = `
+{% foo %}
+{% bar %}
+{% baz %}
+# testing
+{% /baz %}
+{% /bar %}
+{% /foo %}
+`;
+
+      const doc2 = `
+{% foo %}
+{% bar %}
+{% /bar %}
+{% /foo %}
+
+{% bar %}
+{% baz %}
+# testing
+{% /baz %}
+{% /bar %}
+`;
+
+      const config = {
+        tags: {
+          foo: {},
+          bar: {},
+          baz: {},
+        },
+        nodes: {
+          heading: {
+            ...Markdoc.nodes.heading,
+            validate(node, config) {
+              if (config.validation.parents.find((p) => p.tag === 'foo'))
+                return [
+                  {
+                    id: 'heading-in-foo',
+                    level: 'error',
+                    message: "Can't nest a heading in tag 'foo'",
+                  },
+                ];
+
+              return [];
+            },
+          },
+        },
+      };
+
+      const errors = validate(doc, config);
+      expect(errors.length).toEqual(1);
+      expect(errors[0].error.id).toEqual('heading-in-foo');
+
+      const errors2 = validate(doc2, config);
+      expect(errors2.length).toEqual(0);
+    });
+  });
 });

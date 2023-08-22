@@ -250,7 +250,7 @@ export default function validator(node: Node, config: Config) {
       });
 
     if (typeof attrib.validate === 'function') {
-      const attribErrors = attrib.validate(value, config);
+      const attribErrors = attrib.validate(value, config, key);
       if (Array.isArray(attribErrors)) errors.push(...attribErrors);
     }
   }
@@ -291,4 +291,38 @@ export default function validator(node: Node, config: Config) {
   }
 
   return errors;
+}
+
+export function* walkWithParents(
+  node: Node,
+  parents: Node[] = []
+): Generator<[Node, Node[]]> {
+  yield [node, parents];
+  for (const child of [...Object.values(node.slots), ...node.children])
+    yield* walkWithParents(child, [...parents, node]);
+}
+
+export function validateTree(content: Node, config: Config) {
+  const output = [...walkWithParents(content)].map(([node, parents]) => {
+    const { type, lines, location } = node;
+    const updatedConfig = {
+      validation: { ...config.validation, parents },
+      ...config,
+    };
+    const errors = validator(node, updatedConfig);
+
+    if (isPromise(errors)) {
+      return errors.then((e) =>
+        e.map((error) => ({ type, lines, location, error }))
+      );
+    }
+
+    return errors.map((error) => ({ type, lines, location, error }));
+  });
+
+  if (output.some(isPromise)) {
+    return Promise.all(output).then((o) => o.flat());
+  }
+
+  return output.flat();
 }
