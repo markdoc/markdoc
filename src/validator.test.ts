@@ -545,6 +545,84 @@ bar
     });
   });
 
+  describe('attribute validation key', () => {
+    it('simple case', () => {
+      const example = `{% foo bar={baz: 3} /%}`;
+
+      function validator(value, config, name) {
+        return value.baz < 5
+          ? [
+              {
+                id: 'invalid-foo-bar',
+                level: 'error',
+                message: `The value of '${name}.baz' must be less than five`,
+              },
+            ]
+          : [];
+      }
+
+      const config = {
+        tags: {
+          foo: {
+            attributes: {
+              bar: {
+                type: Object,
+                validate: validator,
+              },
+              blah: {
+                type: Object,
+                validate: validator,
+              },
+            },
+          },
+        },
+      };
+
+      const errs = validate(example, config);
+      expect(errs[0].error.message).toEqual(
+        "The value of 'bar.baz' must be less than five"
+      );
+    });
+
+    it('custom attribute type', () => {
+      const example = `{% foo bar={baz: 3} /%}`;
+
+      class CustomType {
+        validate(value, config, name) {
+          return value.baz < 5
+            ? [
+                {
+                  id: 'invalid-foo-bar',
+                  level: 'error',
+                  message: `The value of '${name}.baz' must be less than five`,
+                },
+              ]
+            : [];
+        }
+      }
+
+      const config = {
+        tags: {
+          foo: {
+            attributes: {
+              bar: {
+                type: CustomType,
+              },
+              blah: {
+                type: CustomType,
+              },
+            },
+          },
+        },
+      };
+
+      const errs = validate(example, config);
+      expect(errs[0].error.message).toEqual(
+        "The value of 'bar.baz' must be less than five"
+      );
+    });
+  });
+
   describe('parent validation', () => {
     it('for deep nesting', () => {
       const doc = `
