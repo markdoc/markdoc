@@ -10,8 +10,8 @@ import { truthy } from './src/tags/conditional';
 import Tokenizer from './src/tokenizer';
 import transformer, { globalAttributes } from './src/transformer';
 import transforms from './src/transforms';
-import { parseTags, isPromise } from './src/utils';
-import validator from './src/validator';
+import { parseTags } from './src/utils';
+import validator, { validateTree } from './src/validator';
 
 import type { Node, ParserArgs } from './src/types';
 import type Token from 'markdown-it/lib/token';
@@ -94,25 +94,7 @@ export function validate<C extends Config = Config>(
   options?: C
 ): any {
   const config = mergeConfig(options);
-
-  const output = [content, ...content.walk()].map((node) => {
-    const { type, lines, location } = node;
-    const errors = validator(node, config);
-
-    if (isPromise(errors)) {
-      return errors.then((e) =>
-        e.map((error) => ({ type, lines, location, error }))
-      );
-    }
-
-    return errors.map((error) => ({ type, lines, location, error }));
-  });
-
-  if (output.some(isPromise)) {
-    return Promise.all(output).then((o) => o.flat());
-  }
-
-  return output.flat();
+  return validateTree(content, config);
 }
 
 export function createElement(

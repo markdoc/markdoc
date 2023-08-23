@@ -24,7 +24,8 @@ type TypeParam = NonNullable<SchemaAttribute['type']>;
 export function validateType(
   type: TypeParam,
   value: Value,
-  config: Config
+  config: Config,
+  key: string
 ): boolean | ValidationError[] {
   if (!type) return true;
 
@@ -40,14 +41,14 @@ export function validateType(
   if (Ast.isAst(value)) return true;
 
   if (Array.isArray(type))
-    return type.some((t) => validateType(t, value, config));
+    return type.some((t) => validateType(t, value, config, key));
 
   if (typeof type === 'string') type = TypeMappings[type];
 
   if (typeof type === 'function') {
     const instance: any = new type();
     if (instance.validate) {
-      return instance.validate(value, config);
+      return instance.validate(value, config, key);
     }
   }
 
@@ -94,7 +95,7 @@ function validateFunction(fn: Function, config: Config): ValidationError[] {
       if (Ast.isAst(value) && !Ast.isFunction(value)) continue;
 
       if (param.type) {
-        const valid = validateType(param.type, value, config);
+        const valid = validateType(param.type, value, config, key);
         if (valid === false) {
           errors.push({
             id: 'parameter-type-invalid',
@@ -217,7 +218,7 @@ export default function validator(node: Node, config: Config) {
     value = value as string;
 
     if (type) {
-      const valid = validateType(type, value, config);
+      const valid = validateType(type, value, config, key);
       if (valid === false) {
         errors.push({
           id: 'attribute-type-invalid',
@@ -250,7 +251,7 @@ export default function validator(node: Node, config: Config) {
       });
 
     if (typeof attrib.validate === 'function') {
-      const attribErrors = attrib.validate(value, config);
+      const attribErrors = attrib.validate(value, config, key);
       if (Array.isArray(attribErrors)) errors.push(...attribErrors);
     }
   }
@@ -291,4 +292,38 @@ export default function validator(node: Node, config: Config) {
   }
 
   return errors;
+}
+
+export function* walkWithParents(
+  node: Node,
+  parents: Node[] = []
+): Generator<[Node, Node[]]> {
+  yield [node, parents];
+  for (const child of [...Object.values(node.slots), ...node.children])
+    yield* walkWithParents(child, [...parents, node]);
+}
+
+export function validateTree(content: Node, config: Config) {
+  const output = [...walkWithParents(content)].map(([node, parents]) => {
+    const { type, lines, location } = node;
+    const updatedConfig = {
+      validation: { ...config.validation, parents },
+      ...config,
+    };
+    const errors = validator(node, updatedConfig);
+
+    if (isPromise(errors)) {
+      return errors.then((e) =>
+        e.map((error) => ({ type, lines, location, error }))
+      );
+    }
+
+    return errors.map((error) => ({ type, lines, location, error }));
+  });
+
+  if (output.some(isPromise)) {
+    return Promise.all(output).then((o) => o.flat());
+  }
+
+  return output.flat();
 }

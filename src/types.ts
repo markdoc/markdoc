@@ -29,6 +29,7 @@ export type ConfigType = Partial<{
   functions: Record<string, ConfigFunction>;
   partials: Record<string, any>;
   validation?: {
+    parents?: Node[];
     validateFunctions?: boolean;
   };
 }>;
@@ -42,7 +43,7 @@ export type ConfigFunction = {
 
 export interface CustomAttributeTypeInterface {
   transform?(value: any, config: Config): Scalar;
-  validate?(value: any, config: Config): ValidationError[];
+  validate?(value: any, config: Config, name: string): ValidationError[];
 }
 
 export interface CustomAttributeType {
@@ -116,7 +117,7 @@ export type SchemaAttribute = {
   default?: any;
   required?: boolean;
   matches?: SchemaMatches | ((config: Config) => SchemaMatches);
-  validate?(value: any, config: Config): ValidationError[];
+  validate?(value: any, config: Config, name: string): ValidationError[];
   errorLevel?: ValidationError['level'];
   description?: string;
 };

@@ -544,4 +544,141 @@ bar
       ]);
     });
   });
+
+  describe('attribute validation key', () => {
+    it('simple case', () => {
+      const example = `{% foo bar={baz: 3} /%}`;
+
+      function validator(value, config, name) {
+        return value.baz < 5
+          ? [
+              {
+                id: 'invalid-foo-bar',
+                level: 'error',
+                message: `The value of '${name}.baz' must be less than five`,
+              },
+            ]
+          : [];
+      }
+
+      const config = {
+        tags: {
+          foo: {
+            attributes: {
+              bar: {
+                type: Object,
+                validate: validator,
+              },
+              blah: {
+                type: Object,
+                validate: validator,
+              },
+            },
+          },
+        },
+      };
+
+      const errs = validate(example, config);
+      expect(errs[0].error.message).toEqual(
+        "The value of 'bar.baz' must be less than five"
+      );
+    });
+
+    it('custom attribute type', () => {
+      const example = `{% foo bar={baz: 3} /%}`;
+
+      class CustomType {
+        validate(value, config, name) {
+          return value.baz < 5
+            ? [
+                {
+                  id: 'invalid-foo-bar',
+                  level: 'error',
+                  message: `The value of '${name}.baz' must be less than five`,
+                },
+              ]
+            : [];
+        }
+      }
+
+      const config = {
+        tags: {
+          foo: {
+            attributes: {
+              bar: {
+                type: CustomType,
+              },
+              blah: {
+                type: CustomType,
+              },
+            },
+          },
+        },
+      };
+
+      const errs = validate(example, config);
+      expect(errs[0].error.message).toEqual(
+        "The value of 'bar.baz' must be less than five"
+      );
+    });
+  });
+
+  describe('parent validation', () => {
+    it('for deep nesting', () => {
+      const doc = `
+{% foo %}
+{% bar %}
+{% baz %}
+# testing
+{% /baz %}
+{% /bar %}
+{% /foo %}
+`;
+
+      const doc2 = `
+{% foo %}
+{% bar %}
+{% /bar %}
+{% /foo %}
+
+{% bar %}
+{% baz %}
+# testing
+{% /baz %}
+{% /bar %}
+`;
+
+      const config = {
+        tags: {
+          foo: {},
+          bar: {},
+          baz: {},
+        },
+        nodes: {
+          heading: {
+            ...Markdoc.nodes.heading,
+            validate(node, config) {
+              if (config.validation.parents.find((p) => p.tag === 'foo'))
+                return [
+                  {
+                    id: 'heading-in-foo',
+                    level: 'error',
+                    message: "Can't nest a heading in tag 'foo'",
+                  },
+                ];
+
+              return [];
+            },
+          },
+        },
+      };
+
+      const errors = validate(doc, config);
+      expect(errors.length).toEqual(1);
+      expect(errors[0].error.id).toEqual('heading-in-foo');
+
+      const errors2 = validate(doc2, config);
+      expect(errors2.length).toEqual(0);
+    });
+  });
 });
