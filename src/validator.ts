@@ -307,8 +307,8 @@ export function validateTree(content: Node, config: Config) {
   const output = [...walkWithParents(content)].map(([node, parents]) => {
     const { type, lines, location } = node;
     const updatedConfig = {
-      validation: { ...config.validation, parents },
       ...config,
+      validation: { ...config.validation, parents },
     };
     const errors = validator(node, updatedConfig);
 
