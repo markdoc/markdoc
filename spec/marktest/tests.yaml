@@ -1806,6 +1806,29 @@
           - tag: p
             children: [test]
 
+- name: Hnadling slot that doesn't render
+  config:
+    tags:
+      foo:
+        render: foo
+        slots:
+          bar:
+            render: false
+  slots: true
+  code: |
+    {% foo %}
+    this is a test
+
+    {% slot "bar" %}
+    test
+    {% /slot %}
+    {% /foo %}
+  expected:
+    - tag: foo
+      children:
+        - tag: p
+          children: [this is a test]
+
 - name: Multiline block tags
   config:
     tags:

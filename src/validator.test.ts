@@ -1,5 +1,5 @@
 import Markdoc, { nodes } from '../index';
-import type { ValidationError } from './types';
+import type { Config, ValidationError } from './types';
 
 function validate(string, config) {
   return Markdoc.validate(Markdoc.parse(string), config);
@@ -679,6 +679,33 @@ bar
 
       const errors2 = validate(doc2, config);
       expect(errors2.length).toEqual(0);
+    });
+
+    it('with function validation enabled', () => {
+      const doc = `{% foo %}{% bar %}this is a test{% /bar %}{% /foo %}`;
+
+      const config: Config = {
+        validation: {
+          validateFunctions: true,
+        },
+        tags: {
+          foo: {},
+          bar: {
+            validate(node, config) {
+              const parents = config?.validation?.parents?.map((p) => p.type);
+              expect(parents).toDeepEqual([
+                'document',
+                'paragraph',
+                'inline',
+                'tag',
+              ]);
+              return [];
+            },
+          },
+        },
+      };
+
+      validate(doc, config);
     });
   });
 });
