@@ -52,19 +52,25 @@ describe('Markdown parser', function () {
       });
     });
 
-    it('location off', function() {
-      const example = convert(`# This is a test`, { file: 'foo.md', location: false });
+    it('location off', function () {
+      const example = convert(`# This is a test`, {
+        file: 'foo.md',
+        location: false,
+      });
       expect(example.children[0].location).toBeUndefined();
     });
 
-    it('location on', function() {
-      const example = convert(`# This is a test`, { file: 'foo.md', location: true });
-      const expected = {file: 'foo.md', start: {line: 0}, end: {line: 1}};
+    it('location on', function () {
+      const example = convert(`# This is a test`, {
+        file: 'foo.md',
+        location: true,
+      });
+      const expected = { file: 'foo.md', start: { line: 0 }, end: { line: 1 } };
       expect(example.children[0].location).toDeepEqualSubset(expected);
-      
-      const example2 = convert(`# This is a test`, { file: 'foo.md' }); 
+
+      const example2 = convert(`# This is a test`, { file: 'foo.md' });
       expect(example2.children[0].location).toDeepEqualSubset(expected);
-    })
+    });
   });
 
   describe('handling frontmatter', function () {
