@@ -31,6 +31,7 @@ export type ConfigType = Partial<{
   validation?: {
     parents?: Node[];
     validateFunctions?: boolean;
+    environment?: string;
   };
 }>;
 
@@ -168,4 +169,5 @@ export type Value = AstType | Scalar;
 export type ParserArgs = {
   file?: string;
   slots?: boolean;
+  location?: boolean;
 };
