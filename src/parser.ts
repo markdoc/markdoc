@@ -101,6 +101,7 @@ function handleToken(
   nodes: Node[],
   file?: string,
   handleSlots?: boolean,
+  addLocation?: boolean,
   inlineParent?: Node
 ) {
   if (token.type === 'frontmatter') {
@@ -150,18 +151,20 @@ function handleToken(
   const { position = {} } = token;
 
   node.errors = errors;
-  node.lines = token.map || parent.lines || [];
-  node.location = {
-    file,
-    start: {
-      line: node.lines[0],
-      character: position.start,
-    },
-    end: {
-      line: node.lines[1],
-      character: position.end,
-    },
-  };
+  if (addLocation !== false) {
+    node.lines = token.map || parent.lines || [];
+    node.location = {
+      file,
+      start: {
+        line: node.lines[0],
+        character: position.start,
+      },
+      end: {
+        line: node.lines[1],
+        character: position.end,
+      },
+    };
+  }
 
   if (inlineParent) node.inline = true;
 
@@ -187,7 +190,7 @@ function handleToken(
   const isLeafNode = typeName === 'image';
   if (!isLeafNode) {
     for (const child of token.children)
-      handleToken(child, nodes, file, handleSlots, inlineParent);
+      handleToken(child, nodes, file, handleSlots, addLocation, inlineParent);
   }
 
   nodes.pop();
@@ -200,7 +203,7 @@ export default function parser(tokens: Token[], args?: string | ParserArgs) {
   if (typeof args === 'string') args = { file: args };
 
   for (const token of tokens)
-    handleToken(token, nodes, args?.file, args?.slots);
+    handleToken(token, nodes, args?.file, args?.slots, args?.location);
 
   if (nodes.length > 1)
     for (const node of nodes.slice(1))
