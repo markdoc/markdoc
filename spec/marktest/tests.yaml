@@ -1829,6 +1829,29 @@
         - tag: p
           children: [this is a test]
 
+- name: Slot with a variable
+  config:
+    variables:
+      example: test
+    tags:
+      foo:
+        render: foo
+        slots:
+          bar: {}
+  code: |
+    {% foo %}
+      {% slot "bar" %}
+      This is a {% $example %}
+      {% /slot %}
+    {% /foo %}
+  slots: true
+  expected:
+    - tag: foo
+      attributes:
+        bar:
+          - tag: p
+            children: ['This is a ', 'test']
+
 - name: Multiline block tags
   config:
     tags:
