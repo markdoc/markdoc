@@ -382,20 +382,28 @@ function* formatNode(n: Node, o: Options = {}) {
         }
         yield NL;
       } else {
-        yield NL;
+        const widths: number[] = [];
+
+        for (const row of table) {
+          for (let i = 0; i < row.length; i++) {
+            widths[i] = widths[i]
+              ? Math.max(widths[i], row[i].length)
+              : row[i].length;
+          }
+        }
+
         const [head, ...rows] = table as string[][];
 
-        const ml = table
-          .map((arr) => arr.map((s: string) => s.length).reduce(max))
-          .reduce(max);
-
-        yield* formatTableRow(head.map((h) => h + SPACE.repeat(ml - h.length)));
         yield NL;
-        yield* formatTableRow(head.map(() => '-'.repeat(ml)));
+        yield* formatTableRow(
+          head.map((cell, i) => cell + SPACE.repeat(widths[i] - cell.length))
+        );
+        yield NL;
+        yield* formatTableRow(head.map((cell, i) => '-'.repeat(widths[i])));
         yield NL;
         for (const row of rows) {
           yield* formatTableRow(
-            row.map((r) => r + SPACE.repeat(ml - r.length))
+            row.map((cell, i) => cell + SPACE.repeat(widths[i] - cell.length))
           );
           yield NL;
         }
