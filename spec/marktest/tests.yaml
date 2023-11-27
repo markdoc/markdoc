@@ -1612,6 +1612,23 @@
     {% foo bar="this is a test of \"quoted\" strings" /%}
   expected: <article><foo bar="this is a test of &quot;quoted&quot; strings"></foo></article>
 
+- name: Escaped newline in tag strings
+  config:
+    tags:
+      foo:
+        render: foo
+        attributes:
+          bar:
+            type: String
+  code: |
+    {% foo bar="this is a test\nof a newline in a tag" /%}
+  expected:
+    - tag: foo
+      attributes:
+        bar: |-
+          this is a test
+          of a newline in a tag
+
 - name: Basic slot
   config:
     tags:
