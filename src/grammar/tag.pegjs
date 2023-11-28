@@ -162,7 +162,13 @@ ValueStringChars =
   [^\0-\x1F\x22\x5C] / ValueStringEscapes
     
 ValueStringEscapes =
-  '\\' sequence:('"' / '\\') { return sequence; }
+  '\\' sequence:(
+    '"' /
+    '\\' /
+    'n' { return '\n' } /
+    'r' { return '\r' } /
+    't' { return '\t' }
+  ) { return sequence; }
 
 Identifier 'identifier' =
   $([a-zA-Z0-9_-]+)
