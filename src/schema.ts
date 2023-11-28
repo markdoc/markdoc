@@ -145,7 +145,7 @@ export const td: Schema = {
 export const th: Schema = {
   render: 'th',
   attributes: {
-    width: { type: Number },
+    width: { type: String },
     align: { type: String },
     colspan: { type: Number, render: 'colSpan' },
     rowspan: { type: Number, render: 'rowSpan' },
