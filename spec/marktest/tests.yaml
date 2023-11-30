@@ -712,7 +712,7 @@
 - name: Advanced table format
   code: |
     {% table %}
-    * Test 1 - 1 {% width=20 %}
+    * Test 1 - 1 {% width="20%" %}
     * Test 1 - 2
     * Test 1 - 3
     ---
@@ -733,7 +733,7 @@
               children:
                 - tag: th
                   attributes:
-                    width: 20
+                    width: 20%
                   children: ['Test 1 - 1 ']
                 - tag: th
                   children: [Test 1 - 2]
