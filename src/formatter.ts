@@ -180,7 +180,7 @@ function* formatNode(n: Node, o: Options = {}) {
       yield ']';
       yield '(';
       yield* typeof n.attributes.src === 'string'
-        ? escapeMarkdownCharacters(n.attributes.src, /[()]/)
+        ? escapeMarkdownCharacters(n.attributes.src, /[()]/g)
         : formatValue(n.attributes.src, no);
       if (n.attributes.title) {
         yield SPACE + `"${n.attributes.title}"`;

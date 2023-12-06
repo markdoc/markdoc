@@ -162,8 +162,10 @@ regular_word_with_underscores
 {% table %}
 - **[Link](https://example.com?q=()**
 - **[Link](https://example.com?q=\\()**
+- **[Link](https://example.com?q=\\(\\))**
 - ![Image](https://example.com?q=()
 - ![Image](https://example.com?q=\\()
+- ![Image](https://example.com?q=\\(\\))
 {% /table %}
 
 paragraph 1
