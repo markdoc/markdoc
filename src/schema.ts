@@ -1,5 +1,5 @@
 import type { Schema } from './types';
-import Tag from './tag';
+import * as Tag from './tag';
 
 export const document: Schema = {
   render: 'article',
@@ -26,7 +26,7 @@ export const heading: Schema = {
     level: { type: Number, render: false, required: true },
   },
   transform(node, config) {
-    return new Tag(
+    return Tag.createTag(
       `h${node.attributes['level']}`,
       node.transformAttributes(config),
       node.transformChildren(config)
@@ -62,7 +62,7 @@ export const fence: Schema = {
       ? node.transformChildren(config)
       : [node.attributes.content];
 
-    return new Tag('pre', attributes, children);
+    return Tag.createTag('pre', attributes, children);
   },
 };
 
@@ -105,7 +105,7 @@ export const list: Schema = {
     marker: { type: String, render: false },
   },
   transform(node, config) {
-    return new Tag(
+    return Tag.createTag(
       node.attributes.ordered ? 'ol' : 'ul',
       node.transformAttributes(config),
       node.transformChildren(config)
@@ -220,7 +220,7 @@ export const code: Schema = {
   },
   transform(node, config) {
     const attributes = node.transformAttributes(config);
-    return new Tag('code', attributes, [node.attributes.content]);
+    return Tag.createTag('code', attributes, [node.attributes.content]);
   },
 };
 

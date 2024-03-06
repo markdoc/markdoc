@@ -4,7 +4,7 @@ import functions from './src/functions';
 import parser from './src/parser';
 import * as nodes from './src/schema';
 import renderers from './src/renderers';
-import Tag from './src/tag';
+import * as Tag from './src/tag';
 import tags from './src/tags';
 import { truthy } from './src/tags/conditional';
 import Tokenizer from './src/tokenizer';

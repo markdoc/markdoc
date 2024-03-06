@@ -1,4 +1,4 @@
-import Tag from './tag';
+import * as Tag from './tag';
 
 describe('Tag.isTag', function () {
   it('should detect when value is not a tag', () => {
@@ -12,6 +12,6 @@ describe('Tag.isTag', function () {
   });
 
   it('should detect tags', () => {
-    expect(Tag.isTag(new Tag('tag', {}, []))).toBe(true);
+    expect(Tag.isTag(Tag.createTag('tag', {}, []))).toBe(true);
   });
 });

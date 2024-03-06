@@ -3,7 +3,7 @@ import markdoc from '../../index';
 import Node from './node';
 import Variable from './variable';
 
-import Tag from '../tag';
+import * as Tag from '../tag';
 
 describe('Node object', function () {
   describe('traversal', function () {
@@ -91,7 +91,9 @@ describe('transform', function () {
       ]);
 
       const output = transform(example);
-      expect(output).toDeepEqual(new Tag('h1', {}, ['This is a heading']));
+      expect(output).toDeepEqual(
+        Tag.createTag('h1', {}, ['This is a heading'])
+      );
     });
 
     describe('fenced code blocks', function () {
@@ -102,7 +104,7 @@ describe('transform', function () {
         });
         const output = transform(example);
         expect(output).toDeepEqual(
-          new Tag('pre', { 'data-language': 'ruby' }, ['test'])
+          Tag.createTag('pre', { 'data-language': 'ruby' }, ['test'])
         );
       });
     });
@@ -114,12 +116,12 @@ describe('transform', function () {
 
       const foo = {
         transform() {
-          return new Tag('foo', {}, []);
+          return Tag.createTag('foo', {}, []);
         },
       };
 
       const output = transform(example, { nodes: { foo } });
-      expect(output).toDeepEqual(new Tag('foo', {}, []));
+      expect(output).toDeepEqual(Tag.createTag('foo', {}, []));
     });
 
     it('with a render function that renders attributes', function () {
@@ -164,7 +166,9 @@ describe('transform', function () {
       );
 
       const output = transform(example, { tags });
-      expect(output).toDeepEqual(new Tag('foo', { bar: 'baz' }, ['test']));
+      expect(output).toDeepEqual(
+        Tag.createTag('foo', { bar: 'baz' }, ['test'])
+      );
     });
 
     it('with a non-existing tag', function () {
@@ -194,7 +198,7 @@ describe('transform', function () {
       const output = transform(example, {
         nodes: { foo: {}, bar: { render: 'bar' } },
       });
-      expect(output).toDeepEqual([new Tag('bar', {}, [])]);
+      expect(output).toDeepEqual([Tag.createTag('bar', {}, [])]);
     });
   });
 
@@ -213,7 +217,7 @@ describe('transform', function () {
         class: { foo: true, bar: false },
       });
       const output = transform(example);
-      expect(output).toDeepEqual(new Tag('p', { class: 'foo' }, []));
+      expect(output).toDeepEqual(Tag.createTag('p', { class: 'foo' }, []));
     });
 
     it('with boolean render attribute', function () {
@@ -227,7 +231,7 @@ describe('transform', function () {
       };
 
       const output = transform(example, { nodes: { foo } });
-      expect(output).toDeepEqual(new Tag('foo', { bar: 1, baz: 'test' }));
+      expect(output).toDeepEqual(Tag.createTag('foo', { bar: 1, baz: 'test' }));
     });
 
     it('with string render attribute', function () {
@@ -242,7 +246,7 @@ describe('transform', function () {
 
       const output = transform(example, { nodes: { foo } });
       expect(output).toDeepEqual(
-        new Tag('foo', { 'data-bar': 1, 'data-baz': 'test' })
+        Tag.createTag('foo', { 'data-bar': 1, 'data-baz': 'test' })
       );
     });
 
@@ -257,7 +261,7 @@ describe('transform', function () {
 
       const output = transform(example, { nodes: { foo } }) as Tag;
       expect(Object.keys(output.attributes).includes('baz')).toBeFalse();
-      expect(output).toDeepEqual(new Tag('foo', { bar: 1 }, []));
+      expect(output).toDeepEqual(Tag.createTag('foo', { bar: 1 }, []));
     });
 
     it('with a default attribute value', function () {
@@ -300,7 +304,7 @@ describe('transform', function () {
         nodes: { foo },
         variables: { a: { b: { c: 'example' } } },
       });
-      expect(output).toDeepEqual(new Tag('foo', { bar: 'example' }, []));
+      expect(output).toDeepEqual(Tag.createTag('foo', { bar: 'example' }, []));
     });
 
     describe('custom types', () => {

@@ -1,5 +1,5 @@
 import MarkdownIt from 'markdown-it';
-import Tag from '../tag';
+import * as Tag from '../tag';
 import type { RenderableTreeNodes } from '../types';
 const { escapeHtml } = MarkdownIt().utils;
 

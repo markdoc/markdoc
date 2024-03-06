@@ -1,4 +1,4 @@
-import Tag from './tag';
+import * as Tag from './tag';
 import { Class } from './schema-types/class';
 import { Id } from './schema-types/id';
 import { isPromise } from './utils';
@@ -79,11 +79,11 @@ export default {
     const attributes = this.attributes(node, config);
 
     if (isPromise(attributes) || isPromise(children)) {
-      return Promise.all([attributes, children]).then(
-        (values) => new Tag(schema.render, ...values)
+      return Promise.all([attributes, children]).then((values) =>
+        Tag.createTag(schema.render, ...values)
       );
     }
 
-    return new Tag(schema.render, attributes, children);
+    return Tag.createTag(schema.render, attributes, children);
   },
 } as Transformer;

@@ -1,6 +1,6 @@
 import dynamic from './react';
 import renderStatic from './static';
-import Tag from '../../tag';
+import * as Tag from '../../tag';
 
 const React = {
   Fragment: 'fragment',
@@ -53,7 +53,7 @@ describe('React dynamic renderer', function () {
 
   it('rendering an external component', function () {
     const components = { Foo: 'bar' };
-    const example = new Tag('Foo', undefined, ['test']);
+    const example = Tag.createTag('Foo', undefined, ['test']);
     const output = dynamic(example, React, { components });
     expect(output).toDeepEqualSubset({
       name: 'bar',
@@ -74,7 +74,7 @@ describe('React dynamic renderer', function () {
     });
 
     it('with a class attribute', function () {
-      const example = new Tag('h1', { class: 'foo bar' }, ['test']);
+      const example = Tag.createTag('h1', { class: 'foo bar' }, ['test']);
 
       const output = dynamic(example, React);
       expect(output).toDeepEqualSubset({
@@ -98,7 +98,9 @@ describe('React dynamic renderer', function () {
 
   describe('rendering built-in nodes', function () {
     it('rendering a fenced code block', function () {
-      const example = new Tag('pre', { class: 'code code-ruby' }, ['test']);
+      const example = Tag.createTag('pre', { class: 'code code-ruby' }, [
+        'test',
+      ]);
 
       const output = dynamic(example, React);
       expect(output).toDeepEqual({
@@ -157,7 +159,7 @@ describe('React static renderer', function () {
 
   it('rendering an external component', function () {
     const components = { Foo: 'bar' };
-    const example = new Tag('Foo', undefined, ['test']);
+    const example = Tag.createTag('Foo', undefined, ['test']);
     const code = renderStatic(example);
     const output = eval(code)({ components });
 

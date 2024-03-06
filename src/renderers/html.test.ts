@@ -1,13 +1,13 @@
 import render from './html';
 import { RenderableTreeNode } from '../types';
-import Tag from '../tag';
+import * as Tag from '../tag';
 
 function tag(
   name: string,
   attributes: Record<string, any> = {},
   children: RenderableTreeNode[] = []
 ) {
-  return new Tag(name, attributes, children);
+  return Tag.createTag(name, attributes, children);
 }
 
 describe('HTML renderer', function () {
