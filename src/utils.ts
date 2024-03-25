@@ -1,4 +1,4 @@
-import { parse, SyntaxError } from './grammar/tag';
+import { parse, type SyntaxError } from './grammar/tag';
 import Variable from './ast/variable';
 import Function from './ast/function';
 
