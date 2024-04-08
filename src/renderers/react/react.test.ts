@@ -61,6 +61,20 @@ describe('React dynamic renderer', function () {
     });
   });
 
+  it('rendering with a custom tag resolution function', function () {
+    function tagName(name, components) {
+      return components.Foo;
+    }
+    const components = { Foo: 'bar' };
+    const example = new Tag('Foo', undefined, ['test']);
+    const output = dynamic(example, React, {components, resolveTagName: tagName});
+
+    expect(output).toDeepEqualSubset({
+      name: 'bar',
+      children: ['test'],
+    });
+  });
+
   describe('attributes', function () {
     it('with an id attribute', function () {
       const example = {
@@ -159,6 +173,21 @@ describe('React static renderer', function () {
     const components = { Foo: 'bar' };
     const example = new Tag('Foo', undefined, ['test']);
     const code = renderStatic(example);
+    const output = eval(code)({ components });
+
+    expect(output).toDeepEqualSubset({
+      name: 'bar',
+      children: ['test'],
+    });
+  });
+
+  it('rendering with a custom tag resolution function', function () {
+    function tagName(name, components) {
+      return components.Foo;
+    }
+    const components = { Foo: 'bar' };
+    const example = new Tag('Foo', undefined, ['test']);
+    const code = renderStatic(example, {resolveTagName: tagName});
     const output = eval(code)({ components });
 
     expect(output).toDeepEqualSubset({
