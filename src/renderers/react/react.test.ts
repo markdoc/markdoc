@@ -67,7 +67,10 @@ describe('React dynamic renderer', function () {
     }
     const components = { Foo: 'bar' };
     const example = new Tag('Foo', undefined, ['test']);
-    const output = dynamic(example, React, {components, resolveTagName: tagName});
+    const output = dynamic(example, React, {
+      components,
+      resolveTagName: tagName,
+    });
 
     expect(output).toDeepEqualSubset({
       name: 'bar',
@@ -187,7 +190,7 @@ describe('React static renderer', function () {
     }
     const components = { Foo: 'bar' };
     const example = new Tag('Foo', undefined, ['test']);
-    const code = renderStatic(example, {resolveTagName: tagName});
+    const code = renderStatic(example, { resolveTagName: tagName });
     const output = eval(code)({ components });
 
     expect(output).toDeepEqualSubset({

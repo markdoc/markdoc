@@ -24,9 +24,9 @@ function tagName(
 }
 
 export type RenderOpts = {
-  components?: Record<string, Component> | ((string: string) => Component)
-  resolveTagName?: typeof tagName
-}
+  components?: Record<string, Component> | ((string: string) => Component);
+  resolveTagName?: typeof tagName;
+};
 export default function dynamic(
   node: RenderableTreeNodes,
   React: ReactShape,
