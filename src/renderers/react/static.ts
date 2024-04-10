@@ -60,10 +60,18 @@ function render(node: RenderableTreeNodes): string {
     ${renderArray(children)})`;
 }
 
-export default function reactStatic(node: RenderableTreeNodes): string {
+export default function reactStatic(
+  node: RenderableTreeNodes,
+  { resolveTagName = tagName }: { resolveTagName?: typeof tagName } = {}
+): string {
+  // the resolveTagName function *must* be called tagName
+  // throw an error if it does not
+  if (resolveTagName.name !== 'tagName') {
+    throw new Error('resolveTagName must be named tagName');
+  }
   return `
   (({components = {}} = {}) => {
-    ${tagName}
+    ${resolveTagName}
     return ${render(node)};
   })
 `;

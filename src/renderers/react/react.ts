@@ -23,10 +23,14 @@ function tagName(
     : components[name];
 }
 
+export type RenderOpts = {
+  components?: Record<string, Component> | ((string: string) => Component);
+  resolveTagName?: typeof tagName;
+};
 export default function dynamic(
   node: RenderableTreeNodes,
   React: ReactShape,
-  { components = {} } = {}
+  { components = {}, resolveTagName = tagName }: RenderOpts = {}
 ) {
   function deepRender(value: any): any {
     if (value == null || typeof value !== 'object') return value;
@@ -58,7 +62,7 @@ export default function dynamic(
     if (className) attrs.className = className;
 
     return React.createElement(
-      tagName(name, components),
+      resolveTagName(name, components),
       Object.keys(attrs).length == 0 ? null : deepRender(attrs),
       ...children.map(render)
     );
