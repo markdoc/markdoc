@@ -33,7 +33,8 @@
     "node": ">=14.7.0"
   },
   "optionalDependencies": {
-    "@types/markdown-it": "12.2.3"
+    "@types/markdown-it": "12.2.3",
+    "@types/linkify-it": "^3.0.1"
   },
   "peerDependencies": {
     "@types/react": "*",
