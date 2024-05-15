@@ -1,7 +1,7 @@
 {
   "name": "@markdoc/markdoc",
   "author": "Ryan Paul",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "description": "A text markup language for documentation",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
@@ -33,7 +33,8 @@
     "node": ">=14.7.0"
   },
   "optionalDependencies": {
-    "@types/markdown-it": "12.2.3"
+    "@types/markdown-it": "12.2.3",
+    "@types/linkify-it": "^3.0.1"
   },
   "peerDependencies": {
     "@types/react": "*",
