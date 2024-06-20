@@ -20,10 +20,10 @@ export type AttributeValue = {
   value: any;
 };
 
-export type Config = Readonly<ConfigType>;
+export type Config<R = string> = Readonly<ConfigType<R>>;
 
-export type ConfigType = Partial<{
-  nodes: Partial<Record<NodeType, Schema>>;
+export type ConfigType<R = string> = Partial<{
+  nodes: Partial<Record<NodeType, Schema<ConfigType, R>>>;
   tags: Record<string, Schema>;
   variables: Record<string, any>;
   functions: Record<string, ConfigFunction>;
