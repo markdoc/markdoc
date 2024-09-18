@@ -22,6 +22,12 @@ describe('variable', function () {
     expect(output).toEqual('value');
   });
 
+  it('resolves to undefined if there is an unresolved variable', function () {
+    const example = new Variable(['jawn', 'baz', 1, 'qux']);
+    const output = example.resolve(config);
+    expect(output).toEqual(undefined);
+  });
+
   it('resolution with a function', function () {
     function variables(path) {
       expect(path).toDeepEqual(['foo', 'bar']);
