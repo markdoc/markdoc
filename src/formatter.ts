@@ -5,7 +5,7 @@ import type { AttributeValue, Function, Node, Value, Variable } from './types';
 type Options = {
   allowIndentation?: boolean;
   maxTagOpeningWidth?: number;
-  increasingOlMarkers?: boolean;
+  incrementListNumbers?: boolean;
   parent?: Node;
   indent?: number;
 };
@@ -311,7 +311,7 @@ function* formatNode(n: Node, o: Options = {}) {
           const startNumber = n.attributes.start ?? 1;
           if (i === 0) number = startNumber.toString();
 
-          if (o.increasingOlMarkers) {
+          if (o.incrementListNumbers) {
             number = (parseInt(startNumber) + i).toString();
           }
 
