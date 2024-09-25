@@ -506,6 +506,48 @@ Yes!
     stable(expected);
   });
 
+  it('human-readable ordered lists', () => {
+    const source = `
+- foo
+- bar
+* baz
+* qux
+
+
+7) foo
+1) bar
+1) baz
+3. foo
+1. bar
+1. baz
+1) foo
+4) bar
+9) baz
+`;
+    const expected = `
+- foo
+- bar
+
+* baz
+* qux
+
+7) foo
+8) bar
+9) baz
+
+3. foo
+4. bar
+5. baz
+
+1) foo
+2) bar
+3) baz
+`;
+    const options = {increasingOlMarkers: true};
+    check(source, expected, options);
+    stable(expected, options);
+  });
+
   it('"loose" lists', () => {
     const source = `
 - a

@@ -5,6 +5,7 @@ import type { AttributeValue, Function, Node, Value, Variable } from './types';
 type Options = {
   allowIndentation?: boolean;
   maxTagOpeningWidth?: number;
+  increasingOlMarkers?: boolean;
   parent?: Node;
   indent?: number;
 };
@@ -302,11 +303,21 @@ function* formatNode(n: Node, o: Options = {}) {
       );
 
       for (let i = 0; i < n.children.length; i++) {
-        const prefix = n.attributes.ordered
-          ? `${i === 0 ? n.attributes.start ?? '1' : '1'}${
-              n.attributes.marker ?? OL
-            }`
-          : n.attributes.marker ?? UL;
+        const prefix = (() => {
+          if (!n.attributes.ordered) return n.attributes.marker ?? UL;
+
+          // Must be an ordered list now
+          let number = '1';
+          const startNumber = n.attributes.start ?? 1;
+          if (i === 0) number = startNumber.toString();
+
+          if (o.increasingOlMarkers) {
+            number = (parseInt(startNumber) + i).toString();
+          }
+
+          return `${number}${n.attributes.marker ?? OL}`
+
+        })();
         let d = format(n.children[i], increment(no, prefix.length + 1));
 
         if (!isLoose || i === n.children.length - 1) {
