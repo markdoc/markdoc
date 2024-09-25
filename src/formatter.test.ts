@@ -506,7 +506,7 @@ Yes!
     stable(expected);
   });
 
-  it('human-readable ordered lists', () => {
+  it('ordered lists with incrementing numbers', () => {
     const source = `
 - foo
 - bar
