@@ -543,7 +543,7 @@ Yes!
 2) bar
 3) baz
 `;
-    const options = {increasingOlMarkers: true};
+    const options = { increasingOlMarkers: true };
     check(source, expected, options);
     stable(expected, options);
   });

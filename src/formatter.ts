@@ -315,8 +315,7 @@ function* formatNode(n: Node, o: Options = {}) {
             number = (parseInt(startNumber) + i).toString();
           }
 
-          return `${number}${n.attributes.marker ?? OL}`
-
+          return `${number}${n.attributes.marker ?? OL}`;
         })();
         let d = format(n.children[i], increment(no, prefix.length + 1));
 
