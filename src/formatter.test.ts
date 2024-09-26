@@ -543,7 +543,7 @@ Yes!
 2) bar
 3) baz
 `;
-    const options = { incrementListNumbers: true };
+    const options = { orderedListMode: 'increment' };
     check(source, expected, options);
     stable(expected, options);
   });
