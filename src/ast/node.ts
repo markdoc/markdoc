@@ -42,8 +42,19 @@ export default class Node implements AstType {
     this.slots = {};
   }
 
+  get parent(): Node | null {
+    return null;
+  }
+
   *walk(): Generator<Node, void, unknown> {
-    for (const child of [...Object.values(this.slots), ...this.children]) {
+    const parent = this;
+    for (let child of [...Object.values(this.slots), ...this.children]) {
+      Object.defineProperty(child, 'parent', {
+        configurable: true,
+        get() {
+          return parent;
+        },
+      });
       yield child;
       yield* child.walk();
     }

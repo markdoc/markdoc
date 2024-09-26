@@ -74,6 +74,7 @@ baz
       'inline',
       'text',
     ]);
+    expect(iter[1].parent).toEqual(iter[0]);
   });
 });
 
