@@ -47,8 +47,9 @@ export default class Node implements AstType {
   }
 
   *walk(): Generator<Node, void, unknown> {
+    // eslint-disable-next-line @typescript-eslint/no-this-alias
     const parent = this;
-    for (let child of [...Object.values(this.slots), ...this.children]) {
+    for (const child of [...Object.values(this.slots), ...this.children]) {
       Object.defineProperty(child, 'parent', {
         configurable: true,
         get() {
