@@ -248,7 +248,7 @@ function* formatNode(n: Node, o: Options = {}) {
         .reduce(max, 0);
 
       const boundary = '`'.repeat(innerFenceLength ? innerFenceLength + 1 : 3);
-      const needsNlBeforeEndBoundary = !n.attributes.content.endsWith(NL)
+      const needsNlBeforeEndBoundary = !n.attributes.content.endsWith(NL);
 
       yield boundary;
       if (n.attributes.language) yield n.attributes.language;

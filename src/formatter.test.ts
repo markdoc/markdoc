@@ -845,7 +845,7 @@ ${'`'.repeat(4)}
   });
 
   it('makes sure fences are formatted correctly if content has no ending newline', () => {
-    const node = new Markdoc.Ast.Node('fence', {content: 'foo'})
-    expect(format(node)).toEqual('```\nfoo\n```\n')
-  })
+    const node = new Markdoc.Ast.Node('fence', { content: 'foo' });
+    expect(format(node)).toEqual('```\nfoo\n```\n');
+  });
 });
