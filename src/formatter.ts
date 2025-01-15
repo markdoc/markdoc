@@ -248,6 +248,7 @@ function* formatNode(n: Node, o: Options = {}) {
         .reduce(max, 0);
 
       const boundary = '`'.repeat(innerFenceLength ? innerFenceLength + 1 : 3);
+      const needsNlBeforeEndBoundary = !n.attributes.content.endsWith(NL);
 
       yield boundary;
       if (n.attributes.language) yield n.attributes.language;
@@ -256,6 +257,9 @@ function* formatNode(n: Node, o: Options = {}) {
       yield NL;
       yield indent;
       yield n.attributes.content.split(NL).join(NL + indent); // yield* formatChildren(n, no);
+      if (needsNlBeforeEndBoundary) {
+        yield NL;
+      }
       yield boundary;
       yield NL;
       break;

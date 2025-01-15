@@ -843,4 +843,9 @@ ${'`'.repeat(4)}
     const d = diff(expected, b.trim());
     if (d && d.includes('Compared values have no visual difference.')) return;
   });
+
+  it('makes sure fences are formatted correctly if content has no ending newline', () => {
+    const node = new Markdoc.Ast.Node('fence', { content: 'foo' });
+    expect(format(node)).toEqual('```\nfoo\n```\n');
+  });
 });
