@@ -1,4 +1,5 @@
 import Ast from './src/ast';
+import Node from './src/ast/node';
 import format from './src/formatter';
 import functions from './src/functions';
 import parser from './src/parser';
@@ -13,7 +14,7 @@ import transforms from './src/transforms';
 import { parseTags } from './src/utils';
 import validator, { validateTree } from './src/validator';
 
-import type { Node, ParserArgs } from './src/types';
+import type { ParserArgs } from './src/types';
 import type Token from 'markdown-it/lib/token';
 import type { Config, RenderableTreeNode, ValidateError } from './src/types';
 
@@ -113,6 +114,7 @@ export {
   transforms,
   renderers,
   Ast,
+  Node,
   Tag,
   Tokenizer,
   parseTags,
