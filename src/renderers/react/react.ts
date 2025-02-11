@@ -8,7 +8,7 @@ type ReactShape = Readonly<{
   Fragment: typeof Fragment;
 }>;
 
-type Component = ComponentType<unknown>;
+type Component = ComponentType<any>;
 
 function tagName(
   name: string,
