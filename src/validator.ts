@@ -9,6 +9,7 @@ import type {
   SchemaAttribute,
   ValidationError,
   Value,
+  CustomAttributeType,
 } from './types';
 
 const TypeMappings = {
@@ -25,7 +26,8 @@ export function validateType(
   type: TypeParam,
   value: Value,
   config: Config,
-  key: string
+  key: string,
+  context?: unknown
 ): boolean | ValidationError[] {
   if (!type) return true;
 
@@ -41,14 +43,14 @@ export function validateType(
   if (Ast.isAst(value)) return true;
 
   if (Array.isArray(type))
-    return type.some((t) => validateType(t, value, config, key));
+    return type.some((t) => validateType(t, value, config, key, context));
 
   if (typeof type === 'string') type = TypeMappings[type];
 
   if (typeof type === 'function') {
-    const instance: any = new type();
+    const instance = new (type as CustomAttributeType)();
     if (instance.validate) {
-      return instance.validate(value, config, key);
+      return instance.validate(value, config, key, context);
     }
   }
 
@@ -63,7 +65,11 @@ function typeToString(type: TypeParam): string {
   return type.name;
 }
 
-function validateFunction(fn: Function, config: Config): ValidationError[] {
+function validateFunction(
+  fn: Function,
+  config: Config,
+  context?: unknown
+): ValidationError[] {
   const schema = config.functions?.[fn.name];
   const errors: ValidationError[] = [];
 
@@ -76,7 +82,7 @@ function validateFunction(fn: Function, config: Config): ValidationError[] {
       },
     ];
 
-  if (schema.validate) errors.push(...schema.validate(fn, config));
+  if (schema.validate) errors.push(...schema.validate(fn, config, context));
 
   if (schema.parameters) {
     for (const [key, value] of Object.entries(fn.parameters)) {
@@ -128,7 +134,11 @@ function displayMatches(matches: any[], n: number) {
   return `[${items.join(',')}, ... ${matches.length - n} more]`;
 }
 
-export default function validator(node: Node, config: Config) {
+export default function validator(
+  node: Node,
+  config: Config,
+  context?: unknown
+) {
   const schema = node.findSchema(config);
   const errors: ValidationError[] = [...(node.errors || [])];
 
@@ -192,7 +202,7 @@ export default function validator(node: Node, config: Config) {
 
     if (Ast.isAst(value)) {
       if (Ast.isFunction(value) && config.validation?.validateFunctions)
-        errors.push(...validateFunction(value, config));
+        errors.push(...validateFunction(value, config, context));
       else if (Ast.isVariable(value) && config.variables) {
         let missing = false;
         let variables = config.variables;
@@ -218,7 +228,7 @@ export default function validator(node: Node, config: Config) {
     value = value as string;
 
     if (type) {
-      const valid = validateType(type, value, config, key);
+      const valid = validateType(type, value, config, key, context);
       if (valid === false) {
         errors.push({
           id: 'attribute-type-invalid',
@@ -251,7 +261,7 @@ export default function validator(node: Node, config: Config) {
       });
 
     if (typeof attrib.validate === 'function') {
-      const attribErrors = attrib.validate(value, config, key);
+      const attribErrors = attrib.validate(value, config, key, context);
       if (Array.isArray(attribErrors)) errors.push(...attribErrors);
     }
   }
@@ -283,7 +293,7 @@ export default function validator(node: Node, config: Config) {
   }
 
   if (schema.validate) {
-    const schemaErrors = schema.validate(node, config);
+    const schemaErrors = schema.validate(node, config, context);
     if (isPromise(schemaErrors)) {
       return schemaErrors.then((e) => errors.concat(e));
     }
@@ -303,14 +313,14 @@ export function* walkWithParents(
     yield* walkWithParents(child, [...parents, node]);
 }
 
-export function validateTree(content: Node, config: Config) {
+export function validateTree(content: Node, config: Config, context?: unknown) {
   const output = [...walkWithParents(content)].map(([node, parents]) => {
     const { type, lines, location } = node;
     const updatedConfig = {
       ...config,
       validation: { ...config.validation, parents },
     };
-    const errors = validator(node, updatedConfig);
+    const errors = validator(node, updatedConfig, context);
 
     if (isPromise(errors)) {
       return errors.then((e) =>

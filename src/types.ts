@@ -39,12 +39,17 @@ export type ConfigFunction = {
   returns?: ValidationType | ValidationType[];
   parameters?: Record<string, SchemaAttribute>;
   transform?(parameters: Record<string, any>, config: Config): any;
-  validate?(fn: Func, config: Config): ValidationError[];
+  validate?(fn: Func, config: Config, context?: unknown): ValidationError[];
 };
 
 export interface CustomAttributeTypeInterface {
   transform?(value: any, config: Config): Scalar;
-  validate?(value: any, config: Config, name: string): ValidationError[];
+  validate?(
+    value: any,
+    config: Config,
+    name: string,
+    context?: unknown
+  ): ValidationError[];
 }
 
 export interface CustomAttributeType {
@@ -108,7 +113,11 @@ export type Schema<C extends Config = Config, R = string> = {
   selfClosing?: boolean;
   inline?: boolean;
   transform?(node: Node, config: C): MaybePromise<RenderableTreeNodes>;
-  validate?(node: Node, config: C): MaybePromise<ValidationError[]>;
+  validate?(
+    node: Node,
+    config: C,
+    context?: unknown
+  ): MaybePromise<ValidationError[]>;
   description?: string;
 };
 
@@ -118,7 +127,12 @@ export type SchemaAttribute = {
   default?: any;
   required?: boolean;
   matches?: SchemaMatches | ((config: Config) => SchemaMatches);
-  validate?(value: any, config: Config, name: string): ValidationError[];
+  validate?(
+    value: any,
+    config: Config,
+    name: string,
+    context?: unknown
+  ): ValidationError[];
   errorLevel?: ValidationError['level'];
   description?: string;
 };

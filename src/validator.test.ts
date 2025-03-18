@@ -1,11 +1,98 @@
 import Markdoc, { nodes } from '../index';
 import type { Config, ValidationError } from './types';
 
-function validate(string, config) {
-  return Markdoc.validate(Markdoc.parse(string), config);
+function validate(string, config, context?: unknown) {
+  return Markdoc.validate(Markdoc.parse(string), config, context);
 }
 
 describe('validate', function () {
+  describe('context', () => {
+    it('passed to schema validate', () => {
+      const context = { foo: 'bar' };
+      const config: Config = {
+        tags: {
+          my_tag: {
+            validate(_node, _config, validateContext) {
+              expect(validateContext).toEqual(context);
+              return [];
+            },
+          },
+        },
+      };
+      expect(validate('{% my_tag /%}', config, context)).toEqual([]);
+    });
+
+    it('passed to attribute validate', () => {
+      const context = { foo: 'bar' };
+      const config: Config = {
+        tags: {
+          my_tag: {
+            attributes: {
+              my_attr: {
+                validate(_value, _config, _name, validateContext) {
+                  expect(validateContext).toEqual(context);
+                  return [];
+                },
+              },
+            },
+          },
+        },
+      };
+      expect(
+        validate('{% my_tag my_attr="value" /%}', config, context)
+      ).toEqual([]);
+    });
+
+    it('passed to custom attribute type validate', () => {
+      const context = { foo: 'bar' };
+      class CustomType {
+        validate(_value, _config, _name, validateContext) {
+          expect(validateContext).toEqual(context);
+          return [];
+        }
+      }
+      const config: Config = {
+        tags: {
+          my_tag: {
+            attributes: {
+              my_attr: {
+                type: CustomType,
+              },
+            },
+          },
+        },
+      };
+      expect(
+        validate('{% my_tag my_attr="value" /%}', config, context)
+      ).toEqual([]);
+    });
+
+    it('passed to function validate', () => {
+      const context = { foo: 'bar' };
+      const config: Config = {
+        validation: { validateFunctions: true },
+        tags: {
+          my_tag: {
+            attributes: {
+              my_attr: { type: String },
+            },
+          },
+        },
+        functions: {
+          my_function: {
+            validate(_fn, _config, validateContext) {
+              expect(validateContext).toEqual(context);
+              return [];
+            },
+          },
+        },
+      };
+      expect(
+        validate('{% my_tag my_attr=my_function() /%}', config, context)
+      ).toEqual([]);
+    });
+  });
+
   describe('function validation', function () {
     it('ensures that function exists', function () {
       const example = '{% foo bar=baz() /%}';
