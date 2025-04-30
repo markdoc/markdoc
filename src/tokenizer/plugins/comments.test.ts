@@ -90,5 +90,31 @@ describe('MarkdownIt Comments plugin', function () {
 
       expect(example).toDeepEqualSubset(output);
     });
+
+    it('block comment across multiple lines with blank lines', function () {
+      const actual = tokenizer.tokenize(
+        `
+      foo <!-- example
+
+      comment --> bar
+      `.trim()
+      );
+
+      const expected = [
+        { type: 'paragraph_open' },
+        {
+          type: 'inline',
+          children: [
+            { type: 'text', content: 'foo <!-- example' },
+          ],
+        },
+        { type: 'paragraph_close' },
+        { type: 'paragraph_open' },
+        { type: 'inline', content: 'comment --> bar' },
+        { type: 'paragraph_close' },
+      ];
+
+      expect(actual).toDeepEqualSubset(expected);
+    });
   });
 });
