@@ -16,7 +16,7 @@ function block(
 
   const close = state.src.indexOf(CLOSE, start);
 
-  if (!close) return false;
+  if (close === -1) return false;
   if (silent) return true;
 
   const content = state.src.slice(start + OPEN.length, close);
@@ -34,7 +34,7 @@ function inline(state: StateInline, silent: boolean): boolean {
 
   const close = state.src.indexOf(CLOSE, state.pos);
 
-  if (!close) return false;
+  if (close === -1) return false;
   if (silent) return true;
 
   const content = state.src.slice(state.pos + OPEN.length, close);
