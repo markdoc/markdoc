@@ -104,9 +104,7 @@ describe('MarkdownIt Comments plugin', function () {
         { type: 'paragraph_open' },
         {
           type: 'inline',
-          children: [
-            { type: 'text', content: 'foo <!-- example' },
-          ],
+          children: [{ type: 'text', content: 'foo <!-- example' }],
         },
         { type: 'paragraph_close' },
         { type: 'paragraph_open' },
