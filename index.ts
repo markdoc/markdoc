@@ -88,14 +88,16 @@ export function transform<C extends Config = Config>(
 
 export function validate<C extends Config = Config>(
   node: Node,
-  options?: C
+  options?: C,
+  context?: unknown
 ): ValidateError[];
 export function validate<C extends Config = Config>(
   content: any,
-  options?: C
+  options?: C,
+  context?: unknown
 ): any {
   const config = mergeConfig(options);
-  return validateTree(content, config);
+  return validateTree(content, config, context);
 }
 
 export function createElement(
