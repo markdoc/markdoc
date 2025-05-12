@@ -453,7 +453,7 @@ function* formatNode(n: Node, o: Options = {}) {
 }
 
 function* formatValue(
-  v: Value,
+  v: Value | Value[],
   o: Options = {}
 ): Generator<string, void, unknown> {
   switch (typeof v) {
@@ -491,7 +491,7 @@ function* formatValue(
   }
 }
 
-export default function format(v: Value, options?: Options): string {
+export default function format(v: Value | Value[], options?: Options): string {
   let doc = '';
   for (const s of formatValue(v, options)) doc += s;
   return doc.trimStart();
