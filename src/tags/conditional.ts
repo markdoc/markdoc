@@ -8,6 +8,7 @@ import {
   Schema,
   Value,
 } from '../types';
+import { ConditionalAttributeType } from '../schema-types/conditional';
 
 type Condition = { condition: Value; children: Node[] };
 
@@ -34,7 +35,7 @@ function renderConditions(node: Node) {
 
 export const tagIf: Schema = {
   attributes: {
-    primary: { type: Object, render: false },
+    primary: { type: ConditionalAttributeType, render: false },
   },
 
   transform(node, config) {
@@ -56,6 +57,6 @@ export const tagIf: Schema = {
 export const tagElse: Schema = {
   selfClosing: true,
   attributes: {
-    primary: { type: Object, render: false },
+    primary: { type: ConditionalAttributeType, render: false },
   },
 };
