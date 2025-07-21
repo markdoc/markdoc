@@ -190,8 +190,16 @@ function* formatNode(n: Node, o: Options = {}) {
       break;
     }
     case 'link': {
+      const children = [...formatChildren(n, no)].join('');
+
+      // https://spec.commonmark.org/0.31.2/#autolinks
+      if (children === n.attributes.href && !n.attributes.title) {
+        yield `<${n.attributes.href}>`;
+        break;
+      }
+
       yield '[';
-      yield* formatChildren(n, no);
+      yield children;
       yield ']';
       yield '(';
       yield* typeof n.attributes.href === 'string'
