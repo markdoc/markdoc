@@ -6,7 +6,7 @@ import {
 
 /**
  * Conditional attribute type for Markdoc {% if /%} and {% else /%} tags.
- * 
+ *
  * Acceptable values are:
  * - `boolean` (true or false)
  * - `null` or `undefined` (in case of using variable that's not defined)
@@ -19,9 +19,9 @@ export class ConditionalAttributeType implements CustomAttributeTypeInterface {
       value === null ||
       value === undefined ||
       typeof value === 'object'
-  ) {
+    ) {
       return [];
-  }
+    }
 
     return [
       {
