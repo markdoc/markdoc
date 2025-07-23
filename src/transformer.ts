@@ -1,7 +1,7 @@
 import Tag from './tag';
 import { Class } from './schema-types/class';
 import { Id } from './schema-types/id';
-import { isPromise } from './utils';
+import { isPromise, interpolateString } from './utils';
 import type {
   Config,
   MaybePromise,
@@ -44,6 +44,11 @@ export default {
       value = value === undefined ? attr.default : value;
 
       if (value === undefined) continue;
+
+      if (typeof value === 'string') {
+        value = interpolateString(value, config.variables).result;
+      }
+      
       output[name] = value;
     }
 

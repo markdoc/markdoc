@@ -1,6 +1,6 @@
 import { globalAttributes } from './transformer';
 import Ast from './ast/index';
-import { isPromise } from './utils';
+import { isPromise, interpolateString } from './utils';
 
 import type {
   Node,
@@ -216,6 +216,16 @@ export default function validator(node: Node, config: Config) {
     }
 
     value = value as string;
+    if (typeof value === 'string' && config.variables) {
+      const { undefinedVariables } = interpolateString(value, config.variables);
+      for (const undefinedVar of undefinedVariables) {
+        errors.push({
+          id: 'interpolation-variable-undefined',
+          level: 'warning',
+          message: `Undefined variable in interpolation: '${undefinedVar}' in attribute '${key}'`,
+        });
+      }
+    }
 
     if (type) {
       const valid = validateType(type, value, config, key);

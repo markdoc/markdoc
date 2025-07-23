@@ -23,6 +23,35 @@ export function isPromise(a: any): a is Promise<any> {
   return a && typeof a === 'object' && typeof a.then === 'function';
 }
 
+export interface InterpolationResult {
+  result: string;
+  undefinedVariables: string[];
+}
+
+export function interpolateString(value: string, variables?: Record<string, any>): InterpolationResult {
+  const undefinedVariables: string[] = [];
+  
+  const result = value.replace(/\$([a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)*)/g, (match, path) => {
+    if (!variables) return match;
+    
+    const pathParts = path.split('.');
+    let variableValue = variables;
+    
+    for (const part of pathParts) {
+      if (variableValue && typeof variableValue === 'object' && part in variableValue) {
+        variableValue = variableValue[part];
+      } else {
+        undefinedVariables.push(path);
+        return match;
+      }
+    }
+    
+    return String(variableValue);
+  });
+  
+  return { result, undefinedVariables };
+}
+
 export function findTagEnd(content: string, start = 0) {
   let state = STATES.normal;
   for (let pos = start; pos < content.length; pos++) {
