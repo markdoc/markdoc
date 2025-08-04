@@ -149,11 +149,15 @@ regular_word_with_underscores
 
 \\### Heading
 
+#Not a heading
+
 **/docs/\\***
 
 ~~**a \\_sentence\\_ with \\_underscores**~~
 
 - Item with [brackets]
+
+-not a list item
 
 \`\`\`
 \\*\\_[\\[]
