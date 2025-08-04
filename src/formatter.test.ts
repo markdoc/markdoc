@@ -164,6 +164,7 @@ regular_word_with_underscores
 \`\`\`
 
 {% table %}
+- <https://autolink.com>
 - **[Link](https://example.com?q=()**
 - **[Link](https://example.com?q=\\()**
 - **[Link](https://example.com?q=\\(\\))**
