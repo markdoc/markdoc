@@ -224,7 +224,7 @@ function* formatNode(n: Node, o: Options = {}) {
           yield* escapeMarkdownCharacters(content, /[*_~]/g);
         } else {
           // Escape > blockquote, * list item, and heading
-          yield* escapeMarkdownCharacters(content, /^\*|#+\s|>/);
+          yield* escapeMarkdownCharacters(content, /^\*|#+\s|^>/);
         }
       }
 
