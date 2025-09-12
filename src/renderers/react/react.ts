@@ -50,8 +50,8 @@ export default function dynamic(
     if (Array.isArray(node))
       return React.createElement(React.Fragment, null, ...node.map(render));
 
-    if (node === null || typeof node !== 'object' || !Tag.isTag(node))
-      return node;
+    if (node !== null || typeof node !== 'object' || !Tag.isTag(node))
+      return typeof node === 'object' ? JSON.stringify(node) : node;
 
     const {
       name,
