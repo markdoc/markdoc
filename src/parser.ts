@@ -213,7 +213,7 @@ export default function parser(tokens: Token[], args?: string | ParserArgs) {
         message: `Node '${node.tag || node.type}' is missing closing`,
       });
 
-  for (const transform of transforms) transform(doc);
+  for (const transform of transforms) transform(doc, args?.conditionalTags);
 
   return doc;
 }

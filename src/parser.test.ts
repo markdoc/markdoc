@@ -946,4 +946,99 @@ describe('Markdown parser', function () {
       expect(example.children[0].errors[0].id).toEqual('missing-closing');
     });
   });
+
+  describe('table parsing', function () {
+    function setupTableDoc(rows: string[]) {
+      return `
+        {% table %}
+        - column 1
+        - column 2
+        ---
+        ${rows.join('\n')}
+        {% /table %}
+      `;
+    }
+    
+    it('should preserve default if tag during table parsing without extra parser args', function () {
+      const document = setupTableDoc([
+        `
+        {% if $fakeCondition.condition1 %}
+        - cell 1
+        - cell 2
+        {% else /%}
+        - cell 3
+        - cell 4
+        {% /if %}
+        `,
+      ]);
+
+      const parsedDoc = convert(document);
+      const tags = [...parsedDoc.walk()]
+        .filter((node) => node.type === 'tag')
+        .map((node) => node.tag);
+
+      expect(tags).toContain('if');
+    });
+
+    it('should not preserve unregistered tags during table parsing without extra parser args', function () {
+      const document = setupTableDoc([
+        `
+        {% if-pref conditions=[{platform: 'web'}] %}
+        - cell 1
+        - cell 2
+        {% /if-pref %}
+        {% if-pref conditions=[{platform: 'ios'}] %}
+        - cell 1
+        - cell 2
+        {% /if-pref %}
+        `,
+      ]);
+
+      const parsedDoc = convert(document);
+      const tags = [...parsedDoc.walk()]
+        .filter((node) => node.type === 'tag')
+        .map((node) => node.tag);
+
+      expect(tags).not.toContain('if-pref');
+    });
+
+    it('should preserve all registered tags and ignore unregistered tags during table parsing with extra parser args', function () {
+      const document = setupTableDoc([
+        `
+        {% if-pref conditions=[{platform: 'web'}] %}
+        - cell 1
+        - cell 2
+        {% /if-pref %}
+        {% if-pref conditions=[{platform: 'ios'}] %}
+        - cell 1
+        - cell 2
+        {% /if-pref %}
+        `,
+        `
+        {% if $fakeCondition.condition1 %}
+        - cell 1
+        - cell 2
+        {% else /%}
+        - cell 3
+        - cell 4
+        {% /if %}
+        `,
+        `
+        {% unregistered-if-tag $fakeCondition.condition2 %}
+        - cell 1
+        - cell 2
+        {% /unregistered-if-tag %}
+        `,
+      ]);
+
+      const parsedDoc = convert(document, { conditionalTags: ['if', 'if-pref'] });
+      const tags = [...parsedDoc.walk()]
+        .filter((node) => node.type === 'tag')
+        .map((node) => node.tag);
+
+      expect(tags).toContain('if');
+      expect(tags).toContain('if-pref');
+      expect(tags).not.toContain('unregistered-if-tag');
+    });
+  });
 });
