@@ -170,7 +170,7 @@ export type ParserArgs = {
   file?: string;
   slots?: boolean;
   location?: boolean;
-  // Tags that are not harmful to table HTML syntax can be registered and preserved during table parsing. 
+  // Tags that are not harmful to table HTML syntax can be registered and preserved during table parsing.
   // default to ['if'] if not provided.
   conditionalTags?: string[];
 };

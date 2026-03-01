@@ -958,7 +958,7 @@ describe('Markdown parser', function () {
         {% /table %}
       `;
     }
-    
+
     it('should preserve default if tag during table parsing without extra parser args', function () {
       const document = setupTableDoc([
         `
@@ -1031,7 +1031,9 @@ describe('Markdown parser', function () {
         `,
       ]);
 
-      const parsedDoc = convert(document, { conditionalTags: ['if', 'if-pref'] });
+      const parsedDoc = convert(document, {
+        conditionalTags: ['if', 'if-pref'],
+      });
       const tags = [...parsedDoc.walk()]
         .filter((node) => node.type === 'tag')
         .map((node) => node.tag);
