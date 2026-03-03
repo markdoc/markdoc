@@ -170,4 +170,9 @@ export type ParserArgs = {
   file?: string;
   slots?: boolean;
   location?: boolean;
+  // A list of tags that are allowed to wrap table body content.
+  // During table transformation, these tags are kept as wrappers in tbody.
+  // Tags not in this list that appear between table rows are dropped, which prevents arbitrary custom components from wrapping rows in ways that could produce invalid HTML.
+  // @default ['if'] - By default, only the markdoc native conditional tag (`if`) is set
+  conditionalTags?: string[];
 };
