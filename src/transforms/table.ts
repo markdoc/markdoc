@@ -23,11 +23,11 @@ function isComment(node: Node) {
   );
 }
 
-function unexpectedContentError(nodeType: NodeType): ValidationError {
+function unexpectedContentError(description: string): ValidationError {
   return {
     id: 'table-syntax',
     level: 'critical',
-    message: `Unexpected content in table: found '${nodeType}' where a row (list) was expected. Make sure all tags inside table cells are indented.`,
+    message: `Unexpected content in table: found '${description}' where a row (list) was expected. Make sure all content inside table cells is indented.`,
   };
 }
 

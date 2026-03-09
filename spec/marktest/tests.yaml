@@ -1108,7 +1108,7 @@
     ---
     Escaped content
     {% /table %}
-  expectedError: "Unexpected content in table: found 'paragraph' where a row (list) was expected. Make sure all tags inside table cells are indented."
+  expectedError: "Unexpected content in table: found 'paragraph' where a row (list) was expected. Make sure all content inside table cells is indented."
 
 - name: Table with invalid conditional content in body
   code: |
@@ -1122,7 +1122,7 @@
     Escaped content
     {% /if %}
     {% /table %}
-  expectedError: "Unexpected content in table: found 'paragraph' where a row (list) was expected. Make sure all tags inside table cells are indented."
+  expectedError: "Unexpected content in table: found 'paragraph' where a row (list) was expected. Make sure all content inside table cells is indented."
 
 - name: Closing tag with trailing whitespace
   config:
