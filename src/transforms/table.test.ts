@@ -13,9 +13,9 @@ describe('table transform validation', function () {
 * Cell 1
 * Cell 2
 {% if $foo %}
-This is invalid content at the row level of the table.
+This is invalid conditional content at the row level of the table.
 {% /if %}
-This is also invalid content at the row level.
+This is invalid non-conditional content at the row level.
 {% /table %}`;
 
     const errors = validate(input);
@@ -23,13 +23,27 @@ This is also invalid content at the row level.
       (e) => e.error.id === 'table-syntax'
     );
 
-    // One error for the paragraph inside the conditional, one for the bare paragraph
+    // One error for the paragraph inside the conditional (on the if tag),
+    // one for the bare paragraph (on the table tag since the node is discarded)
     expect(tableSyntaxErrors.length).toBe(2);
     for (const err of tableSyntaxErrors) {
       expect(err.error.level).toBe('critical');
       expect(err.error.message).toContain('paragraph');
       expect(err.error.message).toContain('indented');
     }
+
+    // The conditional error should point to the {% if %} tag, not the table
+    const conditionalError = tableSyntaxErrors.find(
+      (e) => e.type === 'tag' && e.location?.start.line !== 0
+    );
+    expect(conditionalError).toBeDefined();
+    expect(conditionalError?.location?.start.line).toBeGreaterThan(0);
+
+    // The row-level error should point to the table tag (paragraph is discarded)
+    const rowLevelError = tableSyntaxErrors.find(
+      (e) => e.location?.start.line === 0
+    );
+    expect(rowLevelError).toBeDefined();
   });
 
   it('does not produce errors for valid conditional rows', function () {
@@ -134,5 +148,55 @@ comment inside conditional
     );
 
     expect(tableSyntaxErrors).toEqual([]);
+  });
+
+  it('produces an error for invalid tags inside a table conditional', function () {
+    const input = `{% table %}
+* Heading 1
+* Heading 2
+---
+{% if $foo %}
+{% callout %}
+This is not a valid row
+{% /callout %}
+{% /if %}
+{% /table %}`;
+
+    const config = {
+      tags: { callout: { render: 'div' } },
+    };
+
+    const errors = validate(input, config);
+    const tableSyntaxErrors = errors.filter(
+      (e) => e.error.id === 'table-syntax'
+    );
+
+    expect(tableSyntaxErrors.length).toBe(1);
+    expect(tableSyntaxErrors[0].error.level).toBe('critical');
+    expect(tableSyntaxErrors[0].error.message).toContain('tag callout');
+  });
+
+  it('produces an error for non-conditional tags at the row level of a table', function () {
+    const input = `{% table %}
+* Heading 1
+* Heading 2
+---
+{% callout %}
+This is not a valid row
+{% /callout %}
+{% /table %}`;
+
+    const config = {
+      tags: { callout: { render: 'div' } },
+    };
+
+    const errors = validate(input, config);
+    const tableSyntaxErrors = errors.filter(
+      (e) => e.error.id === 'table-syntax'
+    );
+
+    expect(tableSyntaxErrors.length).toBe(1);
+    expect(tableSyntaxErrors[0].error.level).toBe('critical');
+    expect(tableSyntaxErrors[0].error.message).toContain('tag');
   });
 });

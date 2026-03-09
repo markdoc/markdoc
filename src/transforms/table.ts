@@ -23,11 +23,19 @@ function isComment(node: Node) {
   );
 }
 
-function unexpectedContentError(description: string): ValidationError {
+function unexpectedNodeError({
+  type,
+  tag,
+}: {
+  type: NodeType;
+  tag?: string;
+}): ValidationError {
   return {
     id: 'table-syntax',
     level: 'critical',
-    message: `Unexpected content in table: found '${description}' where a row (list) was expected. Make sure all content inside table cells is indented.`,
+    message: `Found ${type}${
+      tag ? ` ${tag}` : ''
+    } where a list was expected. Make sure all content inside table cells is indented.`,
   };
 }
 
@@ -61,8 +69,16 @@ export default function transform(
           // Replace children and skip HRs in order to support conditionals with multiple rows
           if (child.type === 'hr') continue;
           if (child.type === 'list') convertToRow(child);
-          else if (child.type !== 'tag' && !isComment(child)) {
-            node.errors.push(unexpectedContentError(child.type));
+          else if (
+            isComment(child) ||
+            child.tag === 'else' ||
+            isConditionalTag(child, conditionalTags)
+          ) {
+            // Allow structural tags: else, nested conditionals, and comments
+          } else {
+            row.errors.push(
+              unexpectedNodeError({ type: child.type, tag: child.tag })
+            );
             continue;
           }
           children.push(child);
@@ -70,7 +86,7 @@ export default function transform(
 
         row.children = children;
       } else if (row.type !== 'hr' && !isComment(row)) {
-        node.errors.push(unexpectedContentError(row.type));
+        node.errors.push(unexpectedNodeError({ type: row.type, tag: row.tag }));
         continue;
       } else continue;
       tbody.push(row);
