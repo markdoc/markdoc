@@ -1,6 +1,6 @@
 import Ast from '../ast/index';
 
-import type { Node, NodeType } from '../types';
+import type { Node, NodeType, ValidationError } from '../types';
 
 function convertToRow(node: Node, cellType: NodeType = 'td') {
   node.type = 'tr';
@@ -9,6 +9,26 @@ function convertToRow(node: Node, cellType: NodeType = 'td') {
   for (const cell of node.children) cell.type = cellType;
 
   return node;
+}
+
+function isConditionalTag(node: Node, conditionalTags: string[]) {
+  return (
+    node.type === 'tag' && !!node.tag && conditionalTags.includes(node.tag)
+  );
+}
+
+function isComment(node: Node) {
+  return (
+    node.type === 'comment' || (node.type === 'tag' && node.tag === 'comment')
+  );
+}
+
+function unexpectedContentError(nodeType: NodeType): ValidationError {
+  return {
+    id: 'table-syntax',
+    level: 'critical',
+    message: `Unexpected content in table: found '${nodeType}' where a row (list) was expected. Make sure all tags inside table cells are indented.`,
+  };
 }
 
 export default function transform(
@@ -34,21 +54,24 @@ export default function transform(
       // Convert lists to rows with special-case support for conditionals
       // When a conditional is encountered, convert all of its top-level lists to rows
       if (row.type === 'list') convertToRow(row);
-      else if (
-        row.type === 'tag' &&
-        row.tag &&
-        conditionalTags.includes(row.tag)
-      ) {
+      else if (isConditionalTag(row, conditionalTags)) {
         const children = [];
 
         for (const child of row.children) {
           // Replace children and skip HRs in order to support conditionals with multiple rows
           if (child.type === 'hr') continue;
           if (child.type === 'list') convertToRow(child);
+          else if (child.type !== 'tag' && !isComment(child)) {
+            node.errors.push(unexpectedContentError(child.type));
+            continue;
+          }
           children.push(child);
         }
 
         row.children = children;
+      } else if (row.type !== 'hr' && !isComment(row)) {
+        node.errors.push(unexpectedContentError(row.type));
+        continue;
       } else continue;
       tbody.push(row);
     }
