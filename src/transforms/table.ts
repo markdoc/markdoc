@@ -1,6 +1,6 @@
 import Ast from '../ast/index';
 
-import type { Node, NodeType } from '../types';
+import type { Node, NodeType, ValidationError } from '../types';
 
 function convertToRow(node: Node, cellType: NodeType = 'td') {
   node.type = 'tr';
@@ -9,6 +9,34 @@ function convertToRow(node: Node, cellType: NodeType = 'td') {
   for (const cell of node.children) cell.type = cellType;
 
   return node;
+}
+
+function isConditionalTag(node: Node, conditionalTags: string[]) {
+  return (
+    node.type === 'tag' && !!node.tag && conditionalTags.includes(node.tag)
+  );
+}
+
+function isComment(node: Node) {
+  return (
+    node.type === 'comment' || (node.type === 'tag' && node.tag === 'comment')
+  );
+}
+
+function unexpectedNodeError({
+  type,
+  tag,
+}: {
+  type: NodeType;
+  tag?: string;
+}): ValidationError {
+  return {
+    id: 'table-syntax',
+    level: 'critical',
+    message: `Found ${type}${
+      tag ? ` ${tag}` : ''
+    } where a list was expected. Make sure all content inside table cells is indented.`,
+  };
 }
 
 export default function transform(
@@ -34,21 +62,32 @@ export default function transform(
       // Convert lists to rows with special-case support for conditionals
       // When a conditional is encountered, convert all of its top-level lists to rows
       if (row.type === 'list') convertToRow(row);
-      else if (
-        row.type === 'tag' &&
-        row.tag &&
-        conditionalTags.includes(row.tag)
-      ) {
+      else if (isConditionalTag(row, conditionalTags)) {
         const children = [];
 
         for (const child of row.children) {
           // Replace children and skip HRs in order to support conditionals with multiple rows
           if (child.type === 'hr') continue;
           if (child.type === 'list') convertToRow(child);
+          else if (
+            isComment(child) ||
+            child.tag === 'else' ||
+            isConditionalTag(child, conditionalTags)
+          ) {
+            // Allow structural tags: else, nested conditionals, and comments
+          } else {
+            row.errors.push(
+              unexpectedNodeError({ type: child.type, tag: child.tag })
+            );
+            continue;
+          }
           children.push(child);
         }
 
         row.children = children;
+      } else if (row.type !== 'hr' && !isComment(row)) {
+        node.errors.push(unexpectedNodeError({ type: row.type, tag: row.tag }));
+        continue;
       } else continue;
       tbody.push(row);
     }

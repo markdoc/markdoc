@@ -1047,6 +1047,83 @@
                 - tag: td
                   children: [Test 2 - 2]
 
+- name: Advanced table with conditional inside cell
+  config:
+    variables:
+      foo: true
+  code: |
+    {% table %}
+    * Heading 1
+    * Heading 2
+    ---
+    * Cell 1
+    * {% if $foo %}Inline conditional content{% /if %}
+    ---
+    * Cell 2
+    * Some content
+
+      {% if $foo %}
+      Conditional block
+      {% else /%}
+      Alternate block
+      {% /if %}
+    {% /table %}
+  expected:
+    - tag: table
+      children:
+        - tag: thead
+          children:
+            - tag: tr
+              children:
+                - tag: th
+                  children: [Heading 1]
+                - tag: th
+                  children: [Heading 2]
+        - tag: tbody
+          children:
+            - tag: tr
+              children:
+                - tag: td
+                  children: [Cell 1]
+                - tag: td
+                  children: [Inline conditional content]
+            - tag: tr
+              children:
+                - tag: td
+                  children:
+                    - tag: p
+                      children: [Cell 2]
+                - tag: td
+                  children:
+                    - tag: p
+                      children: [Some content]
+                    - tag: p
+                      children: [Conditional block]
+
+- name: Table with invalid content in body
+  code: |
+    {% table %}
+    * Heading 1
+    * Heading 2
+    ---
+    Escaped content
+    {% /table %}
+  expectedError: 'Found paragraph where a list was expected. Make sure all content inside table cells is indented.'
+
+- name: Table with invalid conditional content in body
+  code: |
+    {% table %}
+    * Heading 1
+    * Heading 2
+    ---
+    * Cell 1
+    * Cell 2
+    {% if $foo %}
+    Escaped content
+    {% /if %}
+    {% /table %}
+  expectedError: 'Found paragraph where a list was expected. Make sure all content inside table cells is indented.'
+
 - name: Closing tag with trailing whitespace
   config:
     tags:
