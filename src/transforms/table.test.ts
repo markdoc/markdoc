@@ -23,8 +23,8 @@ This is invalid non-conditional content at the row level.
       (e) => e.error.id === 'table-syntax'
     );
 
-    // One error for the paragraph inside the conditional (on the if tag),
-    // one for the bare paragraph (on the table tag since the node is discarded)
+    // One error for the paragraph inside the conditional,
+    // one for the bare paragraph at the row level
     expect(tableSyntaxErrors.length).toBe(2);
     for (const err of tableSyntaxErrors) {
       expect(err.error.level).toBe('critical');
@@ -32,18 +32,10 @@ This is invalid non-conditional content at the row level.
       expect(err.error.message).toContain('indented');
     }
 
-    // The conditional error should point to the {% if %} tag, not the table
-    const conditionalError = tableSyntaxErrors.find(
-      (e) => e.type === 'tag' && e.location?.start.line !== 0
-    );
-    expect(conditionalError).toBeDefined();
-    expect(conditionalError?.location?.start.line).toBeGreaterThan(0);
-
-    // The row-level error should point to the table tag (paragraph is discarded)
-    const rowLevelError = tableSyntaxErrors.find(
-      (e) => e.location?.start.line === 0
-    );
-    expect(rowLevelError).toBeDefined();
+    // Both errors should point to the actual invalid content, not the table
+    for (const err of tableSyntaxErrors) {
+      expect(err.location?.start.line).toBeGreaterThan(0);
+    }
   });
 
   it('does not produce errors for valid conditional rows', function () {
@@ -198,5 +190,7 @@ This is not a valid row
     expect(tableSyntaxErrors.length).toBe(1);
     expect(tableSyntaxErrors[0].error.level).toBe('critical');
     expect(tableSyntaxErrors[0].error.message).toContain('tag');
+    // Error should point to the callout tag, not the table
+    expect(tableSyntaxErrors[0].location?.start.line).toBeGreaterThan(0);
   });
 });

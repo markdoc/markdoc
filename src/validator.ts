@@ -314,11 +314,21 @@ export function validateTree(content: Node, config: Config) {
 
     if (isPromise(errors)) {
       return errors.then((e) =>
-        e.map((error) => ({ type, lines, location, error }))
+        e.map((error) => ({
+          type,
+          lines,
+          location: error.location ?? location,
+          error,
+        }))
       );
     }
 
-    return errors.map((error) => ({ type, lines, location, error }));
+    return errors.map((error) => ({
+      type,
+      lines,
+      location: error.location ?? location,
+      error,
+    }));
   });
 
   if (output.some(isPromise)) {

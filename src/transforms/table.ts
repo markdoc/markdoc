@@ -23,19 +23,14 @@ function isComment(node: Node) {
   );
 }
 
-function unexpectedNodeError({
-  type,
-  tag,
-}: {
-  type: NodeType;
-  tag?: string;
-}): ValidationError {
+function unexpectedNodeError(node: Node): ValidationError {
   return {
     id: 'table-syntax',
     level: 'critical',
-    message: `Found ${type}${
-      tag ? ` ${tag}` : ''
+    message: `Found ${node.type}${
+      node.tag ? ` ${node.tag}` : ''
     } where a list was expected. Make sure all content inside table cells is indented.`,
+    location: node.location,
   };
 }
 
@@ -76,9 +71,7 @@ export default function transform(
           ) {
             // Allow structural tags: else, nested conditionals, and comments
           } else {
-            row.errors.push(
-              unexpectedNodeError({ type: child.type, tag: child.tag })
-            );
+            row.errors.push(unexpectedNodeError(child));
             continue;
           }
           children.push(child);
@@ -86,7 +79,7 @@ export default function transform(
 
         row.children = children;
       } else if (row.type !== 'hr' && !isComment(row)) {
-        node.errors.push(unexpectedNodeError({ type: row.type, tag: row.tag }));
+        node.errors.push(unexpectedNodeError(row));
         continue;
       } else continue;
       tbody.push(row);
