@@ -316,7 +316,9 @@ export function validateTree(content: Node, config: Config) {
       return errors.then((e) =>
         e.map((error) => ({
           type,
-          lines,
+          lines: error.location
+            ? [error.location.start.line, error.location.end.line]
+            : lines,
           location: error.location
             ? { file: location?.file, ...error.location }
             : location,
@@ -327,7 +329,9 @@ export function validateTree(content: Node, config: Config) {
 
     return errors.map((error) => ({
       type,
-      lines,
+      lines: error.location
+        ? [error.location.start.line, error.location.end.line]
+        : lines,
       location: error.location
         ? { file: location?.file, ...error.location }
         : location,
