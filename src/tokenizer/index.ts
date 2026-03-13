@@ -20,7 +20,10 @@ export default class Tokenizer {
     // single tab), causing tab-indented nested tags like `\t{% /tag %}` to
     // be swallowed into the preceding paragraph instead of being recognised
     // as block-level annotations. See https://github.com/markdoc/markdoc/issues/581
-    this.parser = new MarkdownIt({ allowIndentation: true, ...config } as MarkdownIt.Options);
+    this.parser = new MarkdownIt({
+      allowIndentation: true,
+      ...config,
+    } as MarkdownIt.Options);
     this.parser.use(annotations, 'annotations', {});
     this.parser.use(frontmatter, 'frontmatter', {});
     this.parser.disable([
