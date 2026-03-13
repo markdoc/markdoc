@@ -744,6 +744,35 @@ describe('Markdown parser', function () {
     }).not.toThrow();
   });
 
+  it('parsing nested tags indented with tabs should produce correct nesting', function () {
+    // Regression test for https://github.com/markdoc/markdoc/issues/581
+    // A single tab expands to 4 visual columns, which previously caused
+    // markdown-it's paragraph rule to swallow the tab-indented closing tag.
+    const tabTokenizer = new Tokenizer();
+    const content =
+      '{% tag1 %}\n\t{% tag2 %}\n\t\tContents\n\t{% /tag2 %}\n{% /tag1 %}';
+    const tokens = tabTokenizer.tokenize(content);
+    const ast = parser(tokens);
+    expect(ast.errors).toDeepEqual([]);
+    expect(ast).toDeepEqualSubset({
+      type: 'document',
+      children: [
+        {
+          type: 'tag',
+          tag: 'tag1',
+          errors: [],
+          children: [
+            {
+              type: 'tag',
+              tag: 'tag2',
+              errors: [],
+            },
+          ],
+        },
+      ],
+    });
+  });
+
   it('parsing comments', function () {
     const example = convert(`
     this is a test

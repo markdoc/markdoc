@@ -13,7 +13,14 @@ export default class Tokenizer {
       allowComments?: boolean;
     } = {}
   ) {
-    this.parser = new MarkdownIt(config);
+    // Default allowIndentation to true: markdoc already disables the indented
+    // code_block rule, so there is no ambiguity between a tab-indented line
+    // and a code block. Without this default, markdown-it's paragraph rule
+    // skips terminator checks for lines whose visual indent >= 4 (e.g. a
+    // single tab), causing tab-indented nested tags like `\t{% /tag %}` to
+    // be swallowed into the preceding paragraph instead of being recognised
+    // as block-level annotations. See https://github.com/markdoc/markdoc/issues/581
+    this.parser = new MarkdownIt({ allowIndentation: true, ...config } as MarkdownIt.Options);
     this.parser.use(annotations, 'annotations', {});
     this.parser.use(frontmatter, 'frontmatter', {});
     this.parser.disable([
