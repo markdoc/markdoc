@@ -257,7 +257,7 @@ function* formatNode(n: Node, o: Options = {}) {
         // the destination has balanced parens (what the parser treats as a link).
         // Leaves patterns with unbalanced parens alone; they already round-trip
         // as plain text without escaping.
-        let escaped = content.replace(/\[/g, (_, offset) =>
+        let escaped = content.replace(/\[/g, (_: string, offset: number) =>
           startsWithLink(content, offset) ? '\\[' : '['
         );
         // Escape < that would be parsed as an autolink <scheme://...>
