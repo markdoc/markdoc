@@ -85,8 +85,43 @@ export function parseTags(content: string, firstLine = 0): Token[] {
     const end = findTagEnd(content, pos);
 
     if (end == null) {
-      // If we cannot find the closing tag, we skip over it
-      pos = pos + OPEN.length;
+      // Check if a raw '%}' exists that findTagEnd couldn't see because a
+      // string attribute was never closed.  If so, emit an error token so
+      // callers get a parse error rather than silently discarding the tag
+      // (see issue #114).  If there is no '%}' at all the '{%' is not a
+      // Markdoc tag — leave it as plain text by skipping past it.
+      const rawClose = content.indexOf(CLOSE, pos + OPEN.length);
+      if (rawClose === -1) {
+        pos = pos + OPEN.length;
+        continue;
+      }
+
+      const tagEnd = rawClose + CLOSE.length;
+      const tagText = content.slice(pos, tagEnd);
+      const lineStart = content.lastIndexOf('\n', pos);
+
+      output.push({
+        type: 'text',
+        start,
+        end: pos - 1,
+        content: content.slice(start, pos),
+      });
+
+      output.push({
+        type: 'error',
+        map: [line, line + 1],
+        position: {
+          start: pos - lineStart,
+          end: pos - lineStart + tagText.length,
+        },
+        start: pos,
+        end: tagEnd - 1,
+        info: tagText,
+        meta: { error: { message: 'Unterminated string in tag attribute' } },
+      });
+
+      start = tagEnd;
+      pos = start - 1;
       continue;
     }
 
