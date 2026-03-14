@@ -876,8 +876,7 @@ ${'`'.repeat(4)}
     const ast = Markdoc.parse(String.raw`\!\[a](https://example.com)`);
     const reparsed = Markdoc.parse(format(ast));
     const content =
-      reparsed.children?.[0]?.children?.[0]?.children?.[0]?.attributes
-        ?.content;
+      reparsed.children?.[0]?.children?.[0]?.children?.[0]?.attributes?.content;
     expect(content).toEqual('![a](https://example.com)');
   });
 });
