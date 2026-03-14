@@ -62,7 +62,24 @@ function block(
   const tagEnd = findTagEnd(state.src, start);
   const lastPossible = state.src.slice(0, finish).trim().length;
 
-  if (!tagEnd || tagEnd < lastPossible - CLOSE.length) return false;
+  if (!tagEnd || tagEnd < lastPossible - CLOSE.length) {
+    if (!tagEnd) {
+      // A %} exists on this line but was consumed as part of an unterminated string
+      // attribute, so findTagEnd returned null. Emit a parse error instead of
+      // silently treating the broken tag as plain text.
+      const lineContent = state.src.slice(start, finish + 1);
+      if (lineContent.indexOf(CLOSE) !== -1) {
+        if (!silent) {
+          const token = state.push('error', '', 0);
+          token.meta = { error: { message: 'Missing closing quote in tag attribute' } };
+          token.map = [startLine, startLine + 1];
+          state.line++;
+        }
+        return true;
+      }
+    }
+    return false;
+  }
 
   const contentStart = start + OPEN.length;
   const content = state.src.slice(contentStart, tagEnd).trim();
@@ -84,7 +101,20 @@ function inline(state: StateInline, silent: boolean): boolean {
   if (!state.src.startsWith(OPEN, state.pos)) return false;
 
   const tagEnd = findTagEnd(state.src, state.pos);
-  if (!tagEnd) return false;
+  if (!tagEnd) {
+    // A %} may exist but was consumed as part of an unterminated string attribute.
+    // Emit a parse error and advance past the broken tag.
+    const rawEnd = state.src.indexOf(CLOSE, state.pos + OPEN.length);
+    if (rawEnd !== -1) {
+      if (!silent) {
+        const token = state.push('error', '', 0);
+        token.meta = { error: { message: 'Missing closing quote in tag attribute' } };
+      }
+      state.pos = rawEnd + CLOSE.length;
+      return true;
+    }
+    return false;
+  }
 
   const content = state.src.slice(state.pos + OPEN.length, tagEnd);
   if (!silent) createToken(state, content.trim());

@@ -917,6 +917,38 @@ describe('Markdown parser', function () {
     });
   });
 
+  describe('handles tags with unterminated string attributes', function () {
+    it('emits parse-error for block tag with missing closing quote (issue #114)', function () {
+      // Previously, {% quote content="test /%} was silently ignored (treated as
+      // plain text) because the %} was consumed inside the unterminated string.
+      const example = convert(`{% quote content="test /%}`);
+      expect(example.children[0].type).toEqual('error');
+      expect(example.children[0].errors[0].id).toEqual('parse-error');
+    });
+
+    it('emits parse-error for inline tag with missing closing quote', function () {
+      const example = convert(`This is {% foo content="bar /%} a paragraph.`);
+      // The inline error node is a child of the inline container inside the paragraph.
+      const inlineNode = example.children[0].children[0];
+      const errorNode = inlineNode.children.find((c: any) => c.type === 'error');
+      expect(errorNode).toBeDefined();
+      expect(errorNode.errors[0].id).toEqual('parse-error');
+    });
+
+    it('does not affect valid tags with string attributes containing %}', function () {
+      // A properly quoted string with %} inside should still parse correctly.
+      const example = convert(`{% foo bar="this has no problem" /%}`);
+      expect(example.children[0].errors.length).toBe(0);
+    });
+
+    it('does not emit error for tag with no closing %} at all', function () {
+      // When there is no %} anywhere, the tag cannot be malformed in this way.
+      // It should be treated as plain text (original behavior).
+      const example = convert(`{% foo content="unterminated`);
+      expect(example.children[0].type).not.toEqual('error');
+    });
+  });
+
   describe('handles structural errors correctly', function () {
     it('with unmatched closing tag', function () {
       const example = convert(`
