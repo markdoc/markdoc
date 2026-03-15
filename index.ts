@@ -16,7 +16,14 @@ import validator, { validateTree } from './src/validator';
 
 import type { ParserArgs } from './src/types';
 import type Token from 'markdown-it/lib/token';
-import type { Config, RenderableTreeNode, ValidateError } from './src/types';
+import type {
+  Config,
+  MaybePromise,
+  RenderableTreeNode,
+  RenderableTreeNodes,
+  ValidateError,
+} from './src/types';
+import { isPromise } from './src/utils';
 
 export * from './src/types';
 
@@ -69,21 +76,33 @@ export function resolve<C extends Config = Config>(
 export function transform<C extends Config = Config>(
   node: Node,
   config?: C
-): RenderableTreeNode;
+): MaybePromise<RenderableTreeNode>;
 export function transform<C extends Config = Config>(
   nodes: Node[],
   config?: C
-): RenderableTreeNode[];
+): MaybePromise<RenderableTreeNode[]>;
 export function transform<C extends Config = Config>(
   nodes: any,
   options?: C
-): any {
+): MaybePromise<any> {
   const config = mergeConfig(options);
   const content = resolve(nodes, config);
 
-  if (Array.isArray(content))
-    return content.flatMap((child) => child.transform(config));
-  return content.transform(config);
+  if (Array.isArray(content)) {
+    const results = content.flatMap<MaybePromise<RenderableTreeNodes>>(
+      (child) => child.transform(config)
+    );
+    if (results.some(isPromise)) {
+      return Promise.all(results).then((resolved) =>
+        resolved.flatMap<RenderableTreeNode>((r) => (Array.isArray(r) ? r : [r]))
+      );
+    }
+    return (results as RenderableTreeNodes[]).flatMap<RenderableTreeNode>((r) =>
+      Array.isArray(r) ? r : [r]
+    );
+  }
+
+  return content.transform(config) as MaybePromise<RenderableTreeNode>;
 }
 
 export function validate<C extends Config = Config>(
