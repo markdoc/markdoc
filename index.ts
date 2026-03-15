@@ -94,7 +94,9 @@ export function transform<C extends Config = Config>(
     );
     if (results.some(isPromise)) {
       return Promise.all(results).then((resolved) =>
-        resolved.flatMap<RenderableTreeNode>((r) => (Array.isArray(r) ? r : [r]))
+        resolved.flatMap<RenderableTreeNode>((r) =>
+          Array.isArray(r) ? r : [r]
+        )
       );
     }
     return (results as RenderableTreeNodes[]).flatMap<RenderableTreeNode>((r) =>

@@ -90,7 +90,8 @@ describe('transform', function () {
           heading: {
             ...nodes.heading,
             async transform(node, config) {
-              const text = node.children[0]?.children[0]?.attributes?.content ?? '';
+              const text =
+                node.children[0]?.children[0]?.attributes?.content ?? '';
               order.push(text);
               return new Tag('h1', {}, [text]);
             },
