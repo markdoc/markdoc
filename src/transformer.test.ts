@@ -29,7 +29,7 @@ describe('transform', function () {
         nodes: {
           heading: {
             ...nodes.heading,
-            async transform(node, config) {
+            async transform(_node, _config) {
               const text = await Promise.resolve('async heading');
               return new Tag('h1', {}, [text]);
             },
@@ -59,7 +59,7 @@ describe('transform', function () {
         nodes: {
           heading: {
             ...nodes.heading,
-            async transform(node, config) {
+            async transform(_node, _config) {
               const text = await Promise.resolve('async heading');
               return new Tag('h1', {}, [text]);
             },
@@ -89,7 +89,7 @@ describe('transform', function () {
         nodes: {
           heading: {
             ...nodes.heading,
-            async transform(node, config) {
+            async transform(node, _config) {
               const text =
                 node.children[0]?.children[0]?.attributes?.content ?? '';
               order.push(text);
