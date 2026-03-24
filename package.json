@@ -55,7 +55,7 @@
     "@typescript-eslint/parser": "^5.12.0",
     "deep-assert": "0.3.0",
     "diff": "^4.0.2",
-    "esbuild": "0.13.3",
+    "esbuild": "0.25.0",
     "eslint": "^8.9.0",
     "jasmine": "3.5.0",
     "jest-diff": "^28.1.3",
