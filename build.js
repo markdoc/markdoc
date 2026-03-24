@@ -8,7 +8,6 @@ const shared = {
   sourcemap: 'external',
   external: [],
   format: 'esm',
-  watch: process.argv.includes('--watch'),
 };
 
 buildSync({ ...shared, format: 'cjs' });
