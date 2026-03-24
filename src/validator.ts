@@ -3,10 +3,12 @@ import Ast from './ast/index';
 import { isPromise } from './utils';
 
 import type {
+  Location,
   Node,
   Function,
   Config,
   SchemaAttribute,
+  ValidateError,
   ValidationError,
   Value,
 } from './types';
@@ -303,9 +305,35 @@ export function* walkWithParents(
     yield* walkWithParents(child, [...parents, node]);
 }
 
+function hasValidLocation(
+  error: ValidationError
+): error is ValidationError & { location: Location } {
+  const loc = error.location;
+  return (
+    loc != null &&
+    typeof loc.start?.line === 'number' &&
+    typeof loc.end?.line === 'number' &&
+    (loc.file === undefined || typeof loc.file === 'string')
+  );
+}
+
+function toValidateError(
+  node: { type: string; lines: number[]; location?: Location },
+  error: ValidationError
+): ValidateError {
+  if (hasValidLocation(error)) {
+    return {
+      type: node.type,
+      lines: [error.location.start.line, error.location.end.line],
+      location: { file: node.location?.file, ...error.location },
+      error,
+    };
+  }
+  return { type: node.type, lines: node.lines, location: node.location, error };
+}
+
 export function validateTree(content: Node, config: Config) {
   const output = [...walkWithParents(content)].map(([node, parents]) => {
-    const { type, lines, location } = node;
     const updatedConfig = {
       ...config,
       validation: { ...config.validation, parents },
@@ -313,12 +341,10 @@ export function validateTree(content: Node, config: Config) {
     const errors = validator(node, updatedConfig);
 
     if (isPromise(errors)) {
-      return errors.then((e) =>
-        e.map((error) => ({ type, lines, location, error }))
-      );
+      return errors.then((e) => e.map((error) => toValidateError(node, error)));
     }
 
-    return errors.map((error) => ({ type, lines, location, error }));
+    return errors.map((error) => toValidateError(node, error));
   });
 
   if (output.some(isPromise)) {
