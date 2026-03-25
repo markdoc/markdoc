@@ -70,6 +70,11 @@
     "typescript": "^5.0.0",
     "yaml-js": "^0.2.3"
   },
+  "overrides": {
+    "ts-eager": {
+      "esbuild": "0.25.0"
+    }
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/markdoc/markdoc.git"
