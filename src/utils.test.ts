@@ -75,7 +75,7 @@ describe('Templating', function () {
 
       it('for an invalid container', function () {
         const end = findTagEnd('{% foo .bar#baz');
-        expect(end).toBeUndefined;
+        expect(end).toBeNull();
       });
 
       it('in a complex container', function () {
