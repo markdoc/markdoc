@@ -50,7 +50,7 @@
   },
   "devDependencies": {
     "@types/jasmine": "^3.10.2",
-    "@types/node": "^16.11.58",
+    "@types/node": "^18.0.0",
     "@typescript-eslint/eslint-plugin": "^5.12.0",
     "@typescript-eslint/parser": "^5.12.0",
     "deep-assert": "0.3.0",
@@ -64,8 +64,8 @@
     "pegjs": "0.11.0-master.b7b87ea",
     "prettier": "^2.5.1",
     "ts-eager": "2.0.2",
-    "typedoc": "^0.22.13",
-    "typescript": "^4.5.4",
+    "typedoc": "0.28.18",
+    "typescript": "^5.0.0",
     "yaml-js": "^0.2.3"
   },
   "repository": {
