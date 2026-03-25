@@ -75,5 +75,8 @@
   "bugs": {
     "url": "https://github.com/markdoc/markdoc/issues"
   },
-  "homepage": "https://markdoc.dev"
+  "homepage": "https://markdoc.dev",
+  "overrides": {
+    "flatted": ">=3.4.2"
+  }
 }
