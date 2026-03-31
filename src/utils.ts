@@ -12,6 +12,7 @@ enum STATES {
 
 export const OPEN = '{%';
 export const CLOSE = '%}';
+export const TAG_PATTERN = /\{%\s*[\s\S]*?%\}/;
 
 export const IDENTIFIER_REGEX = /^[a-zA-Z0-9_-]+$/;
 
