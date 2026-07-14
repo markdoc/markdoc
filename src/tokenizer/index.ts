@@ -5,6 +5,8 @@ import comments from './plugins/comments';
 import link from './plugins/link';
 import type Token from 'markdown-it/lib/token';
 
+export type LinkPluginOptions = { validatedProtocols: string[] };
+
 export default class Tokenizer {
   private parser: MarkdownIt;
 
@@ -12,12 +14,17 @@ export default class Tokenizer {
     config: MarkdownIt.Options & {
       allowIndentation?: boolean;
       allowComments?: boolean;
+      linkValidationOptions?: LinkPluginOptions;
     } = {}
   ) {
     this.parser = new MarkdownIt(config);
     this.parser.use(annotations, 'annotations', {});
     this.parser.use(frontmatter, 'frontmatter', {});
-    this.parser.use(link, 'link_url_validation', {});
+    // Default to URL protocols to check for invalid hrefs
+    this.parser.use(
+      link,
+      config.linkValidationOptions ?? { validatedProtocols: ['http', 'https'] }
+    );
     this.parser.disable([
       'lheading',
       // Disable indented `code_block` support https://spec.commonmark.org/0.30/#indented-code-block

@@ -51,7 +51,10 @@ export function findTagEnd(content: string, start = 0) {
   return null;
 }
 
-export function containsMarkdocTagInUrl(content: string) {
+export function containsMarkdocTagInUrl(
+  content: string,
+  allowedProtocols: string[]
+) {
   for (let pos = 0; pos < content.length; pos++) {
     if (!content.startsWith(OPEN, pos)) continue;
 
@@ -67,9 +70,12 @@ export function containsMarkdocTagInUrl(content: string) {
     while (start > 0 && !/\s/.test(content[start - 1])) start--;
 
     // Check if the content contains the URL.
-    if (content.slice(start, pos).includes('https://')) {
-      return true;
+    for (const protocol of allowedProtocols) {
+      if (content.slice(start, pos).includes(protocol)) {
+        return true;
+      }
     }
+    return false;
   }
 
   return false;
