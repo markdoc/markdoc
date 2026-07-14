@@ -70,7 +70,6 @@ export function containsMarkdocTagInUrl(content: string) {
     if (content.slice(start, pos).includes('https://')) {
       return true;
     }
-
   }
 
   return false;
