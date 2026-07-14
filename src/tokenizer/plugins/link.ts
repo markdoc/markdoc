@@ -3,9 +3,8 @@ import type StateCore from 'markdown-it/lib/rules_core/state_core';
 import type Token from 'markdown-it/lib/token';
 import type { ValidationError } from '../../types';
 
-import { TAG_PATTERN } from '../../utils';
+import { containsMarkdocTagInUrl } from '../../utils';
 
-const MARKDOWN_LINK_DESTINATION = /\[[^\]]+\]\(([^)\n]+)\)/g;
 const INVALID_HREF_MESSAGE =
   "The 'href' format cannot contain Markdoc tag or variable. URLs must be static strings.";
 
@@ -26,13 +25,9 @@ function core(state: StateCore) {
   for (token of state.tokens) {
     if (token.type !== 'inline' || typeof token.content !== 'string') continue;
 
-    const matches = token.content.match(MARKDOWN_LINK_DESTINATION) || [];
-    const invalidLink = matches.find((linkSource) =>
-      TAG_PATTERN.test(linkSource)
-    );
-    if (!invalidLink) continue;
-
-    pushHrefError(token);
+    if (containsMarkdocTagInUrl(token.content)) {
+      pushHrefError(token);
+    }
   }
 }
 

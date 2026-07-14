@@ -12,7 +12,6 @@ enum STATES {
 
 export const OPEN = '{%';
 export const CLOSE = '%}';
-export const TAG_PATTERN = /\{%\s*[\s\S]*?%\}/;
 
 export const IDENTIFIER_REGEX = /^[a-zA-Z0-9_-]+$/;
 
@@ -50,6 +49,31 @@ export function findTagEnd(content: string, start = 0) {
   }
 
   return null;
+}
+
+export function containsMarkdocTagInUrl(content: string) {
+  for (let pos = 0; pos < content.length; pos++) {
+    if (!content.startsWith(OPEN, pos)) continue;
+
+    const end = findTagEnd(content, pos);
+    if (end === null) {
+      // If we cannot find the closing tag, we skip over it
+      pos += OPEN.length - 1;
+      continue;
+    }
+
+    // Locate the start of the content from the tag start (stop tracing the starting position when it hits the first whitespace)
+    let start = pos;
+    while (start > 0 && !/\s/.test(content[start - 1])) start--;
+
+    // Check if the content contains the URL.
+    if (content.slice(start, pos).includes('https://')) {
+      return true;
+    }
+
+  }
+
+  return false;
 }
 
 function parseTag(content: string, line: number, contentStart: number) {
