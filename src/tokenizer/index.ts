@@ -20,7 +20,7 @@ export default class Tokenizer {
     this.parser = new MarkdownIt(config);
     this.parser.use(annotations, 'annotations', {});
     this.parser.use(frontmatter, 'frontmatter', {});
-    // Default to URL protocols to check for invalid hrefs
+    // Set http and https as the default protocols to validate
     this.parser.use(
       link,
       config.linkValidationOptions ?? { validatedProtocols: ['http', 'https'] }
