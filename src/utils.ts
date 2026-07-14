@@ -71,7 +71,7 @@ export function containsMarkdocTagInUrl(
 
     // Check if the content contains the URL.
     for (const protocol of allowedProtocols) {
-      if (content.slice(start, pos).includes(protocol)) {
+      if (content.slice(start, pos).includes(`${protocol}://`)) {
         return true;
       }
     }

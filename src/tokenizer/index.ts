@@ -14,17 +14,14 @@ export default class Tokenizer {
     config: MarkdownIt.Options & {
       allowIndentation?: boolean;
       allowComments?: boolean;
+      allowLinkValidation?: boolean;
       linkValidationOptions?: LinkPluginOptions;
     } = {}
   ) {
     this.parser = new MarkdownIt(config);
     this.parser.use(annotations, 'annotations', {});
     this.parser.use(frontmatter, 'frontmatter', {});
-    // Set http and https as the default protocols to validate
-    this.parser.use(
-      link,
-      config.linkValidationOptions ?? { validatedProtocols: ['http', 'https'] }
-    );
+
     this.parser.disable([
       'lheading',
       // Disable indented `code_block` support https://spec.commonmark.org/0.30/#indented-code-block
@@ -32,6 +29,15 @@ export default class Tokenizer {
     ]);
 
     if (config.allowComments) this.parser.use(comments, 'comments', {});
+    if (config.allowLinkValidation) {
+      // Set http and https as the default protocols to validate
+      this.parser.use(
+        link,
+        config.linkValidationOptions ?? {
+          validatedProtocols: ['http', 'https'],
+        }
+      );
+    }
   }
 
   tokenize(content: string): Token[] {
