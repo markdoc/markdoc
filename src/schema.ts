@@ -169,7 +169,7 @@ export const thead: Schema = {
 
 export const strong: Schema = {
   render: 'strong',
-  children: ['em', 's', 'link', 'code', 'text', 'tag'],
+  children: ['em', 's', 'link', 'code', 'text', 'tag', 'softbreak'],
   attributes: {
     marker: { type: String, render: false },
   },
@@ -177,7 +177,7 @@ export const strong: Schema = {
 
 export const em: Schema = {
   render: 'em',
-  children: ['strong', 's', 'link', 'code', 'text', 'tag'],
+  children: ['strong', 's', 'link', 'code', 'text', 'tag', 'softbreak'],
   attributes: {
     marker: { type: String, render: false },
   },
