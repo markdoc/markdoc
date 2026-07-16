@@ -100,9 +100,11 @@ export type RenderableTreeNodes = RenderableTreeNode | RenderableTreeNode[];
 
 export type Scalar = Primitive | Scalar[] | { [key: string]: Scalar };
 
+export type SchemaChild = NodeType;
+
 export type Schema<C extends Config = Config, R = string> = {
   render?: R;
-  children?: string[];
+  children?: SchemaChild[];
   attributes?: Record<string, SchemaAttribute>;
   slots?: Record<string, SchemaSlot>;
   selfClosing?: boolean;
