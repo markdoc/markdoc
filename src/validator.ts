@@ -275,13 +275,28 @@ export default function validator(node: Node, config: Config) {
           message: `Missing required slot: '${key}'`,
         });
 
-  for (const { type } of node.children) {
-    if (schema.children && type !== 'error' && !schema.children.includes(type))
-      errors.push({
-        id: 'child-invalid',
-        level: 'warning',
-        message: `Can't nest '${type}' in '${node.tag || node.type}'`,
-      });
+  if (schema.children) {
+    const tagEntries = schema.children.filter((child) =>
+      child.startsWith('tag:')
+    );
+
+    for (const child of node.children) {
+      if (child.type === 'error') continue;
+
+      const allowed =
+        child.type === 'tag' && tagEntries.length > 0
+          ? tagEntries.includes(`tag:${child.tag}`)
+          : schema.children.includes(child.type);
+
+      if (!allowed)
+        errors.push({
+          id: 'child-invalid',
+          level: 'warning',
+          message: `Can't nest '${
+            child.tag ?? child.type
+          }' in '${node.tag || node.type}'`,
+        });
+    }
   }
 
   if (schema.validate) {
