@@ -708,4 +708,84 @@ bar
       validate(doc, config);
     });
   });
+
+  describe('children validation', () => {
+    it('restricts children to specific tags via the tag: prefix', () => {
+      const config: Config = {
+        tags: {
+          'card-group': { children: ['tag:card'] },
+          card: {},
+          other: {},
+        },
+      };
+
+      const valid = validate(
+        `{% card-group %}{% card /%}{% /card-group %}`,
+        config
+      );
+      expect(valid).toDeepEqual([]);
+
+      const invalid = validate(
+        `{% card-group %}{% other /%}{% /card-group %}`,
+        config
+      );
+      expect(invalid).toDeepEqualSubset([
+        {
+          error: {
+            id: 'child-invalid',
+            message: "Can't nest 'other' in 'card-group'",
+          },
+        },
+      ]);
+    });
+
+    it('falls back to generic type matching when no tag: entries are present', () => {
+      const config: Config = {
+        tags: {
+          list: { children: ['item'] },
+          card: {},
+        },
+      };
+
+      const output = validate(`{% list %}{% card /%}{% /list %}`, config);
+
+      expect(output).toDeepEqualSubset([
+        {
+          error: {
+            id: 'child-invalid',
+            message: "Can't nest 'card' in 'list'",
+          },
+        },
+      ]);
+    });
+
+    it('allows mixing generic types with specific tag names', () => {
+      const config: Config = {
+        tags: {
+          'card-group': { children: ['paragraph', 'tag:card'] },
+          card: {},
+          other: {},
+        },
+      };
+
+      const doc = `
+{% card-group %}
+plain text
+
+{% other /%}
+{% /card-group %}
+`;
+
+      const output = validate(doc, config);
+
+      expect(output).toDeepEqualSubset([
+        {
+          error: {
+            id: 'child-invalid',
+            message: "Can't nest 'other' in 'card-group'",
+          },
+        },
+      ]);
+    });
+  });
 });
