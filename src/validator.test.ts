@@ -747,10 +747,7 @@ bar
         },
       };
 
-      const output = validate(
-        `{% list %}{% card /%}{% /list %}`,
-        config
-      );
+      const output = validate(`{% list %}{% card /%}{% /list %}`, config);
 
       expect(output).toDeepEqualSubset([
         {

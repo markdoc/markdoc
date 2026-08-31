@@ -292,9 +292,9 @@ export default function validator(node: Node, config: Config) {
         errors.push({
           id: 'child-invalid',
           level: 'warning',
-          message: `Can't nest '${
-            child.tag ?? child.type
-          }' in '${node.tag || node.type}'`,
+          message: `Can't nest '${child.tag ?? child.type}' in '${
+            node.tag || node.type
+          }'`,
         });
     }
   }

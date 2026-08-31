@@ -104,7 +104,7 @@ export type Scalar = Primitive | Scalar[] | { [key: string]: Scalar };
  * A `NodeType` restricts children by generic node kind (e.g. 'tag' allows any tag).
  * A `tag:<name>` entry restricts to one specific tag by name; once any `tag:` entry
  * is present, tag children are matched only against those entries, not the generic 'tag' type.
- * 
+ *
  * Example usage:
  * {
  *   children: ['tag:foo', 'tag:bar', 'paragraph']
