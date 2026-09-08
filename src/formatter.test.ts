@@ -855,4 +855,28 @@ ${'`'.repeat(4)}
     const node = new Markdoc.Ast.Node('fence', { content: 'foo' });
     expect(format(node)).toEqual('```\nfoo\n```\n');
   });
+
+  it('preserves escaping on links, images, and autolinks (issue #590)', () => {
+    // \[text](url) — escaped [ must be re-emitted so it stays plain text.
+    // stable() requires a trailing \n because format appends one for paragraphs.
+    stable(String.raw`\[a](https://example.com)` + '\n');
+
+    // \<url> — escaped autolink must stay plain text, not become an autolink
+    stable(String.raw`\<https://example.com>` + '\n');
+
+    // [brackets] with no following (url) must not gain a spurious backslash
+    stable('Item with [brackets]\n');
+
+    // <not-an-autolink> must not gain a spurious backslash
+    stable('<not-an-autolink>\n');
+
+    // \!\[text](url) — the parser collapses \! and \[ into the single text
+    // node "![a](url)". The formatter escapes the [ (producing !\[...]) which
+    // is semantically equivalent and round-trips to the same content.
+    const ast = Markdoc.parse(String.raw`\!\[a](https://example.com)`);
+    const reparsed = Markdoc.parse(format(ast));
+    const content =
+      reparsed.children?.[0]?.children?.[0]?.children?.[0]?.attributes?.content;
+    expect(content).toEqual('![a](https://example.com)');
+  });
 });

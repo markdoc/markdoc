@@ -8,6 +8,7 @@ type Options = {
   orderedListMode?: 'increment' | 'repeat';
   parent?: Node;
   indent?: number;
+  nextSibling?: Node;
 };
 
 const SPACE = ' ';
@@ -27,8 +28,12 @@ const increment = (o: Options, n = 2) => ({
 });
 
 function* formatChildren(a: Node, options: Options) {
-  for (const child of a.children) {
-    yield* formatValue(child, options);
+  const children = a.children;
+  for (let i = 0; i < children.length; i++) {
+    yield* formatValue(children[i], {
+      ...options,
+      nextSibling: children[i + 1],
+    });
   }
 }
 
@@ -140,6 +145,35 @@ function* escapeMarkdownCharacters(s: string, characters: RegExp) {
     .replace(new RegExp('\xa0', 'g'), '&nbsp;');
 }
 
+/**
+ * Returns true if the string starting at `offset` begins a [text](url)
+ * pattern that would be parsed as a link. Uses CommonMark's balanced-
+ * parenthesis rule for link destinations so that patterns with unbalanced
+ * parens — which the parser already treats as plain text — are not touched.
+ */
+function startsWithLink(s: string, offset: number): boolean {
+  let i = offset;
+  if (s[i] !== '[') return false;
+  i++;
+  // scan to closing ]
+  while (i < s.length && s[i] !== ']') i++;
+  if (i >= s.length || s[i + 1] !== '(') return false;
+  i += 2; // skip ](
+  // scan URL counting balanced parens
+  let depth = 1;
+  while (i < s.length) {
+    if (s[i] === '(') depth++;
+    else if (s[i] === ')') {
+      depth--;
+      if (depth === 0) return true;
+    } else if (s[i] === ' ' || s[i] === '\t' || s[i] === '\n') {
+      return false; // unquoted whitespace makes the URL invalid
+    }
+    i++;
+  }
+  return false;
+}
+
 function* formatNode(n: Node, o: Options = {}) {
   const no = { ...o, parent: n };
   const indent = SPACE.repeat(no.indent || 0);
@@ -219,12 +253,30 @@ function* formatNode(n: Node, o: Options = {}) {
         yield* formatValue(content, no);
         yield SPACE + CLOSE;
       } else {
+        // Escape [ that starts a valid inline link [text](url) — only when
+        // the destination has balanced parens (what the parser treats as a link).
+        // Leaves patterns with unbalanced parens alone; they already round-trip
+        // as plain text without escaping.
+        let escaped = content.replace(/\[/g, (_: string, offset: number) =>
+          startsWithLink(content, offset) ? '\\[' : '['
+        );
+        // Escape < that would be parsed as an autolink <scheme://...>
+        escaped = escaped.replace(
+          /<(?=[a-zA-Z][a-zA-Z0-9+.-]*:\/\/[^>]*>)/g,
+          '\\<'
+        );
+        // Escape trailing ! when the next sibling is a link node so that the
+        // sequence ![ ... ]( ... ) is not re-parsed as an image.
+        if (o.nextSibling?.type === 'link' && escaped.endsWith('!')) {
+          escaped = escaped.slice(0, -1) + '\\!';
+        }
+
         if (o.parent && WRAPPING_TYPES.includes(o.parent.type)) {
           // Escape **strong**, _em_, and ~~s~~
-          yield* escapeMarkdownCharacters(content, /[*_~]/g);
+          yield* escapeMarkdownCharacters(escaped, /[*_~]/g);
         } else {
           // Escape > blockquote, * list item, and heading
-          yield* escapeMarkdownCharacters(content, /^\*|#+\s|^>/);
+          yield* escapeMarkdownCharacters(escaped, /^\*|#+\s|^>/);
         }
       }
 
