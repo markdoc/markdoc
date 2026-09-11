@@ -147,6 +147,8 @@ regular_word_with_underscores
 
 Text > not a blockquote
 
+Text # not a heading
+
 \\# Heading
 
 \\### Heading
