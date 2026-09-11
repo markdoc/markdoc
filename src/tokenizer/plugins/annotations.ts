@@ -12,8 +12,12 @@ type StateCore = MarkdownIt.StateCore;
 type StateWithDelimiters = (StateBlock | StateInline) & {
   delimiters?: MarkdownIt.Delimiter[];
 };
-// A real markdown-it token, plus Markdoc's own `errors` extension and
-// looser `children`/`meta` typing.
+// FenceToken combines markdown-it and Markdoc token types, using the more
+// specific markdown-it type for fields it defines (e.g. `info`, `content`,
+// `tag`), and Markdoc's own type for fields it overrides at runtime
+// (`errors`, `children`, `meta`). Previously we used module augmentation
+// (global.d.ts) to extend markdown-it's Token directly, but markdown-it 15
+// no longer exposes an augmentable module path for it.
 type FenceToken = Omit<MarkdownIt.Token, 'children' | 'meta'> &
   Pick<Token, 'errors' | 'children' | 'meta'>;
 
