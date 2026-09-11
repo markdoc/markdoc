@@ -3,7 +3,7 @@ import { parse, SyntaxError } from '../../grammar/tag';
 import Variable from '../../ast/variable';
 import Function from '../../ast/function';
 
-import type { AttributeValue, Token } from '../../types';
+import type { AttributeValue, Token, ValidationError } from '../../types';
 import type MarkdownIt from 'markdown-it';
 
 type StateBlock = MarkdownIt.StateBlock;
@@ -12,6 +12,14 @@ type StateCore = MarkdownIt.StateCore;
 type StateWithDelimiters = (StateBlock | StateInline) & {
   delimiters?: MarkdownIt.Delimiter[];
 };
+// `state.tokens` in `core()` below are always real markdown-it tokens (never
+// the lightweight pseudo-tokens `parseTags` builds), so `info`/`content`/
+// `tag` are guaranteed non-optional strings. `errors` is Markdoc's own
+// extension, bolted on at runtime, and `children`/`meta` get overwritten
+// below with Markdoc's own pseudo-tokens/tag metadata rather than real
+// markdown-it tokens.
+type FenceToken = Omit<MarkdownIt.Token, 'children' | 'meta'> &
+  Pick<Token, 'errors' | 'children' | 'meta'>;
 
 function createToken(
   state: StateWithDelimiters,
@@ -95,14 +103,14 @@ function inline(state: StateInline, silent: boolean): boolean {
 }
 
 function core(state: StateCore) {
-  let token: Token;
-  for (token of state.tokens) {
+  for (const token of state.tokens as FenceToken[]) {
     if (token.type !== 'fence') continue;
+    if (!token.map) continue;
 
-    if (token.info!.includes(OPEN)) {
-      const start = token.info!.indexOf(OPEN);
-      const end = findTagEnd(token.info!, start);
-      const content = token.info!.slice(start + OPEN.length, end ?? undefined);
+    if (token.info.includes(OPEN)) {
+      const start = token.info.indexOf(OPEN);
+      const end = findTagEnd(token.info, start);
+      const content = token.info.slice(start + OPEN.length, end ?? undefined);
 
       try {
         const { meta } = parse(content.trim(), { Variable, Function });
@@ -127,7 +135,7 @@ function core(state: StateCore) {
     )
       continue;
 
-    token.children = parseTags(token.content!, token.map![0]);
+    token.children = parseTags(token.content, token.map[0]);
   }
 }
 
