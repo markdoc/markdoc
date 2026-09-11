@@ -231,11 +231,11 @@ function* formatNode(n: Node, o: Options = {}) {
       break;
     }
     case 'blockquote': {
-      const prefix = '>' + SPACE;
-      yield n.children
-        .map((child) => format(child, no).trimStart())
-        .map((d) => NL + indent + prefix + d)
-        .join(indent + prefix);
+      const prefix = NL + indent + '>' + SPACE;
+      const inner = n.children
+        .map((child) => format(child, { ...no, indent: 0 }).trim())
+        .join(NL + NL);
+      yield prefix + inner.split(NL).join(prefix) + NL;
       break;
     }
     case 'hr': {
