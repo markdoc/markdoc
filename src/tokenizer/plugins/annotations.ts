@@ -12,12 +12,8 @@ type StateCore = MarkdownIt.StateCore;
 type StateWithDelimiters = (StateBlock | StateInline) & {
   delimiters?: MarkdownIt.Delimiter[];
 };
-// `state.tokens` in `core()` below are always real markdown-it tokens (never
-// the lightweight pseudo-tokens `parseTags` builds), so `info`/`content`/
-// `tag` are guaranteed non-optional strings. `errors` is Markdoc's own
-// extension, bolted on at runtime, and `children`/`meta` get overwritten
-// below with Markdoc's own pseudo-tokens/tag metadata rather than real
-// markdown-it tokens.
+// A real markdown-it token, plus Markdoc's own `errors` extension and
+// looser `children`/`meta` typing.
 type FenceToken = Omit<MarkdownIt.Token, 'children' | 'meta'> &
   Pick<Token, 'errors' | 'children' | 'meta'>;
 
@@ -106,10 +102,6 @@ function core(state: StateCore) {
   for (const raw of state.tokens) {
     if (raw.type !== 'fence') continue;
 
-    // Widening, not casting: `errors` is optional on FenceToken, and
-    // `raw`'s real markdown-it `children`/`meta` values satisfy Markdoc's
-    // looser typing for those fields, so this assignment is a plain
-    // structural upcast the compiler verifies on its own.
     const token: FenceToken = raw;
     if (!token.map) continue;
 

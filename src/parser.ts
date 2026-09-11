@@ -34,8 +34,7 @@ function annotate(node: Node, attributes: AttributeValue[]) {
 function handleAttrs(token: Token, type: string) {
   switch (type) {
     case 'heading':
-      // heading_open tokens are always real markdown-it tokens, which always
-      // set `tag` (e.g. "h1"-"h6").
+      // heading_open tokens always have `tag` set (e.g. "h1"-"h6")
       return { level: Number(token.tag!.replace('h', '')) };
     case 'list': {
       const attrs = token.attrs ? Object.fromEntries(token.attrs) : undefined;
@@ -64,8 +63,7 @@ function handleAttrs(token: Token, type: string) {
     case 'comment':
       return { content: (token.meta || {}).variable || token.content };
     case 'fence': {
-      // fence tokens are always real markdown-it tokens, which always set
-      // `info` (empty string when the fence has no info string).
+      // fence tokens always have `info` set (empty string if unused)
       const [language] = token.info!.split(' ', 1);
       return language === '' || language === OPEN
         ? { content: token.content }
