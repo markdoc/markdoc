@@ -167,6 +167,25 @@ describe('MarkdownIt Annotations plugin', function () {
         expect(example.length).toEqual(5);
         expect(example[2].children.length).toEqual(1);
       });
+
+      it('inside a blockquote', function () {
+        const example = parse(`
+        > {% test #foo .bar
+        >   baz=1 %}
+        > This is a test
+        > {% /test %}
+        `);
+
+        expect(example).toDeepEqualSubset([
+          { type: 'blockquote_open', nesting: 1 },
+          ...basicExample,
+          { type: 'blockquote_close', nesting: -1 },
+        ]);
+        expect(example[1].map).toDeepEqual([0, 2]);
+        expect(example[2].map).toDeepEqual([2, 3]);
+        expect(example[5].map).toDeepEqual([3, 4]);
+        expect(example.length).toEqual(7);
+      });
     });
 
     describe('inline', function () {
