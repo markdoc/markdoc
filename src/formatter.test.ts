@@ -833,6 +833,61 @@ ${'`'.repeat(4)}
     check(source, expected);
     stable(expected);
   });
+  it('lists in blockquotes', () => {
+    const source = `
+> Intro:
+>
+> - One
+> - Two
+>
+> 1. First
+> 2. Second
+>
+> After`;
+
+    const expected = `
+> Intro:
+> 
+> - One
+> - Two
+> 
+> 1. First
+> 1. Second
+> 
+> After
+`;
+
+    check(source, expected);
+    stable(expected);
+  });
+  it('nested blocks in blockquotes', () => {
+    const source = `
+> - One
+>   - Nested
+> - Two
+> 
+> > Inner
+> > quote
+> 
+> \`\`\`js
+> code();
+> \`\`\`
+`;
+
+    stable(source);
+  });
+  it('blockquotes with lists inside list items', () => {
+    const source = `
+- Item
+
+  > Quote
+  > 
+  > - One
+  > - Two
+`;
+
+    stable(source);
+  });
   it('skips over undefined variables', () => {
     const sourceNode = new Markdoc.Ast.Node(
       'tag',
