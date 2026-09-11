@@ -103,8 +103,14 @@ function inline(state: StateInline, silent: boolean): boolean {
 }
 
 function core(state: StateCore) {
-  for (const token of state.tokens as FenceToken[]) {
-    if (token.type !== 'fence') continue;
+  for (const raw of state.tokens) {
+    if (raw.type !== 'fence') continue;
+
+    // Widening, not casting: `errors` is optional on FenceToken, and
+    // `raw`'s real markdown-it `children`/`meta` values satisfy Markdoc's
+    // looser typing for those fields, so this assignment is a plain
+    // structural upcast the compiler verifies on its own.
+    const token: FenceToken = raw;
     if (!token.map) continue;
 
     if (token.info.includes(OPEN)) {
