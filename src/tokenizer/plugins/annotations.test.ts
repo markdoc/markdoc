@@ -167,6 +167,132 @@ describe('MarkdownIt Annotations plugin', function () {
         expect(example.length).toEqual(5);
         expect(example[2].children.length).toEqual(1);
       });
+
+      it('inside a blockquote', function () {
+        const example = parse(`
+        > {% test #foo .bar
+        >   baz=1 %}
+        > This is a test
+        > {% /test %}
+        `);
+
+        expect(example).toDeepEqualSubset([
+          { type: 'blockquote_open', nesting: 1 },
+          ...basicExample,
+          { type: 'blockquote_close', nesting: -1 },
+        ]);
+        expect(example[1].map).toDeepEqual([0, 2]);
+        expect(example[2].map).toDeepEqual([2, 3]);
+        expect(example[5].map).toDeepEqual([3, 4]);
+        expect(example.length).toEqual(7);
+      });
+
+      it('followed by content after the blockquote', function () {
+        const example = parse(`
+        > {% test #foo .bar
+        >   baz=1 %}
+        > This is a test
+        > {% /test %}
+        After the blockquote
+        `);
+
+        expect(example).toDeepEqualSubset([
+          { type: 'blockquote_open', nesting: 1 },
+          ...basicExample,
+          { type: 'blockquote_close', nesting: -1 },
+          { type: 'paragraph_open', tag: 'p', nesting: 1 },
+          {
+            type: 'inline',
+            nesting: 0,
+            children: [
+              { type: 'text', nesting: 0, content: 'After the blockquote' },
+            ],
+          },
+          { type: 'paragraph_close', tag: 'p', nesting: -1 },
+        ]);
+        expect(example[1].map).toDeepEqual([0, 2]);
+        expect(example[5].map).toDeepEqual([3, 4]);
+        expect(example[7].map).toDeepEqual([4, 5]);
+        expect(example.length).toEqual(10);
+      });
+
+      it('inside a list item', function () {
+        // Not dedented: list continuation depends on the indentation
+        const example = tokenizer.tokenize(`- {% test #foo .bar
+    baz=1 %}
+  This is a test
+  {% /test %}`);
+
+        expect(example).toDeepEqualSubset([
+          { type: 'bullet_list_open', nesting: 1 },
+          { type: 'list_item_open', nesting: 1 },
+          ...basicExample,
+          { type: 'list_item_close', nesting: -1 },
+          { type: 'bullet_list_close', nesting: -1 },
+        ]);
+        expect(example[2].map).toDeepEqual([0, 2]);
+        expect(example[3].map).toDeepEqual([2, 3]);
+        expect(example[6].map).toDeepEqual([3, 4]);
+        expect(example.length).toEqual(9);
+      });
+
+      it('inside a list item inside a blockquote', function () {
+        const example = tokenizer.tokenize(`> - {% test #foo .bar
+>     baz=1 %}
+>   This is a test
+>   {% /test %}`);
+
+        expect(example).toDeepEqualSubset([
+          { type: 'blockquote_open', nesting: 1 },
+          { type: 'bullet_list_open', nesting: 1 },
+          { type: 'list_item_open', nesting: 1 },
+          ...basicExample,
+          { type: 'list_item_close', nesting: -1 },
+          { type: 'bullet_list_close', nesting: -1 },
+          { type: 'blockquote_close', nesting: -1 },
+        ]);
+        expect(example[3].map).toDeepEqual([0, 2]);
+        expect(example[4].map).toDeepEqual([2, 3]);
+        expect(example[7].map).toDeepEqual([3, 4]);
+        expect(example.length).toEqual(11);
+      });
+    });
+
+    it('with a single-line container inside a blockquote', function () {
+      const example = parse(`
+      > {% test #foo .bar baz=1 %}
+      > This is a test
+      > {% /test %}
+      `);
+
+      expect(example).toDeepEqualSubset([
+        { type: 'blockquote_open', nesting: 1 },
+        {
+          type: 'tag_open',
+          nesting: 1,
+          meta: {
+            attributes: [
+              { type: 'attribute', name: 'id', value: 'foo' },
+              { type: 'class', name: 'bar', value: true },
+              { type: 'attribute', name: 'baz', value: 1 },
+            ],
+            tag: 'test',
+          },
+        },
+        { type: 'paragraph_open', tag: 'p', nesting: 1 },
+        {
+          type: 'inline',
+          nesting: 0,
+          children: [{ type: 'text', nesting: 0, content: 'This is a test' }],
+        },
+        { type: 'paragraph_close', tag: 'p', nesting: -1 },
+        { type: 'tag_close', nesting: -1, meta: { tag: 'test' } },
+        { type: 'blockquote_close', nesting: -1 },
+      ]);
+      expect(example[1].map).toDeepEqual([0, 1]);
+      expect(example[2].map).toDeepEqual([1, 2]);
+      expect(example[5].map).toDeepEqual([2, 3]);
+      expect(example.length).toEqual(7);
     });
 
     describe('inline', function () {
