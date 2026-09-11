@@ -3,7 +3,7 @@ import { parse, SyntaxError } from '../../grammar/tag';
 import Variable from '../../ast/variable';
 import Function from '../../ast/function';
 
-import type { AttributeValue, Token, ValidationError } from '../../types';
+import type { AttributeValue, Token } from '../../types';
 import type MarkdownIt from 'markdown-it';
 
 type StateBlock = MarkdownIt.StateBlock;
