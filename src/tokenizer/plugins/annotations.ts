@@ -1,19 +1,28 @@
-import { findTagEnd, parseTags } from '../../utils';
+import { findTagEnd, OPEN, CLOSE, parseTags } from '../../utils';
 import { parse, SyntaxError } from '../../grammar/tag';
 import Variable from '../../ast/variable';
 import Function from '../../ast/function';
 
-import type { AttributeValue } from '../../types';
-import type MarkdownIt from 'markdown-it/lib';
-import type StateCore from 'markdown-it/lib/rules_core/state_core';
-import type StateInline from 'markdown-it/lib/rules_inline/state_inline';
-import type StateBlock from 'markdown-it/lib/rules_block/state_block';
-import type Token from 'markdown-it/lib/token';
+import type { AttributeValue, Token } from '../../types';
+import type MarkdownIt from 'markdown-it';
 
-import { OPEN, CLOSE } from '../../utils';
+type StateBlock = MarkdownIt.StateBlock;
+type StateInline = MarkdownIt.StateInline;
+type StateCore = MarkdownIt.StateCore;
+type StateWithDelimiters = (StateBlock | StateInline) & {
+  delimiters?: MarkdownIt.Delimiter[];
+};
+// FenceToken combines markdown-it and Markdoc token types, using the more
+// specific markdown-it type for fields it defines (e.g. `info`, `content`,
+// `tag`), and Markdoc's own type for fields it overrides at runtime
+// (`errors`, `children`, `meta`). Previously we used module augmentation
+// (global.d.ts) to extend markdown-it's Token directly, but markdown-it 15
+// no longer exposes an augmentable module path for it.
+type FenceToken = Omit<MarkdownIt.Token, 'children' | 'meta'> &
+  Pick<Token, 'errors' | 'children' | 'meta'>;
 
 function createToken(
-  state: StateBlock | StateInline,
+  state: StateWithDelimiters,
   content: string,
   contentStart?: number
 ): Token {
@@ -94,14 +103,16 @@ function inline(state: StateInline, silent: boolean): boolean {
 }
 
 function core(state: StateCore) {
-  let token: Token;
-  for (token of state.tokens) {
-    if (token.type !== 'fence') continue;
+  for (const raw of state.tokens) {
+    if (raw.type !== 'fence') continue;
+
+    const token: FenceToken = raw;
+    if (!token.map) continue;
 
     if (token.info.includes(OPEN)) {
       const start = token.info.indexOf(OPEN);
       const end = findTagEnd(token.info, start);
-      const content = token.info.slice(start + OPEN.length, end);
+      const content = token.info.slice(start + OPEN.length, end ?? undefined);
 
       try {
         const { meta } = parse(content.trim(), { Variable, Function });
@@ -130,7 +141,7 @@ function core(state: StateCore) {
   }
 }
 
-export default function plugin(md: MarkdownIt /* options */) {
+export default function plugin(md: MarkdownIt.MarkdownIt /* options */) {
   md.block.ruler.before('paragraph', 'annotations', block, {
     alt: ['paragraph', 'blockquote'],
   });

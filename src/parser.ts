@@ -2,9 +2,7 @@ import Node from './ast/node';
 import transforms from './transforms/index';
 import { OPEN } from './utils';
 
-import type { AttributeValue, ParserArgs } from './types';
-
-import type Token from 'markdown-it/lib/token';
+import type { AttributeValue, NodeType, ParserArgs, Token } from './types';
 
 const mappings: Record<string, string> = {
   ordered_list: 'list',
@@ -36,7 +34,8 @@ function annotate(node: Node, attributes: AttributeValue[]) {
 function handleAttrs(token: Token, type: string) {
   switch (type) {
     case 'heading':
-      return { level: Number(token.tag.replace('h', '')) };
+      // heading_open tokens always have `tag` set (e.g. "h1"-"h6")
+      return { level: Number(token.tag!.replace('h', '')) };
     case 'list': {
       const attrs = token.attrs ? Object.fromEntries(token.attrs) : undefined;
       const ordered = token.type.startsWith('ordered');
@@ -45,13 +44,13 @@ function handleAttrs(token: Token, type: string) {
         : { ordered, marker: token.markup };
     }
     case 'link': {
-      const attrs = Object.fromEntries(token.attrs);
+      const attrs = Object.fromEntries(token.attrs ?? []);
       return attrs.title
         ? { href: attrs.href, title: attrs.title }
         : { href: attrs.href };
     }
     case 'image': {
-      const attrs = Object.fromEntries(token.attrs);
+      const attrs = Object.fromEntries(token.attrs ?? []);
       return attrs.title
         ? { alt: token.content, src: attrs.src, title: attrs.title }
         : { alt: token.content, src: attrs.src };
@@ -64,7 +63,8 @@ function handleAttrs(token: Token, type: string) {
     case 'comment':
       return { content: (token.meta || {}).variable || token.content };
     case 'fence': {
-      const [language] = token.info.split(' ', 1);
+      // fence tokens always have `info` set (empty string if unused)
+      const [language] = token.info!.split(' ', 1);
       return language === '' || language === OPEN
         ? { content: token.content }
         : { content: token.content, language };
@@ -76,11 +76,12 @@ function handleAttrs(token: Token, type: string) {
 
         let align;
         if (attrs.style) {
-          if (attrs.style.includes('left')) {
+          const style = String(attrs.style);
+          if (style.includes('left')) {
             align = 'left';
-          } else if (attrs.style.includes('center')) {
+          } else if (style.includes('center')) {
             align = 'center';
-          } else if (attrs.style.includes('right')) {
+          } else if (style.includes('right')) {
             align = 'right';
           }
         }
@@ -133,7 +134,7 @@ function handleToken(
     errors.push({ id: 'parse-error', level: 'critical', message, location });
   }
 
-  if (token.nesting < 0) {
+  if ((token.nesting ?? 0) < 0) {
     if (parent.type === typeName && parent.tag === tag) {
       if (parent.lines && token.map) parent.lines.push(...token.map);
       return nodes.pop();
@@ -147,7 +148,12 @@ function handleToken(
   }
 
   const attrs = handleAttrs(token, typeName);
-  const node = new Node(typeName, attrs, undefined, tag || undefined);
+  const node = new Node(
+    typeName as NodeType,
+    attrs,
+    undefined,
+    tag || undefined
+  );
   const { position = {} } = token;
 
   node.errors = errors;
@@ -179,7 +185,7 @@ function handleToken(
     parent.slots[node.attributes.primary] = node;
   else parent.push(node);
 
-  if (token.nesting > 0) nodes.push(node);
+  if ((token.nesting ?? 0) > 0) nodes.push(node);
 
   if (!Array.isArray(token.children)) return;
 

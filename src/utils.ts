@@ -2,7 +2,7 @@ import { parse, SyntaxError } from './grammar/tag';
 import Variable from './ast/variable';
 import Function from './ast/function';
 
-import type Token from 'markdown-it/lib/token';
+import type { Token } from './types';
 
 enum STATES {
   normal,
