@@ -65,10 +65,13 @@ function block(
   if (!tagEnd || tagEnd < lastPossible - CLOSE.length) return false;
 
   const contentStart = start + OPEN.length;
-  const content = state.src.slice(contentStart, tagEnd).trim();
   const lines = state.src
     .slice(start, tagEnd + CLOSE.length)
     .split('\n').length;
+  const text = state.getLines(startLine, startLine + lines, 0, false);
+  const content = text
+    .slice(text.indexOf(OPEN) + OPEN.length, findTagEnd(text))
+    .trim();
 
   if (content[0] === '$') return false;
 
