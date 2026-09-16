@@ -182,5 +182,38 @@ describe('Templating', function () {
         },
       ]);
     });
+
+    describe('malformed tags', function () {
+      it('generates an error token for an unterminated string attribute', function () {
+        // Previously, this was silently dropped as text (issue #114)
+        const example = '{% quote content="test /%}';
+        const output = parseTags(example);
+        const errors = output.filter((t) => t.type === 'error');
+        expect(errors.length).toBe(1);
+        expect(errors[0].meta.error.message).toBe(
+          'Unterminated string in tag attribute'
+        );
+      });
+
+      it('leaves as text when closing delimiter is entirely absent', function () {
+        // No '%}' anywhere — '{%' is not a Markdoc tag, keep it as plain text
+        const example = '{% foo bar="test"';
+        const output = parseTags(example);
+        const errors = output.filter((t) => t.type === 'error');
+        expect(errors.length).toBe(0);
+        expect(output.every((t) => t.type === 'text')).toBe(true);
+      });
+
+      it('still parses valid tags after a malformed one', function () {
+        const example = '{% bad content="oops /%} {% good /%}';
+        const output = parseTags(example);
+        const errors = output.filter((t) => t.type === 'error');
+        const tags = output.filter(
+          (t) => t.type !== 'error' && t.type !== 'text'
+        );
+        expect(errors.length).toBe(1);
+        expect(tags.length).toBeGreaterThan(0);
+      });
+    });
   });
 });
