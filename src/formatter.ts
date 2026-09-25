@@ -278,6 +278,7 @@ function* formatNode(n: Node, o: Options = {}) {
         yield indent;
       }
       const open = OPEN + SPACE;
+      const close = SPACE + (n.children.length ? '' : '/') + CLOSE;
       const attributes = [...formatAttributes(n)].filter(
         (v) => v !== undefined
       );
@@ -285,16 +286,13 @@ function* formatNode(n: Node, o: Options = {}) {
       const inlineTag = tag.join(SPACE);
 
       const isLongTagOpening =
-        inlineTag.length + open.length * 2 >
+        inlineTag.length + close.length >
         (o.maxTagOpeningWidth || MAX_TAG_OPENING_WIDTH);
 
       // {% tag attributes={...} %}
       yield (!n.inline && isLongTagOpening
         ? tag.join(NL + SPACE.repeat(open.length) + indent)
-        : inlineTag) +
-        SPACE +
-        (n.children.length ? '' : '/') +
-        CLOSE;
+        : inlineTag) + close;
 
       if (n.children.length) {
         yield* formatChildren(n, no.allowIndentation ? increment(no) : no);
