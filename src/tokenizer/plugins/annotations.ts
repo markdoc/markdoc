@@ -55,19 +55,21 @@ function block(
   silent: boolean
 ): boolean {
   const start = state.bMarks[startLine] + state.tShift[startLine];
-  const finish = state.eMarks[startLine];
 
   if (!state.src.startsWith(OPEN, start)) return false;
 
   const tagEnd = findTagEnd(state.src, start);
-  const lastPossible = state.src.slice(0, finish).trim().length;
+  if (!tagEnd) return false;
 
-  if (!tagEnd || tagEnd < lastPossible - CLOSE.length) return false;
-
-  const contentStart = start + OPEN.length;
   const lines = state.src
     .slice(start, tagEnd + CLOSE.length)
     .split('\n').length;
+  const finish = state.eMarks[startLine + lines - 1];
+  const lastPossible = state.src.slice(0, finish).trim().length;
+
+  if (tagEnd < lastPossible - CLOSE.length) return false;
+
+  const contentStart = start + OPEN.length;
   const text = state.getLines(startLine, startLine + lines, 0, false);
   const content = text
     .slice(text.indexOf(OPEN) + OPEN.length, findTagEnd(text))
