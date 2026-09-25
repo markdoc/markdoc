@@ -100,7 +100,18 @@ export type RenderableTreeNodes = RenderableTreeNode | RenderableTreeNode[];
 
 export type Scalar = Primitive | Scalar[] | { [key: string]: Scalar };
 
-export type SchemaChild = NodeType;
+/**
+ * A `NodeType` restricts children by generic node kind (e.g. 'tag' allows any tag).
+ * A `tag:<name>` entry restricts to one specific tag by name; once any `tag:` entry
+ * is present, tag children are matched only against those entries, not the generic 'tag' type.
+ *
+ * Example usage:
+ * {
+ *   children: ['tag:foo', 'tag:bar', 'paragraph']
+ * }
+ * This allows 'foo' and 'bar' tags, and 'paragraph' nodes, but no other tags or nodes.
+ */
+export type SchemaChild = NodeType | `tag:${string}`;
 
 export type Schema<C extends Config = Config, R = string> = {
   render?: R;
