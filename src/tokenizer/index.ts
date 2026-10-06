@@ -1,17 +1,17 @@
-import MarkdownIt from 'markdown-it/lib';
+import MarkdownIt from 'markdown-it';
 import annotations from './plugins/annotations';
 import frontmatter from './plugins/frontmatter';
 import comments from './plugins/comments';
 import link from './plugins/link';
-import type Token from 'markdown-it/lib/token';
+import type { Token } from '../types';
 
 export type LinkPluginOptions = { validatedProtocols: string[] };
 
 export default class Tokenizer {
-  private parser: MarkdownIt;
+  private parser: MarkdownIt.MarkdownIt;
 
   constructor(
-    config: MarkdownIt.Options & {
+    config: MarkdownIt.MarkdownItOptions & {
       allowIndentation?: boolean;
       allowComments?: boolean;
       allowLinkValidation?: boolean;
@@ -19,8 +19,8 @@ export default class Tokenizer {
     } = {}
   ) {
     this.parser = new MarkdownIt(config);
-    this.parser.use(annotations, 'annotations', {});
-    this.parser.use(frontmatter, 'frontmatter', {});
+    this.parser.use(annotations);
+    this.parser.use(frontmatter);
 
     this.parser.disable([
       'lheading',
@@ -28,7 +28,7 @@ export default class Tokenizer {
       'code',
     ]);
 
-    if (config.allowComments) this.parser.use(comments, 'comments', {});
+    if (config.allowComments) this.parser.use(comments);
     if (config.allowLinkValidation) {
       // Set http and https as the default protocols to validate
       this.parser.use(

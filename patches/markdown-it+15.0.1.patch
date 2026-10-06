@@ -1,0 +1,278 @@
+diff --git a/node_modules/markdown-it/dist/markdown-it.cjs.js b/node_modules/markdown-it/dist/markdown-it.cjs.js
+index ffee3f0..4342c01 100644
+--- a/node_modules/markdown-it/dist/markdown-it.cjs.js
++++ b/node_modules/markdown-it/dist/markdown-it.cjs.js
+@@ -2030,7 +2030,7 @@ function table(state, startLine, endLine, silent) {
+ 	if (startLine + 2 > endLine) return false;
+ 	let nextLine = startLine + 1;
+ 	if (state.sCount[nextLine] < state.blkIndent) return false;
+-	if (state.sCount[nextLine] - state.blkIndent >= 4) return false;
++	if (!state.md.options.allowIndentation && state.sCount[nextLine] - state.blkIndent >= 4) return false;
+ 	let pos = state.bMarks[nextLine] + state.tShift[nextLine];
+ 	if (pos >= state.eMarks[nextLine]) return false;
+ 	const firstCh = state.src.charCodeAt(pos++);
+@@ -2058,7 +2058,7 @@ function table(state, startLine, endLine, silent) {
+ 	}
+ 	lineText = getLine(state, startLine).trim();
+ 	if (lineText.indexOf("|") === -1) return false;
+-	if (state.sCount[startLine] - state.blkIndent >= 4) return false;
++	if (!state.md.options.allowIndentation && state.sCount[startLine] - state.blkIndent >= 4) return false;
+ 	columns = escapedSplit(lineText);
+ 	if (columns.length && columns[0] === "") columns.shift();
+ 	if (columns.length && columns[columns.length - 1] === "") columns.pop();
+@@ -2097,7 +2097,7 @@ function table(state, startLine, endLine, silent) {
+ 		if (terminate) break;
+ 		lineText = getLine(state, nextLine).trim();
+ 		if (!lineText) break;
+-		if (state.sCount[nextLine] - state.blkIndent >= 4) break;
++		if (!state.md.options.allowIndentation && state.sCount[nextLine] - state.blkIndent >= 4) break;
+ 		columns = escapedSplit(lineText);
+ 		if (columns.length && columns[0] === "") columns.shift();
+ 		if (columns.length && columns[columns.length - 1] === "") columns.pop();
+@@ -2158,7 +2158,7 @@ function code(state, startLine, endLine) {
+ function fence(state, startLine, endLine, silent) {
+ 	let pos = state.bMarks[startLine] + state.tShift[startLine];
+ 	let max = state.eMarks[startLine];
+-	if (state.sCount[startLine] - state.blkIndent >= 4) return false;
++	if (!state.md.options.allowIndentation && state.sCount[startLine] - state.blkIndent >= 4) return false;
+ 	if (pos + 3 > max) return false;
+ 	const marker = state.src.charCodeAt(pos);
+ 	if (marker !== 126 && marker !== 96) return false;
+@@ -2181,7 +2181,7 @@ function fence(state, startLine, endLine, silent) {
+ 		max = state.eMarks[nextLine];
+ 		if (pos < max && state.sCount[nextLine] < state.blkIndent) break;
+ 		if (state.src.charCodeAt(pos) !== marker) continue;
+-		if (state.sCount[nextLine] - state.blkIndent >= 4) continue;
++		if (!state.md.options.allowIndentation && state.sCount[nextLine] - state.blkIndent >= 4) continue;
+ 		pos = state.skipChars(pos, marker);
+ 		if (pos - mem < len) continue;
+ 		pos = state.skipSpaces(pos);
+@@ -2204,7 +2204,7 @@ function blockquote(state, startLine, endLine, silent) {
+ 	let pos = state.bMarks[startLine] + state.tShift[startLine];
+ 	let max = state.eMarks[startLine];
+ 	const oldLineMax = state.lineMax;
+-	if (state.sCount[startLine] - state.blkIndent >= 4) return false;
++	if (!state.md.options.allowIndentation && state.sCount[startLine] - state.blkIndent >= 4) return false;
+ 	if (state.src.charCodeAt(pos) !== 62) return false;
+ 	if (silent) return true;
+ 	const oldBMarks = [];
+@@ -2305,7 +2305,7 @@ function blockquote(state, startLine, endLine, silent) {
+ //#region src/rules_block/hr.ts
+ function hr(state, startLine, endLine, silent) {
+ 	const max = state.eMarks[startLine];
+-	if (state.sCount[startLine] - state.blkIndent >= 4) return false;
++	if (!state.md.options.allowIndentation && state.sCount[startLine] - state.blkIndent >= 4) return false;
+ 	let pos = state.bMarks[startLine] + state.tShift[startLine];
+ 	const marker = state.src.charCodeAt(pos++);
+ 	if (marker !== 42 && marker !== 45 && marker !== 95) return false;
+@@ -2370,8 +2370,8 @@ function list(state, startLine, endLine, silent) {
+ 	let max, pos, start, token;
+ 	let nextLine = startLine;
+ 	let tight = true;
+-	if (state.sCount[nextLine] - state.blkIndent >= 4) return false;
+-	if (state.listIndent >= 0 && state.sCount[nextLine] - state.listIndent >= 4 && state.sCount[nextLine] < state.blkIndent) return false;
++	if (!state.md.options.allowIndentation && state.sCount[nextLine] - state.blkIndent >= 4) return false;
++	if (!state.md.options.allowIndentation && state.listIndent >= 0 && state.sCount[nextLine] - state.listIndent >= 4 && state.sCount[nextLine] < state.blkIndent) return false;
+ 	let isTerminatingParagraph = false;
+ 	if (silent && state.parentType === "paragraph") {
+ 		if (state.sCount[nextLine] >= state.blkIndent) isTerminatingParagraph = true;
+@@ -2419,7 +2419,7 @@ function list(state, startLine, endLine, silent) {
+ 		let indentAfterMarker;
+ 		if (contentStart >= max) indentAfterMarker = 1;
+ 		else indentAfterMarker = offset - initial;
+-		if (indentAfterMarker > 4) indentAfterMarker = 1;
++		if (!state.md.options.allowIndentation && indentAfterMarker > 4) indentAfterMarker = 1;
+ 		const indent = initial + indentAfterMarker;
+ 		token = state.push("list_item_open", "li", 1);
+ 		token.markup = String.fromCharCode(markerCharCode);
+@@ -2450,7 +2450,7 @@ function list(state, startLine, endLine, silent) {
+ 		itemLines[1] = nextLine;
+ 		if (nextLine >= endLine) break;
+ 		if (state.sCount[nextLine] < state.blkIndent) break;
+-		if (state.sCount[nextLine] - state.blkIndent >= 4) break;
++		if (!state.md.options.allowIndentation && state.sCount[nextLine] - state.blkIndent >= 4) break;
+ 		let terminate = false;
+ 		for (let i = 0, l = terminatorRules.length; i < l; i++) if (terminatorRules[i](state, nextLine, endLine, true)) {
+ 			terminate = true;
+@@ -2482,13 +2482,13 @@ function reference(state, startLine, _endLine, silent) {
+ 	let pos = state.bMarks[startLine] + state.tShift[startLine];
+ 	let max = state.eMarks[startLine];
+ 	let nextLine = startLine + 1;
+-	if (state.sCount[startLine] - state.blkIndent >= 4) return false;
++	if (!state.md.options.allowIndentation && state.sCount[startLine] - state.blkIndent >= 4) return false;
+ 	if (state.src.charCodeAt(pos) !== 91) return false;
+ 	function getNextLine(nextLine) {
+ 		const endLine = state.lineMax;
+ 		if (nextLine >= endLine || state.isEmpty(nextLine)) return null;
+ 		let isContinuation = false;
+-		if (state.sCount[nextLine] - state.blkIndent > 3) isContinuation = true;
++		if (!state.md.options.allowIndentation && state.sCount[nextLine] - state.blkIndent > 3) isContinuation = true;
+ 		if (state.sCount[nextLine] < 0) isContinuation = true;
+ 		if (!isContinuation) {
+ 			const terminatorRules = state.md.block.ruler.getRules("reference");
+@@ -2732,7 +2732,7 @@ var HTML_SEQUENCES = [
+ function html_block(state, startLine, endLine, silent) {
+ 	let pos = state.bMarks[startLine] + state.tShift[startLine];
+ 	let max = state.eMarks[startLine];
+-	if (state.sCount[startLine] - state.blkIndent >= 4) return false;
++	if (!state.md.options.allowIndentation && state.sCount[startLine] - state.blkIndent >= 4) return false;
+ 	if (!state.md.options.html) return false;
+ 	if (state.src.charCodeAt(pos) !== 60) return false;
+ 	let lineText = state.src.slice(pos, max);
+@@ -2765,7 +2765,7 @@ function html_block(state, startLine, endLine, silent) {
+ function heading(state, startLine, endLine, silent) {
+ 	let pos = state.bMarks[startLine] + state.tShift[startLine];
+ 	let max = state.eMarks[startLine];
+-	if (state.sCount[startLine] - state.blkIndent >= 4) return false;
++	if (!state.md.options.allowIndentation && state.sCount[startLine] - state.blkIndent >= 4) return false;
+ 	let ch = state.src.charCodeAt(pos);
+ 	if (ch !== 35 || pos >= max) return false;
+ 	let level = 1;
+@@ -2852,7 +2852,7 @@ function paragraph(state, startLine, endLine) {
+ 	let nextLine = startLine + 1;
+ 	state.parentType = "paragraph";
+ 	for (; nextLine < endLine && !state.isEmpty(nextLine); nextLine++) {
+-		if (state.sCount[nextLine] - state.blkIndent > 3) continue;
++		if (!state.md.options.allowIndentation && state.sCount[nextLine] - state.blkIndent > 3) continue;
+ 		if (state.sCount[nextLine] < 0) continue;
+ 		let terminate = false;
+ 		for (let i = 0, l = terminatorRules.length; i < l; i++) if (terminatorRules[i](state, nextLine, endLine, true)) {
+diff --git a/node_modules/markdown-it/dist/markdown-it.mjs b/node_modules/markdown-it/dist/markdown-it.mjs
+index 1a361c2..f382ff6 100644
+--- a/node_modules/markdown-it/dist/markdown-it.mjs
++++ b/node_modules/markdown-it/dist/markdown-it.mjs
+@@ -1516,7 +1516,7 @@ function table(state, startLine, endLine, silent) {
+ 	if (startLine + 2 > endLine) return false;
+ 	let nextLine = startLine + 1;
+ 	if (state.sCount[nextLine] < state.blkIndent) return false;
+-	if (state.sCount[nextLine] - state.blkIndent >= 4) return false;
++	if (!state.md.options.allowIndentation && state.sCount[nextLine] - state.blkIndent >= 4) return false;
+ 	let pos = state.bMarks[nextLine] + state.tShift[nextLine];
+ 	if (pos >= state.eMarks[nextLine]) return false;
+ 	const firstCh = state.src.charCodeAt(pos++);
+@@ -1544,7 +1544,7 @@ function table(state, startLine, endLine, silent) {
+ 	}
+ 	lineText = getLine(state, startLine).trim();
+ 	if (lineText.indexOf("|") === -1) return false;
+-	if (state.sCount[startLine] - state.blkIndent >= 4) return false;
++	if (!state.md.options.allowIndentation && state.sCount[startLine] - state.blkIndent >= 4) return false;
+ 	columns = escapedSplit(lineText);
+ 	if (columns.length && columns[0] === "") columns.shift();
+ 	if (columns.length && columns[columns.length - 1] === "") columns.pop();
+@@ -1583,7 +1583,7 @@ function table(state, startLine, endLine, silent) {
+ 		if (terminate) break;
+ 		lineText = getLine(state, nextLine).trim();
+ 		if (!lineText) break;
+-		if (state.sCount[nextLine] - state.blkIndent >= 4) break;
++		if (!state.md.options.allowIndentation && state.sCount[nextLine] - state.blkIndent >= 4) break;
+ 		columns = escapedSplit(lineText);
+ 		if (columns.length && columns[0] === "") columns.shift();
+ 		if (columns.length && columns[columns.length - 1] === "") columns.pop();
+@@ -1644,7 +1644,7 @@ function code(state, startLine, endLine) {
+ function fence(state, startLine, endLine, silent) {
+ 	let pos = state.bMarks[startLine] + state.tShift[startLine];
+ 	let max = state.eMarks[startLine];
+-	if (state.sCount[startLine] - state.blkIndent >= 4) return false;
++	if (!state.md.options.allowIndentation && state.sCount[startLine] - state.blkIndent >= 4) return false;
+ 	if (pos + 3 > max) return false;
+ 	const marker = state.src.charCodeAt(pos);
+ 	if (marker !== 126 && marker !== 96) return false;
+@@ -1667,7 +1667,7 @@ function fence(state, startLine, endLine, silent) {
+ 		max = state.eMarks[nextLine];
+ 		if (pos < max && state.sCount[nextLine] < state.blkIndent) break;
+ 		if (state.src.charCodeAt(pos) !== marker) continue;
+-		if (state.sCount[nextLine] - state.blkIndent >= 4) continue;
++		if (!state.md.options.allowIndentation && state.sCount[nextLine] - state.blkIndent >= 4) continue;
+ 		pos = state.skipChars(pos, marker);
+ 		if (pos - mem < len) continue;
+ 		pos = state.skipSpaces(pos);
+@@ -1690,7 +1690,7 @@ function blockquote(state, startLine, endLine, silent) {
+ 	let pos = state.bMarks[startLine] + state.tShift[startLine];
+ 	let max = state.eMarks[startLine];
+ 	const oldLineMax = state.lineMax;
+-	if (state.sCount[startLine] - state.blkIndent >= 4) return false;
++	if (!state.md.options.allowIndentation && state.sCount[startLine] - state.blkIndent >= 4) return false;
+ 	if (state.src.charCodeAt(pos) !== 62) return false;
+ 	if (silent) return true;
+ 	const oldBMarks = [];
+@@ -1791,7 +1791,7 @@ function blockquote(state, startLine, endLine, silent) {
+ //#region src/rules_block/hr.ts
+ function hr(state, startLine, endLine, silent) {
+ 	const max = state.eMarks[startLine];
+-	if (state.sCount[startLine] - state.blkIndent >= 4) return false;
++	if (!state.md.options.allowIndentation && state.sCount[startLine] - state.blkIndent >= 4) return false;
+ 	let pos = state.bMarks[startLine] + state.tShift[startLine];
+ 	const marker = state.src.charCodeAt(pos++);
+ 	if (marker !== 42 && marker !== 45 && marker !== 95) return false;
+@@ -1856,8 +1856,8 @@ function list(state, startLine, endLine, silent) {
+ 	let max, pos, start, token;
+ 	let nextLine = startLine;
+ 	let tight = true;
+-	if (state.sCount[nextLine] - state.blkIndent >= 4) return false;
+-	if (state.listIndent >= 0 && state.sCount[nextLine] - state.listIndent >= 4 && state.sCount[nextLine] < state.blkIndent) return false;
++	if (!state.md.options.allowIndentation && state.sCount[nextLine] - state.blkIndent >= 4) return false;
++	if (!state.md.options.allowIndentation && state.listIndent >= 0 && state.sCount[nextLine] - state.listIndent >= 4 && state.sCount[nextLine] < state.blkIndent) return false;
+ 	let isTerminatingParagraph = false;
+ 	if (silent && state.parentType === "paragraph") {
+ 		if (state.sCount[nextLine] >= state.blkIndent) isTerminatingParagraph = true;
+@@ -1905,7 +1905,7 @@ function list(state, startLine, endLine, silent) {
+ 		let indentAfterMarker;
+ 		if (contentStart >= max) indentAfterMarker = 1;
+ 		else indentAfterMarker = offset - initial;
+-		if (indentAfterMarker > 4) indentAfterMarker = 1;
++		if (!state.md.options.allowIndentation && indentAfterMarker > 4) indentAfterMarker = 1;
+ 		const indent = initial + indentAfterMarker;
+ 		token = state.push("list_item_open", "li", 1);
+ 		token.markup = String.fromCharCode(markerCharCode);
+@@ -1936,7 +1936,7 @@ function list(state, startLine, endLine, silent) {
+ 		itemLines[1] = nextLine;
+ 		if (nextLine >= endLine) break;
+ 		if (state.sCount[nextLine] < state.blkIndent) break;
+-		if (state.sCount[nextLine] - state.blkIndent >= 4) break;
++		if (!state.md.options.allowIndentation && state.sCount[nextLine] - state.blkIndent >= 4) break;
+ 		let terminate = false;
+ 		for (let i = 0, l = terminatorRules.length; i < l; i++) if (terminatorRules[i](state, nextLine, endLine, true)) {
+ 			terminate = true;
+@@ -1968,13 +1968,13 @@ function reference(state, startLine, _endLine, silent) {
+ 	let pos = state.bMarks[startLine] + state.tShift[startLine];
+ 	let max = state.eMarks[startLine];
+ 	let nextLine = startLine + 1;
+-	if (state.sCount[startLine] - state.blkIndent >= 4) return false;
++	if (!state.md.options.allowIndentation && state.sCount[startLine] - state.blkIndent >= 4) return false;
+ 	if (state.src.charCodeAt(pos) !== 91) return false;
+ 	function getNextLine(nextLine) {
+ 		const endLine = state.lineMax;
+ 		if (nextLine >= endLine || state.isEmpty(nextLine)) return null;
+ 		let isContinuation = false;
+-		if (state.sCount[nextLine] - state.blkIndent > 3) isContinuation = true;
++		if (!state.md.options.allowIndentation && state.sCount[nextLine] - state.blkIndent > 3) isContinuation = true;
+ 		if (state.sCount[nextLine] < 0) isContinuation = true;
+ 		if (!isContinuation) {
+ 			const terminatorRules = state.md.block.ruler.getRules("reference");
+@@ -2218,7 +2218,7 @@ var HTML_SEQUENCES = [
+ function html_block(state, startLine, endLine, silent) {
+ 	let pos = state.bMarks[startLine] + state.tShift[startLine];
+ 	let max = state.eMarks[startLine];
+-	if (state.sCount[startLine] - state.blkIndent >= 4) return false;
++	if (!state.md.options.allowIndentation && state.sCount[startLine] - state.blkIndent >= 4) return false;
+ 	if (!state.md.options.html) return false;
+ 	if (state.src.charCodeAt(pos) !== 60) return false;
+ 	let lineText = state.src.slice(pos, max);
+@@ -2251,7 +2251,7 @@ function html_block(state, startLine, endLine, silent) {
+ function heading(state, startLine, endLine, silent) {
+ 	let pos = state.bMarks[startLine] + state.tShift[startLine];
+ 	let max = state.eMarks[startLine];
+-	if (state.sCount[startLine] - state.blkIndent >= 4) return false;
++	if (!state.md.options.allowIndentation && state.sCount[startLine] - state.blkIndent >= 4) return false;
+ 	let ch = state.src.charCodeAt(pos);
+ 	if (ch !== 35 || pos >= max) return false;
+ 	let level = 1;
+@@ -2338,7 +2338,7 @@ function paragraph(state, startLine, endLine) {
+ 	let nextLine = startLine + 1;
+ 	state.parentType = "paragraph";
+ 	for (; nextLine < endLine && !state.isEmpty(nextLine); nextLine++) {
+-		if (state.sCount[nextLine] - state.blkIndent > 3) continue;
++		if (!state.md.options.allowIndentation && state.sCount[nextLine] - state.blkIndent > 3) continue;
+ 		if (state.sCount[nextLine] < 0) continue;
+ 		let terminate = false;
+ 		for (let i = 0, l = terminatorRules.length; i < l; i++) if (terminatorRules[i](state, nextLine, endLine, true)) {

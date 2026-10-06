@@ -146,6 +146,29 @@ export type ValidationError = {
   location?: Location;
 };
 
+// Markdoc's own loose token shape. It's compatible with markdown-it's real
+// `Token` class, but also covers the lightweight pseudo-tokens `parseTags`
+// builds for inline tag content, which aren't real markdown-it tokens.
+export type Token = {
+  type: string;
+  tag?: string;
+  attrs?: Array<[string, string | number]> | null;
+  map?: number[] | null;
+  nesting?: -1 | 0 | 1;
+  level?: number;
+  children?: Token[] | null;
+  content?: string;
+  markup?: string;
+  info?: string;
+  meta?: Record<string, any> | null;
+  block?: boolean;
+  hidden?: boolean;
+  errors?: ValidationError[];
+  position?: { start?: number; end?: number };
+  start?: number;
+  end?: number;
+};
+
 export type ValidateError = {
   type: string;
   lines: number[];
