@@ -78,8 +78,11 @@ function block(
     .slice(start, tagEnd + CLOSE.length)
     .split('\n').length;
   const text = state.getLines(startLine, startLine + lines, 0, false);
+  const contentEnd = findTagEnd(text);
+  if (contentEnd === null) return false;
+
   const content = text
-    .slice(text.indexOf(OPEN) + OPEN.length, findTagEnd(text))
+    .slice(text.indexOf(OPEN) + OPEN.length, contentEnd)
     .trim();
 
   if (content[0] === '$') return false;
