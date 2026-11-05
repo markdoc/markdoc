@@ -330,6 +330,34 @@ Yes!
     stable(source, { maxTagOpeningWidth: Infinity });
   });
 
+  it('long tags at the maxTagOpeningWidth boundary', () => {
+    const source = `
+{% tag a="An opening that is exactly 80 characters wide is kept on one line." %}
+Child
+{% /tag %}
+
+{% tag a="A self-closing tag exactly 80 characters wide is kept on one line" /%}
+
+{% tag a="An opening that is 81 characters wide is wrapped onto several lines" %}
+Child
+{% /tag %}
+`;
+    const expected = `
+{% tag a="An opening that is exactly 80 characters wide is kept on one line." %}
+Child
+{% /tag %}
+
+{% tag a="A self-closing tag exactly 80 characters wide is kept on one line" /%}
+
+{% tag
+   a="An opening that is 81 characters wide is wrapped onto several lines" %}
+Child
+{% /tag %}
+`;
+    check(source, expected);
+    stable(expected);
+  });
+
   it('nested tags — allowIndentation: true', () => {
     const source = `
 {% checkout %}
