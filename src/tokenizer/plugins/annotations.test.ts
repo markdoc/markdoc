@@ -168,6 +168,28 @@ describe('MarkdownIt Annotations plugin', function () {
         expect(example[2].children.length).toEqual(1);
       });
 
+      it('followed by content on its last line', function () {
+        const example = parse(`
+        {% test #foo
+          baz=1 %}This is a test{% /test %}
+        `);
+
+        expect(example).toDeepEqualSubset([
+          { type: 'paragraph_open' },
+          {
+            type: 'inline',
+            children: [
+              { type: 'tag_open', nesting: 1, meta: { tag: 'test' } },
+              { type: 'text', content: 'This is a test' },
+              { type: 'tag_close', nesting: -1, meta: { tag: 'test' } },
+            ],
+          },
+          { type: 'paragraph_close' },
+        ]);
+        expect(example.length).toEqual(3);
+        expect(example[1].children.length).toEqual(3);
+      });
+
       it('inside a blockquote', function () {
         const example = parse(`
         > {% test #foo .bar
