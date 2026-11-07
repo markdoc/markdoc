@@ -185,6 +185,18 @@ paragraph 2
     stable(source);
   });
 
+  it('links with matching text and href', () => {
+    // <href> only parses back as the same link when href is an absolute URI
+    // https://spec.commonmark.org/0.31.2/#autolinks
+    const source = `
+<https://example.com> and <mailto:foo@example.com>
+
+[README.md](README.md), [/docs](/docs), [#intro](#intro), and [//example.com](//example.com)
+`;
+
+    stable(source);
+  });
+
   it('emphasis marks', () => {
     const examples = [
       '*foo* bar baz',

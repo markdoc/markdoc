@@ -20,6 +20,9 @@ const MAX_TAG_OPENING_WIDTH = 80;
 
 const WRAPPING_TYPES = ['strong', 'em', 's'];
 
+// https://spec.commonmark.org/0.31.2/#absolute-uri
+const ABSOLUTE_URI = /^[a-z][a-z0-9+.-]{1,31}:[^\s<>]*$/i;
+
 const max = (a: number, b: number) => Math.max(a, b);
 const increment = (o: Options, n = 2) => ({
   ...o,
@@ -193,7 +196,11 @@ function* formatNode(n: Node, o: Options = {}) {
       const children = [...formatChildren(n, no)].join('');
 
       // https://spec.commonmark.org/0.31.2/#autolinks
-      if (children === n.attributes.href && !n.attributes.title) {
+      if (
+        children === n.attributes.href &&
+        !n.attributes.title &&
+        ABSOLUTE_URI.test(children)
+      ) {
         yield `<${n.attributes.href}>`;
         break;
       }
