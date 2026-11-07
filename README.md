@@ -54,6 +54,11 @@ Check out [our docs](https://markdoc.dev/docs) for more guidance on how to use M
 
 ### TypeScript
 
+The public renderer types require `@types/react`, even when using only the
+Markdown parser or HTML renderer. Package managers that install peer dependencies
+automatically will install it; otherwise, install `@types/react` explicitly.
+The React runtime is optional.
+
 This is the minimal `tsconfig.json` required to use Markdoc in your TypeScript project:
 
 ```json
@@ -83,6 +88,7 @@ Contributions and feedback are welcome and encouraged. Check out our [contributi
 1. Run `npm install`
 1. Run `npm run build`
 1. Run the tests using `npm test`
+1. Check the built package's TypeScript declarations using `npm run test:types`
 
 ## Code of conduct
 

@@ -4,13 +4,17 @@ import Variable from '../../ast/variable';
 import Function from '../../ast/function';
 
 import type { AttributeValue, Token } from '../../types';
-import type MarkdownIt from 'markdown-it';
+import type {
+  Delimiter,
+  MarkdownIt,
+  StateBlock,
+  StateInline,
+  StateCore,
+  Token as MarkdownItToken,
+} from 'markdown-it';
 
-type StateBlock = MarkdownIt.StateBlock;
-type StateInline = MarkdownIt.StateInline;
-type StateCore = MarkdownIt.StateCore;
 type StateWithDelimiters = (StateBlock | StateInline) & {
-  delimiters?: MarkdownIt.Delimiter[];
+  delimiters?: Delimiter[];
 };
 // FenceToken combines markdown-it and Markdoc token types, using the more
 // specific markdown-it type for fields it defines (e.g. `info`, `content`,
@@ -18,7 +22,7 @@ type StateWithDelimiters = (StateBlock | StateInline) & {
 // (`errors`, `children`, `meta`). Previously we used module augmentation
 // (global.d.ts) to extend markdown-it's Token directly, but markdown-it 15
 // no longer exposes an augmentable module path for it.
-type FenceToken = Omit<MarkdownIt.Token, 'children' | 'meta'> &
+type FenceToken = Omit<MarkdownItToken, 'children' | 'meta'> &
   Pick<Token, 'errors' | 'children' | 'meta'>;
 
 function createToken(
@@ -147,7 +151,7 @@ function core(state: StateCore) {
   }
 }
 
-export default function plugin(md: MarkdownIt.MarkdownIt /* options */) {
+export default function plugin(md: MarkdownIt /* options */) {
   md.block.ruler.before('paragraph', 'annotations', block, {
     alt: ['paragraph', 'blockquote'],
   });

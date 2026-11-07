@@ -25,5 +25,6 @@ jobs:
           npm run prettier:check
           npm run lint
           npm run type:check
+          npm run test:types
           npm run test
           npm run marktest

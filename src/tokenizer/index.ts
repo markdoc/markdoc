@@ -1,4 +1,5 @@
 import MarkdownIt from 'markdown-it';
+import type { MarkdownIt as MarkdownItParser } from 'markdown-it';
 import annotations from './plugins/annotations';
 import frontmatter from './plugins/frontmatter';
 import comments from './plugins/comments';
@@ -7,17 +8,30 @@ import type { Token } from '../types';
 
 export type LinkPluginOptions = { validatedProtocols: string[] };
 
-export default class Tokenizer {
-  private parser: MarkdownIt.MarkdownIt;
+// Keep public options independent of the bundled parser's type dependencies.
+// spec/types/tokenizer-options.ts checks compatibility with markdown-it.
+export type TokenizerOptions = {
+  html?: boolean;
+  xhtmlOut?: boolean;
+  breaks?: boolean;
+  langPrefix?: string;
+  linkify?: boolean;
+  typographer?: boolean;
+  quotes?: string | string[];
+  highlight?:
+    | ((content: string, language: string, attributes: string) => string)
+    | null;
+  maxNesting?: number;
+  allowIndentation?: boolean;
+  allowComments?: boolean;
+  allowLinkValidation?: boolean;
+  linkValidationOptions?: LinkPluginOptions;
+};
 
-  constructor(
-    config: MarkdownIt.MarkdownItOptions & {
-      allowIndentation?: boolean;
-      allowComments?: boolean;
-      allowLinkValidation?: boolean;
-      linkValidationOptions?: LinkPluginOptions;
-    } = {}
-  ) {
+export default class Tokenizer {
+  private parser: MarkdownItParser;
+
+  constructor(config: TokenizerOptions = {}) {
     this.parser = new MarkdownIt(config);
     this.parser.use(annotations);
     this.parser.use(frontmatter);

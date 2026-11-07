@@ -1,8 +1,8 @@
-import type MarkdownIt from 'markdown-it';
+import type { MarkdownIt, StateCore } from 'markdown-it';
 import type { Token } from '../../types';
 
 import { containsMarkdocTagInUrl } from '../../utils';
-import { LinkPluginOptions } from '..';
+import type { LinkPluginOptions } from '..';
 
 const INVALID_HREF_MESSAGE =
   "The 'href' format cannot contain Markdoc tag or variable. URLs must be static strings.";
@@ -16,7 +16,7 @@ function pushHrefError(token: Token) {
   });
 }
 
-function core(state: MarkdownIt.StateCore, options: LinkPluginOptions) {
+function core(state: StateCore, options: LinkPluginOptions) {
   let token: Token;
   for (token of state.tokens) {
     if (token.type !== 'inline' || typeof token.content !== 'string') continue;
@@ -27,9 +27,6 @@ function core(state: MarkdownIt.StateCore, options: LinkPluginOptions) {
   }
 }
 
-export default function plugin(
-  md: MarkdownIt.MarkdownIt,
-  options: LinkPluginOptions
-) {
+export default function plugin(md: MarkdownIt, options: LinkPluginOptions) {
   md.core.ruler.push('link_url_validation', (state) => core(state, options));
 }

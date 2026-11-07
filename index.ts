@@ -23,6 +23,7 @@ import type {
 } from './src/types';
 
 export * from './src/types';
+export type { TokenizerOptions } from './src/tokenizer';
 
 const tokenizer = new Tokenizer();
 
