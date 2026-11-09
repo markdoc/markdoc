@@ -15,13 +15,7 @@ We designed Markdoc to power [Stripe's public docs](http://stripe.com/docs), our
 To get started with Markdoc, first install the library:
 
 ```shell
-npm install @markdoc/markdoc
-```
-
-or
-
-```shell
-yarn add @markdoc/markdoc
+pnpm add @markdoc/markdoc
 ```
 
 and import it in your app:
@@ -76,7 +70,7 @@ This is the minimal `tsconfig.json` required to use Markdoc in your TypeScript p
 If you are using React, install Markdoc with:
 
 ```sh
-npm install @markdoc/markdoc react @types/react
+pnpm add @markdoc/markdoc react @types/react
 ```
 
 ## Contributing
@@ -85,10 +79,13 @@ Contributions and feedback are welcome and encouraged. Check out our [contributi
 
 ### Development
 
-1. Run `npm install`
-1. Run `npm run build`
-1. Run the tests using `npm test`
-1. Check the built package's TypeScript declarations using `npm run test:types`
+Use [pnpm](https://pnpm.io/installation), with the version pinned in `package.json`.
+If using Corepack, run `corepack enable` first.
+
+1. Run `pnpm install`
+1. Run `pnpm run build`
+1. Run the tests using `pnpm test`
+1. Check the built package's TypeScript declarations using `pnpm run test:types`
 
 ## Code of conduct
 

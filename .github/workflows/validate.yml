@@ -14,17 +14,18 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
+      - uses: pnpm/action-setup@v6
       - uses: actions/setup-node@v3
         with:
           node-version: 20
-          cache: "npm"
-      - name: npm install, build, and test
+          cache: "pnpm"
+      - name: Install, build, and test with pnpm
         run: |
-          npm ci
-          npm run build
-          npm run prettier:check
-          npm run lint
-          npm run type:check
-          npm run test:types
-          npm run test
-          npm run marktest
+          pnpm install --frozen-lockfile
+          pnpm run build
+          pnpm run prettier:check
+          pnpm run lint
+          pnpm run type:check
+          pnpm run test:types
+          pnpm test
+          pnpm run marktest

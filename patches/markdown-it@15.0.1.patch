@@ -1,7 +1,7 @@
-diff --git a/node_modules/markdown-it/dist/markdown-it.cjs.js b/node_modules/markdown-it/dist/markdown-it.cjs.js
+diff --git a/dist/markdown-it.cjs.js b/dist/markdown-it.cjs.js
 index ffee3f0..4342c01 100644
---- a/node_modules/markdown-it/dist/markdown-it.cjs.js
-+++ b/node_modules/markdown-it/dist/markdown-it.cjs.js
+--- a/dist/markdown-it.cjs.js
++++ b/dist/markdown-it.cjs.js
 @@ -2030,7 +2030,7 @@ function table(state, startLine, endLine, silent) {
  	if (startLine + 2 > endLine) return false;
  	let nextLine = startLine + 1;
@@ -137,10 +137,10 @@ index ffee3f0..4342c01 100644
  		if (state.sCount[nextLine] < 0) continue;
  		let terminate = false;
  		for (let i = 0, l = terminatorRules.length; i < l; i++) if (terminatorRules[i](state, nextLine, endLine, true)) {
-diff --git a/node_modules/markdown-it/dist/markdown-it.mjs b/node_modules/markdown-it/dist/markdown-it.mjs
+diff --git a/dist/markdown-it.mjs b/dist/markdown-it.mjs
 index 1a361c2..f382ff6 100644
---- a/node_modules/markdown-it/dist/markdown-it.mjs
-+++ b/node_modules/markdown-it/dist/markdown-it.mjs
+--- a/dist/markdown-it.mjs
++++ b/dist/markdown-it.mjs
 @@ -1516,7 +1516,7 @@ function table(state, startLine, endLine, silent) {
  	if (startLine + 2 > endLine) return false;
  	let nextLine = startLine + 1;
