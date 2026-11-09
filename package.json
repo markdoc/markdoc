@@ -15,9 +15,9 @@
   "sideEffects": false,
   "license": "MIT",
   "scripts": {
-    "test": "node -r ts-eager/register ./node_modules/.bin/jasmine",
+    "test": "node --import tsx ./node_modules/.bin/jasmine",
     "test:types": "node spec/types/check.mjs",
-    "marktest": "node -r ts-eager/register ${INSPECT:+--inspect-brk} spec/marktest/index.ts spec/marktest/tests.yaml",
+    "marktest": "node --import tsx ${INSPECT:+--inspect-brk} spec/marktest/index.ts spec/marktest/tests.yaml",
     "prebuild": "npx patch-package",
     "build": "npm run build:common && npm run build:types",
     "build:common": "node build.js",
@@ -58,16 +58,11 @@
     "patch-package": "^8.0.0",
     "pegjs": "0.11.0-master.b7b87ea",
     "prettier": "^2.5.1",
-    "ts-eager": "2.0.2",
+    "tsx": "4.23.15",
     "typedoc": "0.28.18",
     "typescript": "^5.0.0",
     "typescript-eslint": "^8.0.0",
     "yaml-js": "^0.2.3"
-  },
-  "overrides": {
-    "ts-eager": {
-      "esbuild": "0.25.0"
-    }
   },
   "repository": {
     "type": "git",
