@@ -1,0 +1,5 @@
+onlyBuiltDependencies:
+  - esbuild
+
+patchedDependencies:
+  markdown-it@15.0.1: patches/markdown-it@15.0.1.patch

@@ -1,4 +1,4 @@
-name: Publish Package to NPM
+name: Publish Package
 
 on:
   release:
@@ -13,11 +13,13 @@ jobs:
       id-token: write
     steps:
       - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v6
       - uses: actions/setup-node@v7
         with:
           node-version: 24
           registry-url: "https://registry.npmjs.org"
-          cache: "npm"
-      - run: npm ci
-      - run: npm run build
-      - run: npm publish --provenance --access public
+          cache: "pnpm"
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm run build
+      # Release events check out a tag rather than pnpm's default publish branch.
+      - run: pnpm publish --provenance --access public --no-git-checks

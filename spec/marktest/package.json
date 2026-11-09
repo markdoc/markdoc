@@ -1,6 +1,0 @@
-{
-  "dependencies": {
-    "diff": "^4.0.4",
-    "yaml-js": "^0.2.3"
-  }
-}
