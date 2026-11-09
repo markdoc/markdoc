@@ -16,6 +16,7 @@
   "license": "MIT",
   "scripts": {
     "test": "node -r ts-eager/register ./node_modules/.bin/jasmine",
+    "test:types": "node spec/types/check.mjs",
     "marktest": "node -r ts-eager/register ${INSPECT:+--inspect-brk} spec/marktest/index.ts spec/marktest/tests.yaml",
     "prebuild": "npx patch-package",
     "build": "npm run build:common && npm run build:types",
@@ -37,9 +38,6 @@
     "react": "*"
   },
   "peerDependenciesMeta": {
-    "@types/react": {
-      "optional": true
-    },
     "react": {
       "optional": true
     }

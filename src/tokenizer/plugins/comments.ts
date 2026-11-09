@@ -1,10 +1,10 @@
-import type MarkdownIt from 'markdown-it';
+import type { MarkdownIt, StateBlock, StateInline } from 'markdown-it';
 
 const OPEN = '<!--';
 const CLOSE = '-->';
 
 function block(
-  state: MarkdownIt.StateBlock,
+  state: StateBlock,
   startLine: number,
   endLine: number,
   silent: boolean
@@ -27,7 +27,7 @@ function block(
   return true;
 }
 
-function inline(state: MarkdownIt.StateInline, silent: boolean): boolean {
+function inline(state: StateInline, silent: boolean): boolean {
   if (!state.src.startsWith(OPEN, state.pos)) return false;
 
   const close = state.src.indexOf(CLOSE, state.pos);
@@ -43,7 +43,7 @@ function inline(state: MarkdownIt.StateInline, silent: boolean): boolean {
   return true;
 }
 
-export default function plugin(md: MarkdownIt.MarkdownIt) {
+export default function plugin(md: MarkdownIt) {
   md.block.ruler.before('table', 'comment', block, { alt: ['paragraph'] });
   md.inline.ruler.push('comment', inline);
 }

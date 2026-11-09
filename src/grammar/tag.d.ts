@@ -1,8 +1,6 @@
-import type MarkdownIt from 'markdown-it';
+import type { Token } from 'markdown-it';
 import type AstVariable from '../ast/variable';
 import type AstFunction from '../ast/function';
-
-type Token = MarkdownIt.Token;
 
 type astTypes = {
   Variable?: typeof AstVariable;

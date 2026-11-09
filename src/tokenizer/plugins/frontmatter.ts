@@ -1,18 +1,18 @@
-import type MarkdownIt from 'markdown-it';
+import type { MarkdownIt, StateBlock } from 'markdown-it';
 
 const fence = '---';
 
-function getLine(state: MarkdownIt.StateBlock, n: number) {
+function getLine(state: StateBlock, n: number) {
   return state.src.slice(state.bMarks[n], state.eMarks[n]).trim();
 }
 
-function findClose(state: MarkdownIt.StateBlock, endLine: number) {
+function findClose(state: StateBlock, endLine: number) {
   for (let line = 1; line < endLine; line++)
     if (getLine(state, line) === fence) return line;
 }
 
 function block(
-  state: MarkdownIt.StateBlock,
+  state: StateBlock,
   startLine: number,
   endLine: number,
   silent: boolean
@@ -33,6 +33,6 @@ function block(
   return true;
 }
 
-export default function plugin(md: MarkdownIt.MarkdownIt /* options */) {
+export default function plugin(md: MarkdownIt /* options */) {
   md.block.ruler.before('hr', 'frontmatter', block);
 }
