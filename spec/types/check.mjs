@@ -12,6 +12,7 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import ts from 'typescript';
+import yaml from 'yaml-js';
 
 const root = fileURLToPath(new URL('../../', import.meta.url));
 const fixtures = fileURLToPath(new URL('./', import.meta.url));
@@ -20,6 +21,9 @@ const fixtures = fileURLToPath(new URL('./', import.meta.url));
 const consumer = mkdtempSync(join(tmpdir(), 'markdoc-types-'));
 const pnpm = process.platform === 'win32' ? 'pnpm.cmd' : 'pnpm';
 const { packageManager } = JSON.parse(readFileSync(join(root, 'package.json')));
+const { minimumReleaseAge } = yaml.load(
+  readFileSync(join(root, 'pnpm-workspace.yaml'), 'utf8')
+);
 
 function check(name, files, options) {
   const program = ts.createProgram(files, {
@@ -29,6 +33,8 @@ function check(name, files, options) {
     esModuleInterop: true,
     target: ts.ScriptTarget.ES2021,
     types: [],
+    // Keep coverage of the legacy Node resolver while TypeScript 6 deprecates it.
+    ignoreDeprecations: '6.0',
     ...options,
   });
   const diagnostics = ts.getPreEmitDiagnostics(program);
@@ -58,6 +64,10 @@ try {
   writeFileSync(
     join(consumer, 'package.json'),
     JSON.stringify({ private: true, packageManager })
+  );
+  writeFileSync(
+    join(consumer, '.npmrc'),
+    `minimum-release-age=${minimumReleaseAge}\n`
   );
   execFileSync(pnpm, ['add', '--ignore-scripts', '--no-lockfile', packed], {
     cwd: consumer,

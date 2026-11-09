@@ -19,8 +19,7 @@ export type TokenizerOptions = {
   typographer?: boolean;
   quotes?: string | string[];
   highlight?:
-    | ((content: string, language: string, attributes: string) => string)
-    | null;
+    ((content: string, language: string, attributes: string) => string) | null;
   maxNesting?: number;
   allowIndentation?: boolean;
   allowComments?: boolean;

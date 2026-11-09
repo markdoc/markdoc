@@ -17,10 +17,10 @@ function tagName(
   return typeof name !== 'string'
     ? name // This can be an object, e.g. when React.forwardRef is used
     : name[0] !== name[0].toUpperCase()
-    ? name
-    : components instanceof Function
-    ? components(name)
-    : components[name];
+      ? name
+      : components instanceof Function
+        ? components(name)
+        : components[name];
 }
 
 export type RenderOpts = {
@@ -50,8 +50,10 @@ export default function dynamic(
     if (Array.isArray(node))
       return React.createElement(React.Fragment, null, ...node.map(render));
 
-    if (node === null || typeof node !== 'object' || !Tag.isTag(node))
-      return node;
+    if (node === null || typeof node !== 'object' || !Tag.isTag(node)) {
+      // Preserve passthrough values from custom transforms, including React elements.
+      return node as ReactNode;
+    }
 
     const {
       name,

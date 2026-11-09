@@ -53,17 +53,21 @@ Markdown parser or HTML renderer. Package managers that install peer dependencie
 automatically will install it; otherwise, install `@types/react` explicitly.
 The React runtime is optional.
 
-This is the minimal `tsconfig.json` required to use Markdoc in your TypeScript project:
+For TypeScript projects that use a bundler, use:
 
 ```json
 {
   "compilerOptions": {
-    "moduleResolution": "node",
+    "module": "esnext",
+    "moduleResolution": "bundler",
     "target": "esnext", // works with es2015 or greater
     "esModuleInterop": true
   }
 }
 ```
+
+For code run directly by Node.js, use `"module": "nodenext"` and
+`"moduleResolution": "nodenext"` instead.
 
 ### React
 

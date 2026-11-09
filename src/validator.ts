@@ -36,8 +36,8 @@ export function validateType(
     return !schema?.returns
       ? true
       : Array.isArray(schema.returns)
-      ? schema.returns.find((t) => t === type) !== undefined
-      : schema.returns === type;
+        ? schema.returns.find((t) => t === type) !== undefined
+        : schema.returns === type;
   }
 
   if (Ast.isAst(value)) return true;
