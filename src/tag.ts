@@ -2,7 +2,7 @@ import type { RenderableTreeNode } from './types';
 
 export default class Tag<
   N extends string = string,
-  A extends Record<string, any> = Record<string, any>
+  A extends Record<string, any> = Record<string, any>,
 > {
   readonly $$mdtype = 'Tag' as const;
 

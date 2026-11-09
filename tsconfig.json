@@ -7,7 +7,8 @@
     "allowSyntheticDefaultImports": true,
     "declaration": true,
     "declarationMap": true,
-    "moduleResolution": "node"
+    "module": "ESNext",
+    "moduleResolution": "bundler"
   },
   "include": ["**/*.ts", "**/*.d.ts"],
   "exclude": ["dist", "spec", "**/*.test.ts"]

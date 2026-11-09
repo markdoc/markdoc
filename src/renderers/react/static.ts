@@ -12,10 +12,10 @@ function tagName(
   return typeof name !== 'string'
     ? 'Fragment'
     : name[0] !== name[0].toUpperCase()
-    ? name
-    : components instanceof Function
-    ? components(name)
-    : components[name];
+      ? name
+      : components instanceof Function
+        ? components(name)
+        : components[name];
 }
 
 function renderArray(children: RenderableTreeNode[]): string {
