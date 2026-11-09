@@ -1,0 +1,74 @@
+{
+  "name": "@markdoc/markdoc",
+  "author": "Ryan Paul",
+  "version": "0.5.12",
+  "description": "A text markup language for documentation",
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
+  "files": [
+    "index.ts",
+    "**/*.d.ts",
+    "src",
+    "dist"
+  ],
+  "sideEffects": false,
+  "license": "MIT",
+  "scripts": {
+    "test": "node --import tsx ./node_modules/jasmine/bin/jasmine.js",
+    "test:types": "node spec/types/check.mjs",
+    "marktest": "node --import tsx ${INSPECT:+--inspect-brk} spec/marktest/index.ts spec/marktest/tests.yaml",
+    "build": "pnpm run build:common && pnpm run build:types",
+    "build:common": "node build.js",
+    "build:types": "tsc --emitDeclarationOnly --outDir dist",
+    "prepack": "cp ../../README.md .",
+    "lint": "eslint .",
+    "grammar": "pegjs -o src/grammar/tag.js src/grammar/tag.pegjs && prettier --write src/grammar/tag.js",
+    "prettier": "prettier --write index.ts src spec",
+    "prettier:check": "prettier --check index.ts src spec",
+    "type:check": "tsc --noEmit",
+    "typedoc": "typedoc index.ts --includeVersion --readme none --excludePrivate --excludeExternals --excludeInternal --sort source-order --out types"
+  },
+  "engines": {
+    "node": ">=14.7.0"
+  },
+  "peerDependencies": {
+    "@types/react": "*",
+    "react": "*"
+  },
+  "peerDependenciesMeta": {
+    "react": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@types/jasmine": "^7.0.0",
+    "@types/node": "^24.19.2",
+    "@types/react": "^19.3.0",
+    "deep-assert": "0.3.0",
+    "diff": "^9.0.0",
+    "esbuild": "0.28.2",
+    "eslint": "10.14.0",
+    "globals": "^17.14.0",
+    "jasmine": "7.0.0",
+    "jest-diff": "^30.5.2",
+    "markdown-it": "15.0.1",
+    "pegjs": "0.11.0-master.b7b87ea",
+    "prettier": "^3.9.10",
+    "tsx": "4.23.15",
+    "typedoc": "0.28.20",
+    "typescript": "^6.0.3",
+    "typescript-eslint": "^8.72.1",
+    "yaml-js": "^0.3.1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/markdoc/markdoc.git",
+    "directory": "packages/markdoc"
+  },
+  "bugs": {
+    "url": "https://github.com/markdoc/markdoc/issues"
+  },
+  "homepage": "https://markdoc.dev"
+}
