@@ -46,6 +46,55 @@ return Markdoc.renderers.react(content, React);
 
 Check out [our docs](https://markdoc.dev/docs) for more guidance on how to use Markdoc.
 
+### Rendering Markdown
+
+`Markdoc.renderers.md` renders the same transformed content as Markdown
+(CommonMark with GFM tables and strikethrough), for example to serve docs to
+LLMs or other plain-text consumers:
+
+```js
+const ast = Markdoc.parse(doc);
+const content = Markdoc.transform(ast, config);
+const markdown = Markdoc.renderers.md(content);
+```
+
+The renderer takes the output of `Markdoc.transform`, so variables, conditionals,
+and partials are already resolved. A string passed to the renderer is treated as
+literal text, not as Markdoc source. Information removed during transformation,
+such as frontmatter, annotations, and the original whitespace or Markdown
+markers, is not reconstructed. The output is Markdown, not markup-free text:
+literal text is escaped so that it keeps its meaning.
+
+Standard Markdoc nodes render without configuration. Other elements, including
+custom components, render their children. To convert a component differently,
+add a handler keyed by its rendered name (`Tag.name`, such as `Callout`, rather
+than the source tag name `callout`). Handlers return Markdown AST nodes built
+with `Markdoc.Ast.Node`; `'children'` renders only the children and `'none'`
+omits the whole subtree:
+
+```js
+const markdown = Markdoc.renderers.md(content, {
+  handlers: {
+    Callout: (tag, { renderChildren }) =>
+      new Markdoc.Ast.Node('blockquote', {}, renderChildren(tag.children)),
+    Layout: 'children',
+    CopyButton: 'none',
+  },
+});
+```
+
+Handlers may override standard elements, such as `table` or `pre`, and may not
+return Markdoc tags or unresolved variables.
+
+Tables render as compact GFM pipe tables with a single header row. Headerless
+tables get an empty header, and ragged rows are padded. Cell spans, nested
+tables, and block content inside cells (such as paragraphs, lists, and code
+blocks) cannot be represented, so their text is kept in row order on a single
+line; use a `table` handler for richer output.
+
+The Markdown renderer does not sanitize HTML or validate URLs: link and image
+destinations are kept as supplied, including relative URLs.
+
 ### TypeScript
 
 The public renderer types require `@types/react`, even when using only the
