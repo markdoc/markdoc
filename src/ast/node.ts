@@ -34,7 +34,7 @@ export default class Node implements AstType {
     children: Node[] = [],
     tag?: string
   ) {
-    this.attributes = attributes;
+    this.attributes = Object.assign(Object.create(null), attributes);
     this.children = children;
     this.type = type;
     this.tag = tag;

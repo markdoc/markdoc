@@ -761,6 +761,41 @@ describe('Markdown parser', function () {
   });
 
   describe('handles attribute errors correctly', function () {
+    for (const name of ['__proto__', 'prototype', 'constructor']) {
+      for (const source of [
+        `{% foo ${name}={src:"javascript:alert(1)"} /%}`,
+        `text {% ${name}={src:"javascript:alert(1)"} %}`,
+        `![text](/image.png) {% ${name}={src:"javascript:alert(1)"} %}`,
+        `${fence} {% ${name}={src:"javascript:alert(1)"} %}\ntext\n${fence}`,
+      ]) {
+        it(`rejects reserved attribute ${name} in ${source}`, function () {
+          const document = convert(source);
+          const node = [...document.walk()].find((node) =>
+            node.errors.some((error) => error.id === 'attribute-name-invalid')
+          );
+
+          expect(node).toBeDefined();
+          expect(node?.errors).toDeepEqualSubset([
+            { id: 'attribute-name-invalid', level: 'critical' },
+          ]);
+          expect(Object.getPrototypeOf(node?.attributes)).toBeNull();
+          expect(
+            Object.prototype.hasOwnProperty.call(node?.attributes, name)
+          ).toBe(false);
+          expect(node?.attributes.src).toBeUndefined();
+        });
+      }
+    }
+
+    it('does not treat inherited property names as duplicates', function () {
+      const document = convert('{% foo toString="first" toString="second" /%}');
+      expect(document.children[0].errors).toDeepEqualSubset([
+        { id: 'duplicate-attribute', level: 'warning' },
+      ]);
+      expect(document.children[0].errors.length).toBe(1);
+      expect(document.children[0].attributes.toString).toBe('second');
+    });
+
     it('with error for duplicate attributes', function () {
       const example = convert(`{% foo bar=1 bar=2 bar=3 bar=4 /%}`);
       expect(example.children[0].errors.length).toBe(3);

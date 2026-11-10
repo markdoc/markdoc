@@ -1,5 +1,5 @@
 import Tag from '../../tag';
-import { RenderableTreeNodes, Scalar } from '../../types';
+import { RenderableTreeNodes } from '../../types';
 
 import type { createElement, ComponentType, Fragment, ReactNode } from 'react';
 
@@ -41,9 +41,9 @@ export default function dynamic(
 
     if (typeof value !== 'object') return value;
 
-    const output: Record<string, Scalar> = {};
-    for (const [k, v] of Object.entries(value)) output[k] = deepRender(v);
-    return output;
+    return Object.fromEntries(
+      Object.entries(value).map(([k, v]) => [k, deepRender(v)])
+    );
   }
 
   function render(node: RenderableTreeNodes): ReactNode {

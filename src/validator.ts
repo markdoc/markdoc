@@ -178,7 +178,9 @@ export default function validator(node: Node, config: Config) {
   }
 
   for (let [key, value] of Object.entries(node.attributes)) {
-    const attrib = attributes[key];
+    const attrib = Object.prototype.hasOwnProperty.call(attributes, key)
+      ? attributes[key]
+      : undefined;
 
     if (!attrib) {
       errors.push({
@@ -259,7 +261,11 @@ export default function validator(node: Node, config: Config) {
   }
 
   for (const [key, { required }] of Object.entries(attributes))
-    if (required && node.attributes[key] === undefined)
+    if (
+      required &&
+      (!Object.prototype.hasOwnProperty.call(node.attributes, key) ||
+        node.attributes[key] === undefined)
+    )
       errors.push({
         id: 'attribute-missing-required',
         level: 'error',

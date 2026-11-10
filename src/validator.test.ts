@@ -1,4 +1,4 @@
-import Markdoc, { nodes } from '../index';
+import Markdoc, { Node, Tag, nodes } from '../index';
 import type { Config, ValidationError } from './types';
 
 function validate(string, config) {
@@ -6,6 +6,179 @@ function validate(string, config) {
 }
 
 describe('validate', function () {
+  describe('prototype-safe attributes', function () {
+    let config: Config;
+    let customValidate: jasmine.Spy;
+    const unsafe = 'javascript:alert(1)';
+    const trusted = 'https://trusted.example/embed';
+    const React = {
+      Fragment: 'fragment',
+      createElement(name, attributes, ...children) {
+        return { name, attributes, children };
+      },
+    };
+
+    beforeEach(function () {
+      customValidate = jasmine.createSpy('validate').and.callFake((value) =>
+        value === trusted
+          ? []
+          : [
+              {
+                id: 'untrusted-src',
+                level: 'critical',
+                message: 'Untrusted URL',
+              },
+            ]
+      );
+      config = {
+        tags: {
+          embed: {
+            render: 'iframe',
+            selfClosing: true,
+            attributes: {
+              src: {
+                type: String,
+                required: true,
+                matches: /^https:\/\/trusted\.example\//,
+                errorLevel: 'critical',
+                validate: customValidate,
+              },
+            },
+          },
+        },
+      };
+    });
+
+    it('validates direct values with the pattern and custom validator', function () {
+      const ast = Markdoc.parse(`{% embed src="${unsafe}" /%}`);
+      expect(Markdoc.validate(ast, config)).toDeepEqualSubset([
+        { error: { id: 'attribute-value-invalid', level: 'critical' } },
+        { error: { id: 'untrusted-src', level: 'critical' } },
+      ]);
+      expect(customValidate).toHaveBeenCalledWith(
+        unsafe,
+        jasmine.anything(),
+        'src'
+      );
+    });
+
+    it('enforces the URL schema when only errors and critical findings block rendering', function () {
+      delete config.tags!.embed.attributes!.src.validate;
+      const render = (source: string) => {
+        const ast = Markdoc.parse(source);
+        const findings = Markdoc.validate(ast, config);
+        if (
+          findings.some(({ error }) =>
+            ['error', 'critical'].includes(error.level)
+          )
+        )
+          return null;
+        return Markdoc.renderers.html(Markdoc.transform(ast, config));
+      };
+
+      expect(render(`{% embed src="${unsafe}" /%}`)).toBeNull();
+      expect(render(`{% embed __proto__={src:"${unsafe}"} /%}`)).toBeNull();
+      expect(render(`{% embed src="${trusted}" /%}`)).toBe(
+        `<article><iframe src="${trusted}"></iframe></article>`
+      );
+    });
+
+    it('blocks prototype attribute smuggling before rendering', function () {
+      const ast = Markdoc.parse(`{% embed __proto__={src:"${unsafe}"} /%}`);
+      expect(Markdoc.validate(ast, config)).toDeepEqualSubset([
+        { error: { id: 'attribute-name-invalid', level: 'critical' } },
+        { error: { id: 'attribute-missing-required', level: 'error' } },
+      ]);
+      expect(customValidate).not.toHaveBeenCalled();
+      expect(Object.keys(ast.children[0].attributes)).toEqual([]);
+      const output = Markdoc.transform(ast.children[0], config);
+      expect(Markdoc.renderers.html(output)).toBe('<iframe></iframe>');
+      expect(Markdoc.renderers.react(output, React)).toDeepEqual({
+        name: 'iframe',
+        attributes: null,
+        children: [],
+      });
+    });
+
+    it('still applies type validation to own values', function () {
+      const ast = Markdoc.parse('{% embed src=42 /%}');
+      expect(Markdoc.validate(ast, config)).toDeepEqualSubset([
+        { error: { id: 'attribute-type-invalid', level: 'critical' } },
+        { error: { id: 'attribute-value-invalid', level: 'critical' } },
+        { error: { id: 'untrusted-src', level: 'critical' } },
+      ]);
+    });
+
+    it('validates an unsafe own value despite a smuggling attempt', function () {
+      const ast = Markdoc.parse(
+        `{% embed __proto__={src:"${trusted}"} src="${unsafe}" /%}`
+      );
+      expect(Markdoc.validate(ast, config)).toDeepEqualSubset([
+        { error: { id: 'attribute-name-invalid', level: 'critical' } },
+        { error: { id: 'attribute-value-invalid', level: 'critical' } },
+        { error: { id: 'untrusted-src', level: 'critical' } },
+      ]);
+      expect(customValidate).toHaveBeenCalledWith(
+        unsafe,
+        jasmine.anything(),
+        'src'
+      );
+    });
+
+    it('validates and renders an own value despite a smuggling attempt', function () {
+      const ast = Markdoc.parse(
+        `{% embed __proto__={src:"${unsafe}"} src="${trusted}" /%}`
+      );
+      expect(Markdoc.validate(ast, config)).toDeepEqualSubset([
+        { error: { id: 'attribute-name-invalid', level: 'critical' } },
+      ]);
+      expect(customValidate).toHaveBeenCalledWith(
+        trusted,
+        jasmine.anything(),
+        'src'
+      );
+      expect(
+        Markdoc.renderers.html(Markdoc.transform(ast.children[0], config))
+      ).toBe(`<iframe src="${trusted}"></iframe>`);
+    });
+
+    it('ignores inherited attributes on a programmatically modified node', function () {
+      const node = new Node('tag', {}, [], 'embed');
+      node.attributes = Object.create({ src: unsafe });
+      expect(Markdoc.validate(node, config)).toDeepEqualSubset([
+        { error: { id: 'attribute-missing-required', level: 'error' } },
+      ]);
+      expect(node.transformAttributes(config).src).toBeUndefined();
+      expect(Markdoc.renderers.html(Markdoc.transform(node, config))).toBe(
+        '<iframe></iframe>'
+      );
+    });
+
+    it('applies defaults instead of inherited values', function () {
+      config.tags!.embed.attributes!.src.default = trusted;
+      const node = new Node('tag', {}, [], 'embed');
+      node.attributes = Object.create({ src: unsafe });
+      expect(node.transformAttributes(config).src).toBe(trusted);
+    });
+
+    it('rejects undeclared attributes whose names exist on Object.prototype', function () {
+      const ast = Markdoc.parse('{% embed toString="value" /%}');
+      expect(Markdoc.validate(ast, config)).toDeepEqualSubset([
+        { error: { id: 'attribute-undefined', level: 'error' } },
+        { error: { id: 'attribute-missing-required', level: 'error' } },
+      ]);
+    });
+
+    it('resolves variables in prototype-free attribute dictionaries', function () {
+      config.variables = { url: trusted };
+      const ast = Markdoc.parse('{% embed src=$url /%}');
+      expect(Markdoc.validate(ast.resolve(config), config)).toEqual([]);
+      expect(Markdoc.transform(ast.children[0], config)).toDeepEqual(
+        new Tag('iframe', { src: trusted })
+      );
+    });
+  });
+
   describe('function validation', function () {
     it('ensures that function exists', function () {
       const example = '{% foo bar=baz() /%}';

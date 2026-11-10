@@ -26,7 +26,7 @@ export default {
 
   attributes(node: Node, config: Config = {}) {
     const schema = this.findSchema(node, config) ?? {};
-    const output: Record<string, any> = {};
+    const output: Record<string, any> = Object.create(null);
 
     const attrs = { ...globalAttributes, ...schema.attributes };
     for (const [key, attr] of Object.entries(attrs)) {
@@ -34,7 +34,9 @@ export default {
 
       const name = typeof attr.render === 'string' ? attr.render : key;
 
-      let value = node.attributes[key];
+      let value = Object.prototype.hasOwnProperty.call(node.attributes, key)
+        ? node.attributes[key]
+        : undefined;
       if (typeof attr.type === 'function') {
         const instance: any = new attr.type();
         if (instance.transform) {

@@ -255,9 +255,9 @@ function peg$parse(input, options) {
     return head ? [head, ...tail] : [];
   };
   var peg$f14 = function (name, params) {
-    let parameters = {};
-    for (let [index, { name, value }] of params.entries())
-      parameters[name || index] = value;
+    const parameters = Object.fromEntries(
+      params.map(({ name, value }, index) => [name || index, value])
+    );
     return new Function(name, parameters);
   };
   var peg$f15 = function (name) {
@@ -289,7 +289,7 @@ function peg$parse(input, options) {
     return value || [];
   };
   var peg$f24 = function (head, tail) {
-    return Object.assign(head, ...tail);
+    return Object.fromEntries([head, ...tail].flatMap(Object.entries));
   };
   var peg$f25 = function (value) {
     return value || {};

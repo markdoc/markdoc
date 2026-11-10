@@ -25,7 +25,8 @@ export function* getAstValues(value: any): Generator<AstType, void, unknown> {
 
   if (isAst(value)) yield value;
 
-  if (Object.getPrototypeOf(value) !== Object.prototype) return;
+  const prototype = Object.getPrototypeOf(value);
+  if (prototype !== Object.prototype && prototype !== null) return;
 
   for (const v of Object.values(value)) yield* getAstValues(v);
 }
@@ -38,9 +39,16 @@ export function resolve(value: any, config: Config = {}): any {
   if (isAst(value) && value?.resolve instanceof Function)
     return value.resolve(config);
 
-  if (Object.getPrototypeOf(value) !== Object.prototype) return value;
+  const prototype = Object.getPrototypeOf(value);
+  if (prototype !== Object.prototype && prototype !== null) return value;
 
-  const output: Record<string, Scalar> = {};
-  for (const [k, v] of Object.entries(value)) output[k] = resolve(v, config);
+  const output: Record<string, Scalar> = Object.create(prototype);
+  for (const [k, v] of Object.entries(value))
+    Object.defineProperty(output, k, {
+      value: resolve(v, config),
+      enumerable: true,
+      configurable: true,
+      writable: true,
+    });
   return output;
 }

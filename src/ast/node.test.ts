@@ -2,10 +2,64 @@
 import markdoc from '../../index';
 import Node from './node';
 import Variable from './variable';
+import { getAstValues } from './base';
 
 import Tag from '../tag';
 
 describe('Node object', function () {
+  it('copies only own attributes into a prototype-free dictionary', function () {
+    const attributes = Object.assign(Object.create({ inherited: 'value' }), {
+      own: 'value',
+    });
+    const node = new Node('tag', attributes);
+    expect(Object.getPrototypeOf(node.attributes)).toBeNull();
+    expect(Object.keys(node.attributes)).toEqual(['own']);
+    expect(node.attributes.own).toBe('value');
+  });
+
+  it('preserves prototype-free attributes and resolves nested values', function () {
+    const attributes = Object.fromEntries([
+      ['__proto__', { src: new Variable(['url']) }],
+      ['src', new Variable(['url'])],
+    ]);
+    const node = new Node('tag', attributes);
+    const resolved = node.resolve({
+      variables: { url: 'https://example.com/' },
+    });
+    expect(Object.getPrototypeOf(resolved.attributes)).toBeNull();
+    expect(Object.keys(resolved.attributes)).toEqual(['__proto__', 'src']);
+    expect(resolved.attributes.__proto__.src).toBe('https://example.com/');
+    expect(resolved.attributes.src).toBe('https://example.com/');
+  });
+
+  it('traverses AST values in prototype-free attribute dictionaries', function () {
+    const variable = new Variable(['url']);
+    const node = new Node('tag', { src: variable });
+    expect([...getAstValues(node.attributes)]).toEqual([variable]);
+  });
+
+  it('resolves object values without invoking prototype setters', function () {
+    const value = Object.fromEntries([
+      ['safe', new Variable(['url'])],
+      ['__proto__', { src: new Variable(['url']) }],
+    ]);
+    const node = new Node('tag', { value });
+    const resolved = node.resolve({
+      variables: { url: 'https://example.com/' },
+    });
+    expect(Object.getPrototypeOf(resolved.attributes.value)).toBe(
+      Object.prototype
+    );
+    expect(Object.keys(resolved.attributes.value)).toEqual([
+      'safe',
+      '__proto__',
+    ]);
+    expect(resolved.attributes.value.src).toBeUndefined();
+    expect(resolved.attributes.value.__proto__.src).toBe(
+      'https://example.com/'
+    );
+  });
+
   describe('traversal', function () {
     it('with a simple document', function () {
       const example = new Node('document', {}, [
