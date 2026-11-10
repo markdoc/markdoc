@@ -1,7 +1,7 @@
 import { diff } from 'jest-diff';
 
 import Markdoc from '../index';
-import format from './formatter';
+import format, { formatMarkdown } from './formatter';
 
 const source = `---
 
@@ -909,5 +909,68 @@ ${'`'.repeat(4)}
   it('makes sure fences are formatted correctly if content has no ending newline', () => {
     const node = new Markdoc.Ast.Node('fence', { content: 'foo' });
     expect(format(node)).toEqual('```\nfoo\n```\n');
+  });
+});
+
+describe('Markdown output formatter', () => {
+  const { Node, Variable } = Markdoc.Ast;
+  const text = (content: string) => new Node('text', { content });
+  const paragraph = (...children) =>
+    new Node('paragraph', {}, [new Node('inline', {}, children)]);
+
+  it('escapes literal text that format leaves unescaped', () => {
+    const node = paragraph(text('[a](b) `c` <d> | e'));
+    expect(format(node)).toEqual('[a](b) `c` <d> | e\n');
+    expect(formatMarkdown(node)).toEqual('\\[a\\](b) \\`c\\` \\<d> \\| e\n');
+  });
+
+  it('chooses inline code delimiters', () => {
+    const code = (content: string) =>
+      formatMarkdown(paragraph(new Node('code', { content })));
+    expect(code('a')).toEqual('`a`\n');
+    expect(code('a`b')).toEqual('``a`b``\n');
+    expect(code('`a`` b')).toEqual('``` `a`` b ```\n');
+    expect(code(' a ')).toEqual('`  a  `\n');
+    expect(code('  ')).toEqual('`  `\n');
+  });
+
+  it('emits compact tables where format pads columns', () => {
+    const cell = (type: 'th' | 'td', content: string) =>
+      new Node(type, {}, [new Node('inline', {}, [text(content)])]);
+    const table = new Node('table', {}, [
+      new Node('thead', {}, [
+        new Node('tr', {}, [cell('th', 'Name'), cell('th', 'V')]),
+      ]),
+      new Node('tbody', {}, [
+        new Node('tr', {}, [cell('td', 'a'), cell('td', 'long value')]),
+      ]),
+    ]);
+    expect(format(table)).toEqual(
+      '| Name | V          |\n| ---- | ---------- |\n| a    | long value |\n'
+    );
+    expect(formatMarkdown(table)).toEqual(
+      '| Name | V |\n| --- | --- |\n| a | long value |\n'
+    );
+  });
+
+  it('increments ordered list markers', () => {
+    const item = (content: string) =>
+      new Node('item', {}, [new Node('inline', {}, [text(content)])]);
+    const list = new Node('list', { ordered: true, start: 2 }, [
+      item('a'),
+      item('b'),
+    ]);
+    expect(format(list)).toEqual('2. a\n1. b\n');
+    expect(formatMarkdown(list)).toEqual('2. a\n3. b\n');
+  });
+
+  it('rejects Markdoc-only syntax', () => {
+    expect(() => formatMarkdown(new Node('tag', {}, [], 'callout'))).toThrow();
+    expect(() =>
+      formatMarkdown(new Node('text', { content: new Variable(['x']) }))
+    ).toThrow();
+    expect(() =>
+      formatMarkdown(new Node('comment', { content: 'x' }))
+    ).toThrow();
   });
 });

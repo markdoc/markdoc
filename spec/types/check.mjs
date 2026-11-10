@@ -9,8 +9,8 @@ import {
 } from 'node:fs';
 import { createRequire } from 'node:module';
 import { tmpdir } from 'node:os';
-import { join } from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { dirname, join } from 'node:path';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 import ts from 'typescript';
 import yaml from 'yaml-js';
 
@@ -87,6 +87,21 @@ try {
     { code: 'MODULE_NOT_FOUND' },
     'The public declarations should not require the bundled parser'
   );
+
+  // Render Markdown from the built entrypoints without a React runtime.
+  const markdocMain = consumerRequire.resolve('@markdoc/markdoc');
+  const entrypoints = {
+    CJS: consumerRequire('@markdoc/markdoc'),
+    ESM: await import(pathToFileURL(join(dirname(markdocMain), 'index.mjs'))),
+  };
+  for (const [name, { default: Markdoc, renderers }] of Object.entries(
+    entrypoints
+  )) {
+    const content = Markdoc.transform(Markdoc.parse('# Hello *world*'));
+    assert.equal(Markdoc.renderers.md(content), '# Hello *world*\n', name);
+    assert.equal(renderers.md(content), '# Hello *world*\n', name);
+    console.log(`Built package: ${name} Markdown renderer passed`);
+  }
 
   const cases = [
     ['node', ts.ModuleKind.CommonJS, ts.ModuleResolutionKind.Node10, 'cts'],

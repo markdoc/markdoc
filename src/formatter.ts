@@ -10,6 +10,14 @@ type Options = {
   indent?: number;
 };
 
+// Internal formatting state. Markdown output is only available through
+// `formatMarkdown`, not as a public `format` option.
+type State = Options & {
+  markdown?: boolean;
+  singleLine?: boolean;
+  tableCell?: boolean;
+};
+
 const SPACE = ' ';
 const SEP = ', '; // Value separator
 const NL = '\n'; //  Newline
@@ -21,12 +29,12 @@ const MAX_TAG_OPENING_WIDTH = 80;
 const WRAPPING_TYPES = ['strong', 'em', 's'];
 
 const max = (a: number, b: number) => Math.max(a, b);
-const increment = (o: Options, n = 2) => ({
+const increment = (o: State, n = 2) => ({
   ...o,
   indent: (o.indent || 0) + n,
 });
 
-function* formatChildren(a: Node, options: Options) {
+function* formatChildren(a: Node, options: State) {
   for (const child of a.children) {
     yield* formatValue(child, options);
   }
@@ -140,7 +148,7 @@ function* escapeMarkdownCharacters(s: string, characters: RegExp) {
     .replace(new RegExp('\xa0', 'g'), '&nbsp;');
 }
 
-function* formatNode(n: Node, o: Options = {}) {
+function* formatNode(n: Node, o: State = {}) {
   const no = { ...o, parent: n };
   const indent = SPACE.repeat(no.indent || 0);
 
@@ -233,7 +241,7 @@ function* formatNode(n: Node, o: Options = {}) {
     case 'blockquote': {
       const prefix = NL + indent + '>' + SPACE;
       const inner = n.children
-        .map((child) => format(child, { ...no, indent: 0 }).trim())
+        .map((child) => formatString(child, { ...no, indent: 0 }).trim())
         .join(NL + NL);
       yield prefix + inner.split(NL).join(prefix) + NL;
       break;
@@ -329,7 +337,7 @@ function* formatNode(n: Node, o: Options = {}) {
 
           return `${number}${n.attributes.marker ?? OL}`;
         })();
-        let d = format(n.children[i], increment(no, prefix.length + 1));
+        let d = formatString(n.children[i], increment(no, prefix.length + 1));
 
         if (!isLoose || i === n.children.length - 1) {
           d = d.trim();
@@ -460,9 +468,255 @@ function* formatNode(n: Node, o: Options = {}) {
   }
 }
 
+// Markdown output: text from transformed content is literal, so escape
+// anything a CommonMark/GFM parser (or Markdoc) would otherwise interpret.
+const ENTITY =
+  /&(?=#[0-9]{1,7};|#[xX][0-9a-fA-F]{1,6};|[A-Za-z][A-Za-z0-9]*;)/g;
+const AUTOLINK = /^[A-Za-z][A-Za-z0-9+.-]{1,31}:[^\s<>\p{Cc}]*$/u;
+const ALIGNMENT: Record<string, string> = {
+  left: ':---',
+  center: ':---:',
+  right: '---:',
+};
+
+function escapeLineStart(line: string) {
+  return (
+    line
+      // ATX headings, list items, thematic breaks, setext underlines, quotes
+      .replace(/^#(?=#{0,5}(\s|$))/, '\\#')
+      .replace(/^([-+])(?=\s|$)/, '\\$1')
+      .replace(/^-(?=[-\s]*$)/, '\\-')
+      .replace(/^=(?==*\s*$)/, '\\=')
+      .replace(/^>/, '\\>')
+      // Ordered list items
+      .replace(/^(\d{1,9})([.)])(?=\s|$)/, '$1\\$2')
+  );
+}
+
+function escapeMarkdownText(s: string, o: State) {
+  const lines = s
+    .replace(/[\\`*~[\]<|]/g, '\\$&')
+    // Intraword underscores cannot delimit emphasis
+    .replace(/(?<![\p{L}\p{N}])_|_(?![\p{L}\p{N}])/gu, '\\_')
+    .replace(ENTITY, '\\&')
+    .replace(new RegExp(OPEN, 'g'), '\\' + OPEN)
+    // Newlines are whitespace; never emit blank lines or indented code
+    .split(/[ \t]*\r?\n\s*/)
+    .map(escapeLineStart);
+  const separator = o.singleLine ? SPACE : NL + SPACE.repeat(o.indent || 0);
+  return lines.join(separator).replace(new RegExp('\xa0', 'g'), '&nbsp;');
+}
+
+function escapeLinkField(s: string, characters: RegExp) {
+  return s.replace(characters, '\\$&').replace(ENTITY, '\\&');
+}
+
+function formatDestination(url: string) {
+  // Destinations containing whitespace or control characters need <...>
+  if (!url || /[\s\p{Cc}]/u.test(url))
+    return `<${escapeLinkField(url, /[\\<>|]/g).replace(
+      /[\r\n]/g,
+      encodeURIComponent
+    )}>`;
+  return escapeLinkField(url, /[\\<>()|]/g);
+}
+
+function formatTitle(title: unknown) {
+  if (title === undefined || title === null || title === '') return '';
+  const escaped = escapeLinkField(String(title), /[\\"|]/g);
+  return SPACE + `"${escaped.replace(/\s*\n\s*/g, SPACE)}"`;
+}
+
+function formatCodeSpan(content: string, o: State) {
+  content = content.replace(/\r?\n/g, SPACE);
+  // GFM splits table cells before parsing code spans
+  if (o.tableCell) content = content.replace(/\|/g, '\\|');
+  if (!content) return '';
+
+  const runs = new Set((content.match(/`+/g) || []).map((s) => s.length));
+  let length = 1;
+  while (runs.has(length)) length++;
+  const delimiter = '`'.repeat(length);
+
+  // https://spec.commonmark.org/0.31.2/#code-spans strips one space from
+  // each side, so pad content that would otherwise be changed or ambiguous
+  const pad =
+    /^`|`$/.test(content) || /^ [^]*[^ ][^]* $/.test(content) ? SPACE : '';
+  return delimiter + pad + content + pad + delimiter;
+}
+
+function formatMarkdownCell(cell: Node, o: State) {
+  return [
+    ...formatChildren(cell, {
+      ...o,
+      indent: 0,
+      singleLine: true,
+      tableCell: true,
+    }),
+  ]
+    .join('')
+    .replace(/\s*\n\s*/g, SPACE)
+    .trim();
+}
+
+function* formatMarkdownTable(n: Node, o: State) {
+  const indent = SPACE.repeat(o.indent || 0);
+  const sections = n.children.filter(
+    (c) => c.type === 'thead' || c.type === 'tbody'
+  );
+  const rows = (type: string) =>
+    sections
+      .filter((section) => section.type === type)
+      .flatMap((section) => section.children);
+
+  const [headRow, ...headRest] = rows('thead');
+  const bodyRows = [...headRest, ...rows('tbody')];
+  const head = headRow ? headRow.children : [];
+  const columns = [headRow, ...bodyRows].reduce(
+    (count, row) => max(count, row ? row.children.length : 0),
+    0
+  );
+  if (!columns) return;
+
+  const cells = (row?: Node) =>
+    Array.from({ length: columns }, (_, i) =>
+      row && row.children[i] ? formatMarkdownCell(row.children[i], o) : ''
+    );
+  const line = (items: string[]) =>
+    indent + '| ' + items.join(' | ') + ' |' + NL;
+  const alignment = Array.from({ length: columns }, (_, i) => {
+    const cell = head[i] || bodyRows[0]?.children[i];
+    return ALIGNMENT[cell?.attributes.align] ?? '---';
+  });
+
+  yield NL;
+  yield line(cells(headRow));
+  yield line(alignment);
+  for (const row of bodyRows) yield line(cells(row));
+}
+
+function* formatMarkdownNode(n: Node, o: State): Generator<string> {
+  const no = { ...o, parent: n };
+  const indent = SPACE.repeat(no.indent || 0);
+
+  if (n.annotations.length)
+    throw new Error('Cannot render Markdoc annotations as Markdown');
+  for (const value of Object.values(n.attributes))
+    if (Ast.isAst(value))
+      throw new Error(
+        `Cannot render an unresolved ${value.$$mdtype} as Markdown`
+      );
+
+  switch (n.type) {
+    case 'heading': {
+      const content = [
+        ...trimStart(formatChildren(n, { ...no, singleLine: true })),
+      ]
+        .join('')
+        .trimEnd()
+        // A trailing run of `#` would be read as a closing sequence
+        .replace(/(\s)(#+)$/, '$1\\$2');
+      yield NL;
+      yield indent;
+      yield '#'.repeat(n.attributes.level || 1);
+      if (content) yield SPACE + content;
+      yield NL;
+      break;
+    }
+    case 'paragraph': {
+      const content = [...formatChildren(n, no)].join('');
+      if (content.trim()) yield NL + content + NL;
+      break;
+    }
+    case 'inline': {
+      yield indent;
+      yield* trimStart(formatChildren(n, no));
+      break;
+    }
+    case 'text': {
+      yield escapeMarkdownText(String(n.attributes.content ?? ''), no);
+      break;
+    }
+    case 'strong':
+    case 'em':
+    case 's': {
+      const marker =
+        n.type === 's'
+          ? '~~'
+          : (n.attributes.marker ?? (n.type === 'strong' ? '**' : '*'));
+      const inner = [...formatChildren(n, no)].join('');
+      const content = inner.trim();
+      if (!content) {
+        yield inner;
+        break;
+      }
+      // Emphasis cannot begin or end with whitespace, so move it outside
+      const start = inner.length - inner.trimStart().length;
+      yield inner.slice(0, start);
+      yield marker + content + marker;
+      yield inner.slice(start + content.length);
+      break;
+    }
+    case 'code': {
+      yield formatCodeSpan(String(n.attributes.content ?? ''), no);
+      break;
+    }
+    case 'link': {
+      const text = [...formatChildren(n, no)].join('');
+      const href = String(n.attributes.href ?? '');
+      const title = formatTitle(n.attributes.title);
+      if (!title && text === href && AUTOLINK.test(href)) {
+        yield `<${href}>`;
+        break;
+      }
+      yield `[${text}](${formatDestination(href)}${title})`;
+      break;
+    }
+    case 'image': {
+      const alt = escapeMarkdownText(String(n.attributes.alt ?? ''), {
+        ...no,
+        singleLine: true,
+      });
+      const src = formatDestination(String(n.attributes.src ?? ''));
+      yield `![${alt}](${src}${formatTitle(n.attributes.title)})`;
+      break;
+    }
+    case 'fence': {
+      const language = String(n.attributes.language ?? '')
+        .replace(/[`\s]+/g, SPACE)
+        .trim();
+      const content = String(n.attributes.content ?? '');
+      yield* formatNode(new Ast.Node('fence', { content, language }), no);
+      break;
+    }
+    case 'table': {
+      yield* formatMarkdownTable(n, no);
+      break;
+    }
+    case 'hardbreak': {
+      yield no.singleLine ? SPACE : '\\' + NL + indent;
+      break;
+    }
+    case 'softbreak': {
+      yield no.singleLine ? SPACE : NL + indent;
+      break;
+    }
+    case 'document':
+    case 'blockquote':
+    case 'list':
+    case 'item':
+    case 'hr': {
+      yield* formatNode(n, o);
+      break;
+    }
+    default:
+      throw new Error(`Cannot render a "${n.type}" node as Markdown`);
+  }
+}
+
 function* formatValue(
   v: Value | Value[],
-  o: Options = {}
+  o: State = {}
 ): Generator<string, void, unknown> {
   switch (typeof v) {
     case 'undefined':
@@ -479,13 +733,19 @@ function* formatValue(
         for (const n of v) yield* formatValue(n, o);
         break;
       }
+      if (o.markdown && v.$$mdtype !== 'Node')
+        throw new Error(
+          `Cannot render an unresolved ${v.$$mdtype} as Markdown`
+        );
       switch (v.$$mdtype) {
         case 'Function': {
           yield* formatFunction(v as Function);
           break;
         }
         case 'Node':
-          yield* formatNode(v as Node, o);
+          yield* o.markdown
+            ? formatMarkdownNode(v as Node, o)
+            : formatNode(v as Node, o);
           break;
         case 'Variable': {
           yield* formatVariable(v as Variable);
@@ -499,8 +759,22 @@ function* formatValue(
   }
 }
 
-export default function format(v: Value | Value[], options?: Options): string {
+function formatString(v: Value | Value[], options?: State): string {
   let doc = '';
   for (const s of formatValue(v, options)) doc += s;
   return doc.trimStart();
+}
+
+export default function format(v: Value | Value[], options?: Options): string {
+  return formatString(v, options);
+}
+
+/**
+ * Serializes a Markdown AST (as produced by the Markdown renderer) to
+ * CommonMark/GFM. Unlike `format`, literal text is escaped so that it keeps
+ * its meaning, and Markdoc-only syntax is rejected.
+ * @internal
+ */
+export function formatMarkdown(v: Node | Node[]): string {
+  return formatString(v, { markdown: true, orderedListMode: 'increment' });
 }
