@@ -1,5 +1,10 @@
-import Markdoc, { Tokenizer } from '@markdoc/markdoc';
-import type { Token, TokenizerOptions } from '@markdoc/markdoc';
+import Markdoc, { Tokenizer, renderers } from '@markdoc/markdoc';
+import type {
+  MarkdownRenderHandler,
+  MarkdownRenderOptions,
+  Token,
+  TokenizerOptions,
+} from '@markdoc/markdoc';
 
 const options: TokenizerOptions = {
   html: false,
@@ -24,3 +29,21 @@ new Tokenizer({ breaks: 'yes' });
 
 // @ts-expect-error Markdoc options retain their declared types.
 new Tokenizer({ allowIndentation: 'yes' });
+
+const transformed = Markdoc.transform(Markdoc.parse(tokens));
+const callout: MarkdownRenderHandler = (tag, { renderChildren }) =>
+  new Markdoc.Ast.Node('blockquote', {}, renderChildren(tag.children));
+const markdownOptions: MarkdownRenderOptions = {
+  handlers: { Callout: callout, Layout: 'children', CopyButton: 'none' },
+};
+export const markdown: string = Markdoc.renderers.md(
+  transformed,
+  markdownOptions
+);
+export const namedMarkdown: string = renderers.md(transformed);
+
+// @ts-expect-error Markdown handlers return AST nodes, not strings.
+renderers.md(transformed, { handlers: { Bad: () => '**bold**' } });
+
+// @ts-expect-error Markdown handler shortcuts are 'children' or 'none'.
+renderers.md(transformed, { handlers: { Bad: 'skip' } });
