@@ -1,25 +1,45 @@
-name: Publish Package
+name: Release
 
 on:
-  release:
-    types: [created]
+  push:
+    branches: [main]
+
+concurrency: ${{ github.workflow }}-${{ github.ref }}
+
+permissions: {}
 
 jobs:
-  build:
+  release:
     runs-on: ubuntu-latest
     environment: release
     permissions:
-      contents: read
+      contents: write
+      pull-requests: write
       id-token: write
     steps:
-      - uses: actions/checkout@v7
-      - uses: pnpm/action-setup@v6
-      - uses: actions/setup-node@v7
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          persist-credentials: false
+
+      - uses: pnpm/action-setup@f520eceda224fe1a4aed5a2a27a194379a409996 # v6
+
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
         with:
           node-version: 24
-          registry-url: "https://registry.npmjs.org"
-          cache: "pnpm"
+          cache: pnpm
+          registry-url: https://registry.npmjs.org
+
       - run: pnpm install --frozen-lockfile
+
       - run: pnpm run build
-      # Release events check out a tag rather than pnpm's default publish branch.
-      - run: pnpm publish --provenance --access public --no-git-checks
+
+      - name: Create release PR or publish
+        uses: changesets/action@ae32849d5ba541f9ae29e40e22a623bc13562f51 # v2.1.2
+        with:
+          version-script: pnpm run version-packages
+          publish-script: pnpm changeset publish
+          pr-title: Version Packages
+          commit-message: Version Packages
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+        env:
+          NPM_CONFIG_PROVENANCE: true
