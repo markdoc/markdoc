@@ -24,9 +24,10 @@ For Markdoc's 0.x releases:
 
 ## Release
 
-1. Merge changes into `main`. A Core-team reviewer approves the `Release` job to
-   open or update the **Version Packages** PR.
+1. Merge changes into `main`. The `Release` workflow automatically opens or updates
+   the **Version Packages** PR when changesets are present.
 2. Review the version, changelog, and lockfile changes. Close and reopen the
    bot-created PR to trigger its required `build` check, then merge once it passes.
-3. Approve the next `Release` job to publish packages and create Git tags and
+3. If the version is not yet on npm, a Core-team reviewer approves the `publish`
+   job in the `Release` workflow to publish packages and create Git tags and
    GitHub releases.
