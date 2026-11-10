@@ -83,13 +83,17 @@ Contributions and feedback are welcome and encouraged. Check out our [contributi
 
 ### Development
 
-Use [pnpm](https://pnpm.io/installation), with the version pinned in `package.json`.
+For development, use the Node version in `.node-version` and
+[pnpm](https://pnpm.io/installation), with the version pinned in `package.json`.
 If using Corepack, run `corepack enable` first.
 
 1. Run `pnpm install`
 1. Run `pnpm run build`
 1. Run the tests using `pnpm test`
 1. Check the built package's TypeScript declarations using `pnpm run test:types`
+
+Add release notes with `pnpm changeset`. See the [Changesets guide](.changeset/README.md)
+for versioning and the release process.
 
 ## Code of conduct
 
