@@ -1,9 +1,9 @@
-import { parse, SyntaxError } from '../../src/grammar/tag';
 import Variable from '../../src/ast/variable';
+import { parse, SyntaxError } from '../../src/grammar/tag';
 
-describe('Markdoc tag parser', function () {
-  describe('tag parsing', function () {
-    it('with a simple opening tag', function () {
+describe('Markdoc tag parser', () => {
+  describe('tag parsing', () => {
+    it('with a simple opening tag', () => {
       const example = parse('foo');
       expect(example).toDeepEqual({
         type: 'tag_open',
@@ -12,7 +12,7 @@ describe('Markdoc tag parser', function () {
       });
     });
 
-    it('with an opening tag that has attributes', function () {
+    it('with an opening tag that has attributes', () => {
       const example = parse('foo foo=1 bar=true');
       expect(example).toDeepEqual({
         type: 'tag_open',
@@ -27,7 +27,7 @@ describe('Markdoc tag parser', function () {
       });
     });
 
-    it('with a self-closing tag', function () {
+    it('with a self-closing tag', () => {
       const example = parse('foo /');
       expect(example).toDeepEqual({
         type: 'tag',
@@ -36,7 +36,7 @@ describe('Markdoc tag parser', function () {
       });
     });
 
-    it('with a self-closing tag that has attributes', function () {
+    it('with a self-closing tag that has attributes', () => {
       const example = parse('foo foo=1 bar=true /');
       expect(example).toDeepEqual({
         type: 'tag',
@@ -51,7 +51,7 @@ describe('Markdoc tag parser', function () {
       });
     });
 
-    it('with a closing tag', function () {
+    it('with a closing tag', () => {
       const example = parse('/foo');
       expect(example).toDeepEqual({
         type: 'tag_close',
@@ -60,17 +60,17 @@ describe('Markdoc tag parser', function () {
       });
     });
 
-    it('with an invalid closing tag', function () {
+    it('with an invalid closing tag', () => {
       expect(() => parse('/foo/')).toThrowError(SyntaxError);
     });
 
-    it('with an invalid closing tag that has attributes', function () {
+    it('with an invalid closing tag that has attributes', () => {
       expect(() => parse('/foo test=1')).toThrowError(SyntaxError);
     });
   });
 
-  describe('variable parsing', function () {
-    it('with a simple variable', function () {
+  describe('variable parsing', () => {
+    it('with a simple variable', () => {
       const example = parse('$foo', { Variable });
       expect(example).toDeepEqual({
         type: 'variable',
@@ -78,7 +78,7 @@ describe('Markdoc tag parser', function () {
       });
     });
 
-    it('with multiple levels of depth', function () {
+    it('with multiple levels of depth', () => {
       const example = parse('$foo.bar.baz', { Variable });
       expect(example).toDeepEqual({
         type: 'variable',
@@ -86,7 +86,7 @@ describe('Markdoc tag parser', function () {
       });
     });
 
-    it('with an array index', function () {
+    it('with an array index', () => {
       const example = parse('$foo[1]', { Variable });
       expect(example).toDeepEqual({
         type: 'variable',
@@ -94,7 +94,7 @@ describe('Markdoc tag parser', function () {
       });
     });
 
-    it('with multiple array indexes', function () {
+    it('with multiple array indexes', () => {
       const example = parse('$foo[1][2]', { Variable });
       expect(example).toDeepEqual({
         type: 'variable',
@@ -102,7 +102,7 @@ describe('Markdoc tag parser', function () {
       });
     });
 
-    it('with array indexes and properties', function () {
+    it('with array indexes and properties', () => {
       const example = parse('$foo[1].bar.baz[2].test', { Variable });
       expect(example).toDeepEqual({
         type: 'variable',
@@ -112,33 +112,33 @@ describe('Markdoc tag parser', function () {
       });
     });
 
-    it('with an invalid array index', function () {
+    it('with an invalid array index', () => {
       expect(() => parse('$foo[asdf]', { Variable })).toThrowError(SyntaxError);
     });
 
-    it('with an invalid namespace', function () {
+    it('with an invalid namespace', () => {
       expect(() => parse('$.foo:bar.baz', { Variable })).toThrowError(
-        SyntaxError
+        SyntaxError,
       );
     });
   });
 
-  describe('parsing attributes', function () {
-    it('parsing annotation with a single attribute', function () {
+  describe('parsing attributes', () => {
+    it('parsing annotation with a single attribute', () => {
       const example = parse('test=1');
       expect(example.meta.attributes).toDeepEqual([
         { type: 'attribute', name: 'test', value: 1 },
       ]);
     });
 
-    it('with an id', function () {
+    it('with an id', () => {
       const example = parse('#test');
       expect(example.meta.attributes).toDeepEqual([
         { type: 'attribute', name: 'id', value: 'test' },
       ]);
     });
 
-    it('with hyphens', function () {
+    it('with hyphens', () => {
       const example = parse('#test-1 .foo-bar');
       expect(example.meta.attributes).toDeepEqual([
         { type: 'attribute', name: 'id', value: 'test-1' },
@@ -146,7 +146,7 @@ describe('Markdoc tag parser', function () {
       ]);
     });
 
-    it('with chained classes', function () {
+    it('with chained classes', () => {
       const example = parse('.foo .bar');
       expect(example.meta.attributes).toDeepEqual([
         { type: 'class', name: 'foo', value: true },
@@ -154,7 +154,7 @@ describe('Markdoc tag parser', function () {
       ]);
     });
 
-    it('with chained id and classes', function () {
+    it('with chained id and classes', () => {
       const example = parse('#test-1 .foo .bar');
       expect(example.meta.attributes).toDeepEqual([
         { type: 'attribute', name: 'id', value: 'test-1' },
@@ -167,7 +167,7 @@ describe('Markdoc tag parser', function () {
       expect(() => parse('#foo@bar.baz@test')).toThrowError(SyntaxError);
     });
 
-    it('with key/value pairs', function () {
+    it('with key/value pairs', () => {
       const example = parse('foo="bar" baz=3 test=true');
       expect(example.meta.attributes).toDeepEqual([
         { type: 'attribute', name: 'foo', value: 'bar' },
@@ -176,7 +176,7 @@ describe('Markdoc tag parser', function () {
       ]);
     });
 
-    it('with shortcuts and key/value pairs', function () {
+    it('with shortcuts and key/value pairs', () => {
       const example = parse('#foo .bar test="asdf"', { Variable });
       expect(example.meta.attributes).toDeepEqual([
         { type: 'attribute', name: 'id', value: 'foo' },
@@ -185,7 +185,7 @@ describe('Markdoc tag parser', function () {
       ]);
     });
 
-    it('with boolean key/value pairs', function () {
+    it('with boolean key/value pairs', () => {
       const example = parse('test=true foo=false bar=true');
       expect(example.meta.attributes).toDeepEqual([
         { type: 'attribute', name: 'test', value: true },
@@ -194,15 +194,15 @@ describe('Markdoc tag parser', function () {
       ]);
     });
 
-    it('with null key/value pair', function () {
+    it('with null key/value pair', () => {
       const example = parse('foo=null');
       expect(example.meta.attributes).toDeepEqual([
         { type: 'attribute', name: 'foo', value: null },
       ]);
     });
 
-    describe('with variables as values', function () {
-      it('with a simple variable', function () {
+    describe('with variables as values', () => {
+      it('with a simple variable', () => {
         const example = parse('test=$foo', { Variable });
         expect(example.meta.attributes).toDeepEqual([
           {
@@ -213,7 +213,7 @@ describe('Markdoc tag parser', function () {
         ]);
       });
 
-      it('with multiple levels of depth', function () {
+      it('with multiple levels of depth', () => {
         const example = parse('test=$foo.bar.baz', { Variable });
         expect(example.meta.attributes).toDeepEqual([
           {
@@ -224,7 +224,7 @@ describe('Markdoc tag parser', function () {
         ]);
       });
 
-      it('with an array index', function () {
+      it('with an array index', () => {
         const example = parse('test=$foo[1]', { Variable });
         expect(example.meta.attributes).toDeepEqual([
           {
@@ -235,7 +235,7 @@ describe('Markdoc tag parser', function () {
         ]);
       });
 
-      it('with multiple array indexes', function () {
+      it('with multiple array indexes', () => {
         const example = parse('test=$foo[1][2]', { Variable });
         expect(example.meta.attributes).toDeepEqual([
           {
@@ -246,7 +246,7 @@ describe('Markdoc tag parser', function () {
         ]);
       });
 
-      it('with array indexes and properties', function () {
+      it('with array indexes and properties', () => {
         const example = parse('test=$foo[1].bar.baz[2].test', { Variable });
         expect(example.meta.attributes).toDeepEqual([
           {
@@ -257,24 +257,24 @@ describe('Markdoc tag parser', function () {
         ]);
       });
 
-      it('with an invalid array index', function () {
+      it('with an invalid array index', () => {
         expect(() => parse('test=$foo[asdf]', { Variable })).toThrowError(
-          SyntaxError
+          SyntaxError,
         );
       });
     });
 
-    describe('with complex values', function () {
-      it('with a simple hash literal value', function () {
+    describe('with complex values', () => {
+      it('with a simple hash literal value', () => {
         const example = parse('foo={bar: true}');
         expect(example.meta.attributes).toDeepEqual([
           { type: 'attribute', name: 'foo', value: { bar: true } },
         ]);
       });
 
-      it('with a nested hash literal value', function () {
+      it('with a nested hash literal value', () => {
         const example1 = parse(
-          'foo={bar: true, baz: {test: "this is a test"}}'
+          'foo={bar: true, baz: {test: "this is a test"}}',
         );
         const example2 = parse('foo={bar:true,baz:{test:"this is a test"}}');
         const expected = [
@@ -292,14 +292,14 @@ describe('Markdoc tag parser', function () {
         expect(example2.meta.attributes).toDeepEqual(expected);
       });
 
-      it('with a hash literal that has string keys', function () {
+      it('with a hash literal that has string keys', () => {
         const example = parse('foo={bar: true, "baz": 1}');
         expect(example.meta.attributes).toDeepEqual([
           { type: 'attribute', name: 'foo', value: { bar: true, baz: 1 } },
         ]);
       });
 
-      it('with multiple hash literal values', function () {
+      it('with multiple hash literal values', () => {
         const example = parse('foo={bar: true} baz={test: "testing"}');
         expect(example.meta.attributes).toDeepEqual([
           { type: 'attribute', name: 'foo', value: { bar: true } },
@@ -307,7 +307,7 @@ describe('Markdoc tag parser', function () {
         ]);
       });
 
-      it('with an array literal value', function () {
+      it('with an array literal value', () => {
         const example1 = parse('foo=[1, 2, 3]');
         const example2 = parse('foo=[1,2,3]');
         const expected = [{ type: 'attribute', name: 'foo', value: [1, 2, 3] }];
@@ -316,7 +316,7 @@ describe('Markdoc tag parser', function () {
         expect(example2.meta.attributes).toDeepEqual(expected);
       });
 
-      it('with nested array literal values', function () {
+      it('with nested array literal values', () => {
         const example1 = parse('foo=[1, 2, ["test", true, null]]');
         const example2 = parse('foo=[1,2,["test",true,null]]');
         const expected = [
@@ -331,7 +331,7 @@ describe('Markdoc tag parser', function () {
         expect(example2.meta.attributes).toDeepEqual(expected);
       });
 
-      it('with multiple nested array literal values', function () {
+      it('with multiple nested array literal values', () => {
         const example = parse('foo=[1, 2, ["test", true, null]] bar=["baz"]');
         expect(example.meta.attributes).toDeepEqual([
           {
@@ -343,7 +343,7 @@ describe('Markdoc tag parser', function () {
         ]);
       });
 
-      it('with array and object literals', function () {
+      it('with array and object literals', () => {
         const example = parse('foo=[1, 2, {bar: "baz", test: [1, 2, 3]}]');
         expect(example.meta.attributes).toDeepEqual([
           {
@@ -355,7 +355,7 @@ describe('Markdoc tag parser', function () {
       });
     });
 
-    it('with an invalid value', function () {
+    it('with an invalid value', () => {
       const examples = ['foo=bar', 'foo=a1', 'foo=1a'];
       for (const example of examples)
         expect(() => parse(example)).toThrowError(SyntaxError);

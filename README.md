@@ -97,6 +97,7 @@ Run these commands from the repository root:
 
 1. Run `pnpm install`
 1. Run `pnpm run build`
+1. Run `pnpm lint` to check formatting, imports, and lint rules
 1. Run the tests using `pnpm test`
 1. Check the built package's TypeScript declarations using `pnpm run test:types`
 

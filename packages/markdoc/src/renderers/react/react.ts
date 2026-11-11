@@ -1,7 +1,6 @@
+import type { ComponentType, createElement, Fragment, ReactNode } from 'react';
 import Tag from '../../tag';
-import { RenderableTreeNodes, Scalar } from '../../types';
-
-import type { createElement, ComponentType, Fragment, ReactNode } from 'react';
+import type { RenderableTreeNodes, Scalar } from '../../types';
 
 type ReactShape = Readonly<{
   createElement: typeof createElement;
@@ -12,7 +11,7 @@ type Component = ComponentType<any>;
 
 function tagName(
   name: string,
-  components: Record<string, Component> | ((string: string) => Component)
+  components: Record<string, Component> | ((string: string) => Component),
 ): string | Component {
   return typeof name !== 'string'
     ? name // This can be an object, e.g. when React.forwardRef is used
@@ -30,7 +29,7 @@ export type RenderOpts = {
 export default function dynamic(
   node: RenderableTreeNodes,
   React: ReactShape,
-  { components = {}, resolveTagName = tagName }: RenderOpts = {}
+  { components = {}, resolveTagName = tagName }: RenderOpts = {},
 ) {
   function deepRender(value: any): any {
     if (value == null || typeof value !== 'object') return value;
@@ -65,8 +64,8 @@ export default function dynamic(
 
     return React.createElement(
       resolveTagName(name, components),
-      Object.keys(attrs).length == 0 ? null : deepRender(attrs),
-      ...children.map(render)
+      Object.keys(attrs).length === 0 ? null : deepRender(attrs),
+      ...children.map(render),
     );
   }
 

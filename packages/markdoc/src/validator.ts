@@ -1,17 +1,16 @@
-import { globalAttributes } from './transformer';
 import Ast from './ast/index';
-import { isPromise } from './utils';
-
+import { globalAttributes } from './transformer';
 import type {
+  Config,
+  Function,
   Location,
   Node,
-  Function,
-  Config,
   SchemaAttribute,
   ValidateError,
   ValidationError,
   Value,
 } from './types';
+import { isPromise } from './utils';
 
 const TypeMappings = {
   String: String,
@@ -27,7 +26,7 @@ export function validateType(
   type: TypeParam,
   value: Value,
   config: Config,
-  key: string
+  key: string,
 ): boolean | ValidationError[] {
   if (!type) return true;
 
@@ -146,7 +145,7 @@ export default function validator(node: Node, config: Config) {
     return errors;
   }
 
-  if (schema.inline != undefined && node.inline !== schema.inline)
+  if (schema.inline != null && node.inline !== schema.inline)
     errors.push({
       id: 'tag-placement-invalid',
       level: 'critical',
@@ -200,6 +199,7 @@ export default function validator(node: Node, config: Config) {
         let variables = config.variables;
 
         for (const key of value.path) {
+          // biome-ignore lint/suspicious/noPrototypeBuiltins: Object.hasOwn requires ES2022; Markdoc targets ES2021.
           if (!Object.prototype.hasOwnProperty.call(variables, key)) {
             missing = true;
             break;
@@ -241,7 +241,7 @@ export default function validator(node: Node, config: Config) {
         level: errorLevel || 'error',
         message: `Attribute '${key}' must match one of ${displayMatches(
           matches,
-          8
+          8,
         )}. Got '${value}' instead.`,
       });
 
@@ -298,7 +298,7 @@ export default function validator(node: Node, config: Config) {
 
 export function* walkWithParents(
   node: Node,
-  parents: Node[] = []
+  parents: Node[] = [],
 ): Generator<[Node, Node[]]> {
   yield [node, parents];
   for (const child of [...Object.values(node.slots), ...node.children])
@@ -306,7 +306,7 @@ export function* walkWithParents(
 }
 
 function hasValidLocation(
-  error: ValidationError
+  error: ValidationError,
 ): error is ValidationError & { location: Location } {
   const loc = error.location;
   return (
@@ -319,7 +319,7 @@ function hasValidLocation(
 
 function toValidateError(
   node: { type: string; lines: number[]; location?: Location },
-  error: ValidationError
+  error: ValidationError,
 ): ValidateError {
   if (hasValidLocation(error)) {
     return {

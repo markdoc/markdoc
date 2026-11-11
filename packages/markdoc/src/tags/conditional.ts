@@ -1,6 +1,6 @@
-import { isPromise } from '../utils';
+import { ConditionalAttributeType } from '../schema-types/conditional';
 
-import {
+import type {
   MaybePromise,
   Node,
   RenderableTreeNode,
@@ -8,7 +8,7 @@ import {
   Schema,
   Value,
 } from '../types';
-import { ConditionalAttributeType } from '../schema-types/conditional';
+import { isPromise } from '../utils';
 
 type Condition = { condition: Value; children: Node[] };
 
@@ -43,7 +43,7 @@ export const tagIf: Schema = {
     for (const { condition, children } of conditions)
       if (truthy(condition)) {
         const nodes = children.flatMap<MaybePromise<RenderableTreeNodes>>(
-          (child) => child.transform(config)
+          (child) => child.transform(config),
         );
         if (nodes.some(isPromise)) {
           return Promise.all(nodes).then((nodes) => nodes.flat());

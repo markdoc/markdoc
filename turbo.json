@@ -2,7 +2,7 @@
   "$schema": "https://turborepo.dev/schema.json",
   "globalDependencies": [
     ".node-version",
-    ".prettierrc",
+    "biome.json",
     "pnpm-workspace.yaml",
     "patches/**"
   ],
@@ -31,10 +31,12 @@
     "type:check": {
       "dependsOn": ["^build"]
     },
-    "prettier": {
+    "lint:fix": {
       "cache": false
     },
-    "prettier:check": {},
+    "format": {
+      "cache": false
+    },
     "typedoc": {
       "dependsOn": ["^build"],
       "outputs": ["types/**"]

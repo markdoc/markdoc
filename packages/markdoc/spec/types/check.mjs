@@ -22,10 +22,10 @@ const fixtures = fileURLToPath(new URL('./', import.meta.url));
 const consumer = mkdtempSync(join(tmpdir(), 'markdoc-types-'));
 const pnpm = process.platform === 'win32' ? 'pnpm.cmd' : 'pnpm';
 const { packageManager } = JSON.parse(
-  readFileSync(join(workspace, 'package.json'))
+  readFileSync(join(workspace, 'package.json')),
 );
 const { minimumReleaseAge } = yaml.load(
-  readFileSync(join(workspace, 'pnpm-workspace.yaml'), 'utf8')
+  readFileSync(join(workspace, 'pnpm-workspace.yaml'), 'utf8'),
 );
 
 function check(name, files, options) {
@@ -47,7 +47,7 @@ function check(name, files, options) {
         getCanonicalFileName: (file) => file,
         getCurrentDirectory: () => consumer,
         getNewLine: () => '\n',
-      })}`
+      })}`,
     );
   }
   console.log(`Published types: ${name} passed`);
@@ -60,17 +60,17 @@ try {
     {
       module: ts.ModuleKind.ESNext,
       moduleResolution: ts.ModuleResolutionKind.Bundler,
-    }
+    },
   );
   const packed = join(consumer, 'markdoc.tgz');
   execFileSync(pnpm, ['pack', '--out', packed], { cwd: root });
   writeFileSync(
     join(consumer, 'package.json'),
-    JSON.stringify({ private: true, packageManager })
+    JSON.stringify({ private: true, packageManager }),
   );
   writeFileSync(
     join(consumer, '.npmrc'),
-    `minimum-release-age=${minimumReleaseAge}\n`
+    `minimum-release-age=${minimumReleaseAge}\n`,
   );
   execFileSync(pnpm, ['add', '--ignore-scripts', '--no-lockfile', packed], {
     cwd: consumer,
@@ -78,17 +78,17 @@ try {
   });
   const consumerRequire = createRequire(join(consumer, 'package.json'));
   const markdocRequire = createRequire(
-    consumerRequire.resolve('@markdoc/markdoc')
+    consumerRequire.resolve('@markdoc/markdoc'),
   );
   assert.throws(
     () => markdocRequire.resolve('react'),
     { code: 'MODULE_NOT_FOUND' },
-    'The React runtime should remain optional'
+    'The React runtime should remain optional',
   );
   assert.throws(
     () => markdocRequire.resolve('markdown-it'),
     { code: 'MODULE_NOT_FOUND' },
-    'The public declarations should not require the bundled parser'
+    'The public declarations should not require the bundled parser',
   );
 
   const cases = [
@@ -121,7 +121,7 @@ try {
           '--no-lockfile',
           '@types/react',
         ],
-        { cwd: consumer, stdio: 'inherit' }
+        { cwd: consumer, stdio: 'inherit' },
       );
     }
     for (const [name, module, moduleResolution, extension] of cases) {

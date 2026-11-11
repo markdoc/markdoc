@@ -1,6 +1,6 @@
-import { parse, SyntaxError } from './grammar/tag';
-import Variable from './ast/variable';
 import Function from './ast/function';
+import Variable from './ast/variable';
+import { parse, SyntaxError } from './grammar/tag';
 
 import type { Token } from './types';
 
@@ -53,7 +53,7 @@ export function findTagEnd(content: string, start = 0) {
 
 export function containsMarkdocTagInUrl(
   content: string,
-  allowedProtocols: string[]
+  allowedProtocols: string[],
 ) {
   for (let pos = 0; pos < content.length; pos++) {
     if (!content.startsWith(OPEN, pos)) continue;

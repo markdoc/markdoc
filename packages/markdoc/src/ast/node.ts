@@ -1,4 +1,3 @@
-import { resolve } from './base';
 import transformer from '../transformer';
 import type {
   AstType,
@@ -12,6 +11,7 @@ import type {
   Schema,
   ValidationError,
 } from '../types';
+import { resolve } from './base';
 
 export default class Node implements AstType {
   readonly $$mdtype = 'Node';
@@ -32,7 +32,7 @@ export default class Node implements AstType {
     type: NodeType = 'node',
     attributes: Record<string, any> = {},
     children: Node[] = [],
-    tag?: string
+    tag?: string,
   ) {
     this.attributes = attributes;
     this.children = children;
@@ -61,7 +61,7 @@ export default class Node implements AstType {
         Object.entries(this.slots).map(([name, slot]) => [
           name,
           slot.resolve(config),
-        ])
+        ]),
       ),
     });
   }

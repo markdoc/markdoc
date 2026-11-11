@@ -1,6 +1,6 @@
 import Tokenizer from '..';
 
-describe('MarkdownIt frontmatter plugin', function () {
+describe('MarkdownIt frontmatter plugin', () => {
   const tokenizer = new Tokenizer();
 
   function parse(example) {
@@ -8,7 +8,7 @@ describe('MarkdownIt frontmatter plugin', function () {
     return tokenizer.tokenize(content);
   }
 
-  it('parsing frontmatter', function () {
+  it('parsing frontmatter', () => {
     const example = parse(`
     ---
     test: true
@@ -26,7 +26,7 @@ describe('MarkdownIt frontmatter plugin', function () {
     });
   });
 
-  it('parsing frontmatter only', function () {
+  it('parsing frontmatter only', () => {
     const example = parse(`
     ---
     test: true
@@ -42,7 +42,7 @@ describe('MarkdownIt frontmatter plugin', function () {
     });
   });
 
-  it('spaces at end', function () {
+  it('spaces at end', () => {
     const example = parse(`
     ---   
     test: true
@@ -60,7 +60,7 @@ describe('MarkdownIt frontmatter plugin', function () {
     });
   });
 
-  it('missing closing', function () {
+  it('missing closing', () => {
     const example = parse(`
     ---
     test: true
@@ -72,7 +72,7 @@ describe('MarkdownIt frontmatter plugin', function () {
     expect(example[0].type).toEqual('hr');
   });
 
-  it('missing opening', function () {
+  it('missing opening', () => {
     const example = parse(`
     test: true
     ---

@@ -1,6 +1,6 @@
 import type { Token } from 'markdown-it';
-import type AstVariable from '../ast/variable';
 import type AstFunction from '../ast/function';
+import type AstVariable from '../ast/variable';
 
 type astTypes = {
   Variable?: typeof AstVariable;

@@ -1,10 +1,10 @@
-import MarkdownIt from 'markdown-it';
 import type { MarkdownIt as MarkdownItParser } from 'markdown-it';
-import annotations from './plugins/annotations';
-import frontmatter from './plugins/frontmatter';
-import comments from './plugins/comments';
-import link from './plugins/link';
+import MarkdownIt from 'markdown-it';
 import type { Token } from '../types';
+import annotations from './plugins/annotations';
+import comments from './plugins/comments';
+import frontmatter from './plugins/frontmatter';
+import link from './plugins/link';
 
 export type LinkPluginOptions = { validatedProtocols: string[] };
 
@@ -19,7 +19,8 @@ export type TokenizerOptions = {
   typographer?: boolean;
   quotes?: string | string[];
   highlight?:
-    ((content: string, language: string, attributes: string) => string) | null;
+    | ((content: string, language: string, attributes: string) => string)
+    | null;
   maxNesting?: number;
   allowIndentation?: boolean;
   allowComments?: boolean;
@@ -48,7 +49,7 @@ export default class Tokenizer {
         link,
         config.linkValidationOptions ?? {
           validatedProtocols: ['http', 'https'],
-        }
+        },
       );
     }
   }
