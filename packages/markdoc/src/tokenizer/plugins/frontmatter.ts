@@ -15,9 +15,9 @@ function block(
   state: StateBlock,
   startLine: number,
   endLine: number,
-  silent: boolean
+  silent: boolean,
 ): boolean {
-  if (startLine != 0 || getLine(state, 0) != fence) return false;
+  if (startLine !== 0 || getLine(state, 0) !== fence) return false;
 
   const close = findClose(state, endLine);
 

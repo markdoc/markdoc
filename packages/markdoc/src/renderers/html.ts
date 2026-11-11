@@ -1,6 +1,7 @@
 import MarkdownIt from 'markdown-it';
 import Tag from '../tag';
 import type { RenderableTreeNodes } from '../types';
+
 const { escapeHtml } = MarkdownIt().utils;
 
 // HTML elements that do not have a matching close tag

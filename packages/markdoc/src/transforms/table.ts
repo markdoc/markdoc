@@ -36,7 +36,7 @@ function unexpectedNodeError(node: Node): ValidationError {
 
 export default function transform(
   document: Node,
-  conditionalTags: string[] = ['if']
+  conditionalTags: string[] = ['if'],
 ) {
   for (const node of document.walk()) {
     if (node.type !== 'tag' || node.tag !== 'table') continue;

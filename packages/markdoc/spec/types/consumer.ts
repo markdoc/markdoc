@@ -1,5 +1,5 @@
-import Markdoc, { Tokenizer } from '@markdoc/markdoc';
 import type { Token, TokenizerOptions } from '@markdoc/markdoc';
+import Markdoc, { Tokenizer } from '@markdoc/markdoc';
 
 const options: TokenizerOptions = {
   html: false,
@@ -16,7 +16,7 @@ const tokenizer = new Tokenizer(options);
 
 export const tokens: Token[] = tokenizer.tokenize('# Hello');
 export const html: string = Markdoc.renderers.html(
-  Markdoc.transform(Markdoc.parse(tokens))
+  Markdoc.transform(Markdoc.parse(tokens)),
 );
 
 // @ts-expect-error markdown-it options retain their declared types.

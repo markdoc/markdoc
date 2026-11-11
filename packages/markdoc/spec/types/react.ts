@@ -7,9 +7,9 @@ declare const Heading: ComponentType<{ children?: ReactNode }>;
 export const rendered: ReactNode = Markdoc.renderers.react(
   Markdoc.transform(Markdoc.parse('# Hello')),
   React,
-  { components: { Heading } }
+  { components: { Heading } },
 );
 
 export const staticRenderer: string = Markdoc.renderers.reactStatic(
-  Markdoc.transform(Markdoc.parse('# Hello'))
+  Markdoc.transform(Markdoc.parse('# Hello')),
 );

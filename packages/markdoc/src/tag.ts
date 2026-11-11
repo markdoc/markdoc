@@ -17,7 +17,7 @@ export default class Tag<
   constructor(
     name = 'div' as N,
     attributes = {} as A,
-    children: RenderableTreeNode[] = []
+    children: RenderableTreeNode[] = [],
   ) {
     this.name = name;
     this.attributes = attributes;

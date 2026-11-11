@@ -1,14 +1,12 @@
-/* eslint-disable @typescript-eslint/ban-ts-comment */
 import markdoc from '../../index';
+import Tag from '../tag';
+import { getAstValues } from './base';
 import FunctionNode from './function';
 import Node from './node';
 import Variable from './variable';
-import { getAstValues } from './base';
 
-import Tag from '../tag';
-
-describe('Node object', function () {
-  it('copies only own attributes into a prototype-free dictionary', function () {
+describe('Node object', () => {
+  it('copies only own attributes into a prototype-free dictionary', () => {
     const attributes = Object.assign(Object.create({ inherited: 'value' }), {
       own: 'value',
     });
@@ -18,7 +16,7 @@ describe('Node object', function () {
     expect(node.attributes.own).toBe('value');
   });
 
-  it('preserves prototype-free attributes and resolves nested values', function () {
+  it('preserves prototype-free attributes and resolves nested values', () => {
     const attributes = Object.fromEntries([
       ['__proto__', { src: new Variable(['url']) }],
       ['src', new Variable(['url'])],
@@ -29,17 +27,18 @@ describe('Node object', function () {
     });
     expect(Object.getPrototypeOf(resolved.attributes)).toBeNull();
     expect(Object.keys(resolved.attributes)).toEqual(['__proto__', 'src']);
+    // biome-ignore lint/suspicious/noProto: Verify the own __proto__ data property preserved by the security fix.
     expect(resolved.attributes.__proto__.src).toBe('https://example.com/');
     expect(resolved.attributes.src).toBe('https://example.com/');
   });
 
-  it('traverses AST values in prototype-free attribute dictionaries', function () {
+  it('traverses AST values in prototype-free attribute dictionaries', () => {
     const variable = new Variable(['url']);
     const node = new Node('tag', { src: variable });
     expect([...getAstValues(node.attributes)]).toEqual([variable]);
   });
 
-  it('resolves object values without invoking prototype setters', function () {
+  it('resolves object values without invoking prototype setters', () => {
     const value = Object.fromEntries([
       ['safe', new Variable(['url'])],
       ['__proto__', { src: new Variable(['url']) }],
@@ -49,26 +48,27 @@ describe('Node object', function () {
       variables: { url: 'https://example.com/' },
     });
     expect(Object.getPrototypeOf(resolved.attributes.value)).toBe(
-      Object.prototype
+      Object.prototype,
     );
     expect(Object.keys(resolved.attributes.value)).toEqual([
       'safe',
       '__proto__',
     ]);
     expect(resolved.attributes.value.src).toBeUndefined();
+    // biome-ignore lint/suspicious/noProto: Verify the own __proto__ data property preserved by the security fix.
     expect(resolved.attributes.value.__proto__.src).toBe(
-      'https://example.com/'
+      'https://example.com/',
     );
   });
 
-  it('resolves serialized function and variable attributes', function () {
+  it('resolves serialized function and variable attributes', () => {
     const serialized = JSON.parse(
       JSON.stringify({
         direct: new Variable(['answer']),
         computed: new FunctionNode('identity', {
           0: new Variable(['answer']),
         }),
-      })
+      }),
     );
     const node = new Node('tag', serialized);
     const resolved = node.resolve({
@@ -82,8 +82,8 @@ describe('Node object', function () {
     expect(resolved.attributes.computed).toBe('resolved');
   });
 
-  describe('traversal', function () {
-    it('with a simple document', function () {
+  describe('traversal', () => {
+    it('with a simple document', () => {
       const example = new Node('document', {}, [
         new Node('heading', { level: 1 }, [
           new Node('inline', {}, [
@@ -105,7 +105,7 @@ describe('Node object', function () {
     });
   });
 
-  it('without slots', function () {
+  it('without slots', () => {
     const example = `
 {% example %}
 # bar
@@ -127,7 +127,7 @@ baz
     ]);
   });
 
-  it('with slots', function () {
+  it('with slots', () => {
     const example = `
 {% example %}
 # bar
@@ -153,13 +153,13 @@ baz
   });
 });
 
-describe('transform', function () {
+describe('transform', () => {
   function transform(content, config = {}) {
     return markdoc.transform(content, config);
   }
 
-  describe('built-in nodes', function () {
-    it('a heading node', function () {
+  describe('built-in nodes', () => {
+    it('a heading node', () => {
       const example = new Node('heading', { level: 1 }, [
         new Node('inline', {}, [
           new Node('text', { content: 'This is a heading' }),
@@ -170,22 +170,22 @@ describe('transform', function () {
       expect(output).toDeepEqual(new Tag('h1', {}, ['This is a heading']));
     });
 
-    describe('fenced code blocks', function () {
-      it('fenced code block with language', function () {
+    describe('fenced code blocks', () => {
+      it('fenced code block with language', () => {
         const example = new Node('fence', {
           language: 'ruby',
           content: 'test',
         });
         const output = transform(example);
         expect(output).toDeepEqual(
-          new Tag('pre', { 'data-language': 'ruby' }, ['test'])
+          new Tag('pre', { 'data-language': 'ruby' }, ['test']),
         );
       });
     });
   });
 
-  describe('transform functions', function () {
-    it('with a simple render function', function () {
+  describe('transform functions', () => {
+    it('with a simple render function', () => {
       const example = new Node('foo', {});
 
       const foo = {
@@ -198,7 +198,7 @@ describe('transform', function () {
       expect(output).toDeepEqual(new Tag('foo', {}, []));
     });
 
-    it('with a render function that renders attributes', function () {
+    it('with a render function that renders attributes', () => {
       const example = new Node('foo', { bar: 'baz', test: 100 });
       const foo = {
         attributes: {
@@ -221,7 +221,7 @@ describe('transform', function () {
     });
   });
 
-  describe('tags', function () {
+  describe('tags', () => {
     const tags = {
       foo: {
         render: 'foo',
@@ -231,32 +231,32 @@ describe('transform', function () {
       },
     };
 
-    it('with a tag', function () {
+    it('with a tag', () => {
       const example = new Node(
         'tag',
         { bar: 'baz' },
         [new Node('inline', {}, [new Node('text', { content: 'test' })])],
-        'foo'
+        'foo',
       );
 
       const output = transform(example, { tags });
       expect(output).toDeepEqual(new Tag('foo', { bar: 'baz' }, ['test']));
     });
 
-    it('with a non-existing tag', function () {
+    it('with a non-existing tag', () => {
       const example = new Node('container', { bar: 'baz' }, [
         new Node('inline', {}, [new Node('text', { content: 'test' })]),
       ]);
 
-      // @ts-ignore test mutating node in userland
+      // @ts-expect-error test mutating node in userland
       example.container = 'bar';
       const output = transform(example, { tags });
       expect(output).toDeepEqual(['test']);
     });
   });
 
-  describe('tag name', function () {
-    it('with a string value', function () {
+  describe('tag name', () => {
+    it('with a string value', () => {
       const example = new Node('foo', {});
       const foo = { render: 'foo' };
 
@@ -264,7 +264,7 @@ describe('transform', function () {
       expect(output.name).toEqual('foo');
     });
 
-    it('with no value', function () {
+    it('with no value', () => {
       const example = new Node('foo', {}, [new Node('bar', {})]);
 
       const output = transform(example, {
@@ -274,8 +274,8 @@ describe('transform', function () {
     });
   });
 
-  describe('attributes', function () {
-    it('with an id', function () {
+  describe('attributes', () => {
+    it('with an id', () => {
       const example = new Node('paragraph', { id: 'bar' });
       const output = transform(example);
       expect(output).toDeepEqualSubset({
@@ -284,7 +284,7 @@ describe('transform', function () {
       });
     });
 
-    it('with a class', function () {
+    it('with a class', () => {
       const example = new Node('paragraph', {
         class: { foo: true, bar: false },
       });
@@ -292,7 +292,7 @@ describe('transform', function () {
       expect(output).toDeepEqual(new Tag('p', { class: 'foo' }, []));
     });
 
-    it('with boolean render attribute', function () {
+    it('with boolean render attribute', () => {
       const example = new Node('foo', { bar: 1, baz: 'test' });
       const foo = {
         render: 'foo',
@@ -306,7 +306,7 @@ describe('transform', function () {
       expect(output).toDeepEqual(new Tag('foo', { bar: 1, baz: 'test' }));
     });
 
-    it('with string render attribute', function () {
+    it('with string render attribute', () => {
       const example = new Node('foo', { bar: 1, baz: 'test' });
       const foo = {
         render: 'foo',
@@ -318,11 +318,11 @@ describe('transform', function () {
 
       const output = transform(example, { nodes: { foo } });
       expect(output).toDeepEqual(
-        new Tag('foo', { 'data-bar': 1, 'data-baz': 'test' })
+        new Tag('foo', { 'data-bar': 1, 'data-baz': 'test' }),
       );
     });
 
-    it('with a non-rendered attribute', function () {
+    it('with a non-rendered attribute', () => {
       const example = new Node('foo', { bar: 1, baz: 'test' });
       const foo = {
         render: 'foo',
@@ -336,7 +336,7 @@ describe('transform', function () {
       expect(output).toDeepEqual(new Tag('foo', { bar: 1 }, []));
     });
 
-    it('with a default attribute value', function () {
+    it('with a default attribute value', () => {
       const example = new Node('foo', {});
       const foo = {
         render: 'foo',
@@ -349,7 +349,7 @@ describe('transform', function () {
       expect(output.attributes.bar).toEqual(10);
     });
 
-    it('with an overriden default attribute value', function () {
+    it('with an overriden default attribute value', () => {
       const example = new Node('foo', { bar: 1 });
       const foo = {
         render: 'foo',
@@ -362,7 +362,7 @@ describe('transform', function () {
       expect(output.attributes.bar).toEqual(1);
     });
 
-    it('variable nested in a hash', function () {
+    it('variable nested in a hash', () => {
       const bar = new Variable(['a', 'b', 'c']);
       const example = new Node('foo', { bar });
       const foo = {
@@ -431,7 +431,7 @@ describe('transform', function () {
   describe('annotations', () => {
     it('multiple values should be ordered correctly', () => {
       const example = markdoc.parse(
-        `\`\`\`js {% z=true .class y=2 x="1" #id %} \nContent\n\`\`\``
+        `\`\`\`js {% z=true .class y=2 x="1" #id %} \nContent\n\`\`\``,
       );
 
       const fence = example.children[0];

@@ -1,8 +1,8 @@
 import { findTagEnd, parseTags } from '../src/utils';
 
-describe('Templating', function () {
-  describe('parseTags', function () {
-    it('simple example', function () {
+describe('Templating', () => {
+  describe('parseTags', () => {
+    it('simple example', () => {
       const example =
         'this is a {% foo blah="asdf" %}test{% /foo %} of template parsing';
       const output = parseTags(example);
@@ -35,59 +35,59 @@ describe('Templating', function () {
     });
   });
 
-  describe('findTagEnd', function () {
-    describe('inline tags', function () {
-      it('in a heading', function () {
+  describe('findTagEnd', () => {
+    describe('inline tags', () => {
+      it('in a heading', () => {
         const example = `# Testing {% #foo.bar baz=1 %}`;
         const end = findTagEnd(example, 0);
         expect(end).toEqual(28);
         expect(example[end]).toEqual('%');
       });
 
-      it('with string', function () {
+      it('with string', () => {
         const example = `# Testing {% #foo.bar baz="example" test=true %}`;
         const end = findTagEnd(example, 0);
         expect(end).toEqual(46);
         expect(example[end]).toEqual('%');
       });
 
-      it('with object literal attribute value', function () {
+      it('with object literal attribute value', () => {
         const example = `# Testing {% #foo.bar baz={test: 1, foo: {test: "asdf{"}} %}`;
         const end = findTagEnd(example, 0);
         expect(end).toEqual(58);
         expect(example[end]).toEqual('%');
       });
 
-      it('in a simple container', function () {
+      it('in a simple container', () => {
         const end = findTagEnd('{% foo %}');
         expect(end).toEqual(7);
       });
 
-      it('in a container with shortcuts', function () {
+      it('in a container with shortcuts', () => {
         const end = findTagEnd('{% foo .bar.baz#test %}');
         expect(end).toEqual(21);
       });
 
-      it('in a container with a string attribute', function () {
+      it('in a container with a string attribute', () => {
         const end = findTagEnd('{% foo test="this is a test" %}');
         expect(end).toEqual(29);
       });
 
-      it('for an invalid container', function () {
+      it('for an invalid container', () => {
         const end = findTagEnd('{% foo .bar#baz');
         expect(end).toBeNull();
       });
 
-      it('in a complex container', function () {
+      it('in a complex container', () => {
         const end = findTagEnd(
-          '{% #foo .bar .baz test="this} is \\"{test}\\" a test" %} this is a test'
+          '{% #foo .bar .baz test="this} is \\"{test}\\" a test" %} this is a test',
         );
         expect(end).toEqual(52);
       });
     });
 
-    describe('multiline tags', function () {
-      it('simple', function () {
+    describe('multiline tags', () => {
+      it('simple', () => {
         const example = `
         {% test #foo.bar
               baz=1 %}
@@ -98,7 +98,7 @@ describe('Templating', function () {
         expect(example[end]).toEqual('%');
       });
 
-      it('with string', function () {
+      it('with string', () => {
         const example = `
         {% test #foo.bar
               baz="this is a test"
@@ -110,7 +110,7 @@ describe('Templating', function () {
         expect(example[end]).toEqual('%');
       });
 
-      it('with string and escaped quote', function () {
+      it('with string and escaped quote', () => {
         const example = `
         {% test #foo.bar
               baz="this \\"is a test"
@@ -122,7 +122,7 @@ describe('Templating', function () {
         expect(example[end]).toEqual('%');
       });
 
-      it('with string that has an opening brace', function () {
+      it('with string that has an opening brace', () => {
         const example = `
         {% test #foo.bar
               baz="this {is a test"
@@ -134,7 +134,7 @@ describe('Templating', function () {
         expect(example[end]).toEqual('%');
       });
 
-      it('with string that has escapes and braces', function () {
+      it('with string that has escapes and braces', () => {
         const example = `
         {% test #foo.bar
               baz="th\\"is {is a \\\\te\\"st"
@@ -146,7 +146,7 @@ describe('Templating', function () {
         expect(example[end]).toEqual('%');
       });
 
-      it('with an object literal attribute value', function () {
+      it('with an object literal attribute value', () => {
         const example = `
         {% test #foo.bar
               foo={testing: "this } is a test", bar: {baz: 1}}
@@ -158,7 +158,7 @@ describe('Templating', function () {
         expect(example[end]).toEqual('%');
       });
 
-      it('with an invalid object literal attribute value', function () {
+      it('with an invalid object literal attribute value', () => {
         const example = `
         {test #foo.bar
               foo={testing: "this } is a test", bar: {baz: 1}

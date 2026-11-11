@@ -3,17 +3,14 @@ import Node from './src/ast/node';
 import format from './src/formatter';
 import functions from './src/functions';
 import parser from './src/parser';
-import * as nodes from './src/schema';
 import renderers from './src/renderers';
+import * as nodes from './src/schema';
 import Tag from './src/tag';
 import tags from './src/tags';
 import { truthy } from './src/tags/conditional';
 import Tokenizer from './src/tokenizer';
 import transformer, { globalAttributes } from './src/transformer';
 import transforms from './src/transforms';
-import { parseTags } from './src/utils';
-import validator, { validateTree } from './src/validator';
-
 import type {
   Config,
   ParserArgs,
@@ -21,9 +18,11 @@ import type {
   Token,
   ValidateError,
 } from './src/types';
+import { parseTags } from './src/utils';
+import validator, { validateTree } from './src/validator';
 
-export * from './src/types';
 export type { TokenizerOptions } from './src/tokenizer';
+export * from './src/types';
 
 const tokenizer = new Tokenizer();
 
@@ -47,7 +46,7 @@ function mergeConfig(config: Config = {}): Config {
 
 export function parse(
   content: string | Token[],
-  args?: string | ParserArgs
+  args?: string | ParserArgs,
 ): Node {
   if (typeof content === 'string') content = tokenizer.tokenize(content);
   return parser(content, args);
@@ -55,15 +54,15 @@ export function parse(
 
 export function resolve<C extends Config = Config>(
   content: Node,
-  config: C
+  config: C,
 ): Node;
 export function resolve<C extends Config = Config>(
   content: Node[],
-  config: C
+  config: C,
 ): Node[];
 export function resolve<C extends Config = Config>(
   content: any,
-  config: C
+  config: C,
 ): any {
   if (Array.isArray(content))
     return content.flatMap((child) => child.resolve(config));
@@ -73,15 +72,15 @@ export function resolve<C extends Config = Config>(
 
 export function transform<C extends Config = Config>(
   node: Node,
-  config?: C
+  config?: C,
 ): RenderableTreeNode;
 export function transform<C extends Config = Config>(
   nodes: Node[],
-  config?: C
+  config?: C,
 ): RenderableTreeNode[];
 export function transform<C extends Config = Config>(
   nodes: any,
-  options?: C
+  options?: C,
 ): any {
   const config = mergeConfig(options);
   const content = resolve(nodes, config);
@@ -93,11 +92,11 @@ export function transform<C extends Config = Config>(
 
 export function validate<C extends Config = Config>(
   node: Node,
-  options?: C
+  options?: C,
 ): ValidateError[];
 export function validate<C extends Config = Config>(
   content: any,
-  options?: C
+  options?: C,
 ): any {
   const config = mergeConfig(options);
   return validateTree(content, config);
@@ -112,21 +111,21 @@ export function createElement(
 }
 
 export {
-  nodes,
-  tags,
+  Ast,
+  format,
   functions,
   globalAttributes,
-  transforms,
-  renderers,
-  Ast,
   Node,
+  nodes,
+  parseTags,
+  renderers,
   Tag,
   Tokenizer,
-  parseTags,
+  tags,
   transformer,
-  validator,
+  transforms,
   truthy,
-  format,
+  validator,
 };
 
 export default class Markdoc {

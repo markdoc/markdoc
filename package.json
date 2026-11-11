@@ -8,18 +8,19 @@
     "version-packages": "changeset version && pnpm install --lockfile-only --ignore-scripts --no-frozen-lockfile",
     "build": "turbo run build",
     "dev": "turbo run dev",
-    "check": "turbo run build lint type:check prettier:check test test:types marktest",
+    "check": "turbo run build lint type:check test test:types marktest",
     "test": "turbo run test",
     "test:types": "turbo run test:types",
     "marktest": "turbo run marktest",
     "lint": "turbo run lint",
+    "lint:fix": "turbo run lint:fix",
+    "format": "turbo run format",
     "type:check": "turbo run type:check",
-    "prettier": "turbo run prettier",
-    "prettier:check": "turbo run prettier:check",
     "grammar": "pnpm --filter @markdoc/markdoc run grammar",
     "typedoc": "turbo run typedoc"
   },
   "devDependencies": {
+    "@biomejs/biome": "2.5.15",
     "@changesets/cli": "3.0.3",
     "turbo": "2.11.7"
   },
