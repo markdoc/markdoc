@@ -17,3 +17,15 @@ Write release notes in terms of the user-visible fix or feature. Documentation,
 tests, and internal tooling changes do not need a package release. See the
 [Changesets guide](../.changeset/README.md) for bump selection, inspecting pending
 changes, and preparing a version update.
+
+Run these commands from the repository root. `pnpm run check` runs all CI checks
+through Turborepo, including the build needed by the published-type tests.
+
+Markdoc's source, tests, and build configuration live in `packages/markdoc`.
+To run a package script directly, use `pnpm --filter @markdoc/markdoc <script>`.
+For example, `pnpm --filter @markdoc/markdoc test` runs only Markdoc's unit tests.
+
+Add reusable packages under `packages/` and applications under `apps/`. Each
+workspace owns its dependencies and scripts; use `workspace:*` for dependencies
+between workspaces. Keep application packages private. The shared build task
+caches `dist/**`; use a package-level `turbo.json` for different build outputs.

@@ -3,7 +3,7 @@ import tseslint from "typescript-eslint";
 import globals from "globals";
 
 export default tseslint.config(
-  { ignores: ["src/grammar/tag.js", "dist/**", "build.js"] },
+  { ignores: ["src/grammar/tag.js", "dist/**", "types/**", ".turbo/**", "build.js"] },
   js.configs.recommended,
   ...tseslint.configs.recommended,
   {

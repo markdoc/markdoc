@@ -1,0 +1,43 @@
+{
+  "$schema": "https://turborepo.dev/schema.json",
+  "globalDependencies": [
+    ".node-version",
+    ".prettierrc",
+    "pnpm-workspace.yaml",
+    "patches/**"
+  ],
+  "tasks": {
+    "build": {
+      "dependsOn": ["^build"],
+      "outputs": ["dist/**"]
+    },
+    "dev": {
+      "cache": false,
+      "persistent": true
+    },
+    "test": {
+      "dependsOn": ["^build"]
+    },
+    "test:types": {
+      "dependsOn": ["build"],
+      "cache": false
+    },
+    "marktest": {
+      "dependsOn": ["^build"],
+      "env": ["INSPECT"],
+      "cache": false
+    },
+    "lint": {},
+    "type:check": {
+      "dependsOn": ["^build"]
+    },
+    "prettier": {
+      "cache": false
+    },
+    "prettier:check": {},
+    "typedoc": {
+      "dependsOn": ["^build"],
+      "outputs": ["types/**"]
+    }
+  }
+}
