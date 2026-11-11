@@ -1,6 +1,6 @@
+import Tag from '../../tag';
 import dynamic from './react';
 import renderStatic from './static';
-import Tag from '../../tag';
 
 const React = {
   Fragment: 'fragment',
@@ -9,8 +9,8 @@ const React = {
   },
 };
 
-describe('React dynamic renderer', function () {
-  it('rendering a null node', function () {
+describe('React dynamic renderer', () => {
+  it('rendering a null node', () => {
     const example = { name: 'h1', children: ['test', null] };
     const output = dynamic(example, React);
     expect(output).toDeepEqual({
@@ -20,19 +20,19 @@ describe('React dynamic renderer', function () {
     });
   });
 
-  it('rendering a tag', function () {
+  it('rendering a tag', () => {
     const example = { name: 'h1', children: ['test'] };
     const output = dynamic(example, React);
     expect(output).toDeepEqualSubset(example);
   });
 
-  it('rendering string and number child nodes', function () {
+  it('rendering string and number child nodes', () => {
     const example = { name: 'h1', children: ['test ', 1] };
     const output = dynamic(example, React);
     expect(output).toDeepEqualSubset(example);
   });
 
-  it('rendering nested tags', function () {
+  it('rendering nested tags', () => {
     const example = {
       name: 'div',
       children: [{ name: 'p', children: ['test'] }],
@@ -41,7 +41,7 @@ describe('React dynamic renderer', function () {
     expect(output).toDeepEqualSubset(example);
   });
 
-  it('rendering parallel tags', function () {
+  it('rendering parallel tags', () => {
     const children = [
       { name: 'p', children: ['foo'] },
       { name: 'p', children: ['bar'] },
@@ -51,7 +51,7 @@ describe('React dynamic renderer', function () {
     expect(output).toDeepEqualSubset({ name: 'fragment', children });
   });
 
-  it('rendering an external component', function () {
+  it('rendering an external component', () => {
     const components = { Foo: 'bar' };
     const example = new Tag('Foo', undefined, ['test']);
     const output = dynamic(example, React, { components });
@@ -61,8 +61,8 @@ describe('React dynamic renderer', function () {
     });
   });
 
-  it('rendering with a custom tag resolution function', function () {
-    function tagName(name, components) {
+  it('rendering with a custom tag resolution function', () => {
+    function tagName(_name, components) {
       return components.Foo;
     }
     const components = { Foo: 'bar' };
@@ -78,8 +78,8 @@ describe('React dynamic renderer', function () {
     });
   });
 
-  describe('attributes', function () {
-    it('with an id attribute', function () {
+  describe('attributes', () => {
+    it('with an id attribute', () => {
       const example = {
         name: 'h1',
         attributes: { id: 'foo' },
@@ -90,7 +90,7 @@ describe('React dynamic renderer', function () {
       expect(output).toDeepEqualSubset(example);
     });
 
-    it('with a class attribute', function () {
+    it('with a class attribute', () => {
       const example = new Tag('h1', { class: 'foo bar' }, ['test']);
 
       const output = dynamic(example, React);
@@ -101,7 +101,7 @@ describe('React dynamic renderer', function () {
       });
     });
 
-    it('with a number attribute value', function () {
+    it('with a number attribute value', () => {
       const example = {
         name: 'h1',
         attributes: { 'data-foo': 42 },
@@ -113,8 +113,8 @@ describe('React dynamic renderer', function () {
     });
   });
 
-  describe('rendering built-in nodes', function () {
-    it('rendering a fenced code block', function () {
+  describe('rendering built-in nodes', () => {
+    it('rendering a fenced code block', () => {
       const example = new Tag('pre', { class: 'code code-ruby' }, ['test']);
 
       const output = dynamic(example, React);
@@ -127,8 +127,8 @@ describe('React dynamic renderer', function () {
   });
 });
 
-describe('React static renderer', function () {
-  it('rendering a null node', function () {
+describe('React static renderer', () => {
+  it('rendering a null node', () => {
     const example = { name: 'h1', children: ['test', null] };
     const code = renderStatic(example);
     const output = eval(code)();
@@ -136,14 +136,14 @@ describe('React static renderer', function () {
     expect(output).toDeepEqual({ ...example, attributes: null });
   });
 
-  it('rendering a tag', function () {
+  it('rendering a tag', () => {
     const example = { name: 'h1', children: ['test'] };
     const code = renderStatic(example);
     const output = eval(code)();
     expect(output).toDeepEqualSubset(example);
   });
 
-  it('rendering nested tags', function () {
+  it('rendering nested tags', () => {
     const example = {
       name: 'div',
       children: [{ name: 'p', children: ['test'] }],
@@ -153,7 +153,7 @@ describe('React static renderer', function () {
     expect(output).toDeepEqualSubset(example);
   });
 
-  it('rendering a fragment', function () {
+  it('rendering a fragment', () => {
     const example = [
       { name: 'p', children: ['foo'] },
       { name: 'p', children: ['bar'] },
@@ -172,7 +172,7 @@ describe('React static renderer', function () {
     });
   });
 
-  it('rendering an external component', function () {
+  it('rendering an external component', () => {
     const components = { Foo: 'bar' };
     const example = new Tag('Foo', undefined, ['test']);
     const code = renderStatic(example);
@@ -184,8 +184,8 @@ describe('React static renderer', function () {
     });
   });
 
-  it('rendering with a custom tag resolution function', function () {
-    function tagName(name, components) {
+  it('rendering with a custom tag resolution function', () => {
+    function tagName(_name, components) {
       return components.Foo;
     }
     const components = { Foo: 'bar' };
@@ -199,8 +199,8 @@ describe('React static renderer', function () {
     });
   });
 
-  describe('attributes', function () {
-    it('with an id attribute', function () {
+  describe('attributes', () => {
+    it('with an id attribute', () => {
       const example = {
         name: 'h1',
         attributes: { id: 'foo' },
@@ -213,7 +213,7 @@ describe('React static renderer', function () {
       expect(output).toDeepEqualSubset(example);
     });
 
-    it('with a number attribute value', function () {
+    it('with a number attribute value', () => {
       const example = {
         name: 'h1',
         attributes: { 'data-foo': 42 },

@@ -1,5 +1,5 @@
+import type { AstType, Config } from '../types';
 import { resolve } from './base';
-import type { Config, AstType } from '../types';
 
 export default class Function implements AstType {
   readonly $$mdtype = 'Function';

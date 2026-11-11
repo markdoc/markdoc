@@ -4,8 +4,8 @@ function validate(string: string, config = {}) {
   return Markdoc.validate(Markdoc.parse(string), config);
 }
 
-describe('table transform validation', function () {
-  it('produces an error for non-row content at the row level of a table', function () {
+describe('table transform validation', () => {
+  it('produces an error for non-row content at the row level of a table', () => {
     const input = `{% table %}
 * Heading 1
 * Heading 2
@@ -20,7 +20,7 @@ This is invalid non-conditional content at the row level.
 
     const errors = validate(input);
     const tableSyntaxErrors = errors.filter(
-      (e) => e.error.id === 'table-syntax'
+      (e) => e.error.id === 'table-syntax',
     );
 
     // One error for the paragraph inside the conditional,
@@ -34,10 +34,10 @@ This is invalid non-conditional content at the row level.
 
     // Errors should point to the actual invalid content, not the table
     const conditionalError = tableSyntaxErrors.find(
-      (e) => e.location?.start.line === 7
+      (e) => e.location?.start.line === 7,
     );
     const rowLevelError = tableSyntaxErrors.find(
-      (e) => e.location?.start.line === 9
+      (e) => e.location?.start.line === 9,
     );
     expect(conditionalError).toBeDefined();
     expect(conditionalError?.location?.start.line).toBe(7);
@@ -49,7 +49,7 @@ This is invalid non-conditional content at the row level.
     expect(rowLevelError?.lines).toEqual([9, 10]);
   });
 
-  it('does not produce errors for valid conditional rows', function () {
+  it('does not produce errors for valid conditional rows', () => {
     const input = `{% table %}
 * Heading 1
 * Heading 2
@@ -70,13 +70,13 @@ This is invalid non-conditional content at the row level.
 
     const errors = validate(input);
     const tableSyntaxErrors = errors.filter(
-      (e) => e.error.id === 'table-syntax'
+      (e) => e.error.id === 'table-syntax',
     );
 
     expect(tableSyntaxErrors).toEqual([]);
   });
 
-  it('does not produce errors for valid conditionals within a cell', function () {
+  it('does not produce errors for valid conditionals within a cell', () => {
     const input = `{% table %}
 * Heading 1
 * Heading 2
@@ -92,13 +92,13 @@ This is invalid non-conditional content at the row level.
 
     const errors = validate(input);
     const tableSyntaxErrors = errors.filter(
-      (e) => e.error.id === 'table-syntax'
+      (e) => e.error.id === 'table-syntax',
     );
 
     expect(tableSyntaxErrors).toEqual([]);
   });
 
-  it('does not produce errors for valid conditional with multiple rows and hr separators', function () {
+  it('does not produce errors for valid conditional with multiple rows and hr separators', () => {
     const input = `{% table %}
 * Heading 1
 * Heading 2
@@ -114,13 +114,13 @@ This is invalid non-conditional content at the row level.
 
     const errors = validate(input);
     const tableSyntaxErrors = errors.filter(
-      (e) => e.error.id === 'table-syntax'
+      (e) => e.error.id === 'table-syntax',
     );
 
     expect(tableSyntaxErrors).toEqual([]);
   });
 
-  it('does not produce errors for comments in a table', function () {
+  it('does not produce errors for comments in a table', () => {
     function validateWithComments(string: string, config = {}) {
       const tokenizer = new Markdoc.Tokenizer({ allowComments: true });
       const tokens = tokenizer.tokenize(string);
@@ -147,13 +147,13 @@ comment inside conditional
 
     const errors = validateWithComments(input);
     const tableSyntaxErrors = errors.filter(
-      (e) => e.error.id === 'table-syntax'
+      (e) => e.error.id === 'table-syntax',
     );
 
     expect(tableSyntaxErrors).toEqual([]);
   });
 
-  it('produces an error for invalid tags inside a table conditional', function () {
+  it('produces an error for invalid tags inside a table conditional', () => {
     const input = `{% table %}
 * Heading 1
 * Heading 2
@@ -171,7 +171,7 @@ This is not a valid row
 
     const errors = validate(input, config);
     const tableSyntaxErrors = errors.filter(
-      (e) => e.error.id === 'table-syntax'
+      (e) => e.error.id === 'table-syntax',
     );
 
     expect(tableSyntaxErrors.length).toBe(1);
@@ -183,7 +183,7 @@ This is not a valid row
     expect(tableSyntaxErrors[0].lines).toEqual([5, 6]);
   });
 
-  it('produces an error for non-conditional tags at the row level of a table', function () {
+  it('produces an error for non-conditional tags at the row level of a table', () => {
     const input = `{% table %}
 * Heading 1
 * Heading 2
@@ -199,7 +199,7 @@ This is not a valid row
 
     const errors = validate(input, config);
     const tableSyntaxErrors = errors.filter(
-      (e) => e.error.id === 'table-syntax'
+      (e) => e.error.id === 'table-syntax',
     );
 
     expect(tableSyntaxErrors.length).toBe(1);

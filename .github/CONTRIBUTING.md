@@ -9,6 +9,7 @@ If you’d like to make changes yourself, follow these steps:
 1. Install [pnpm](https://pnpm.io/installation), using the version pinned in `package.json` (with Corepack, run `corepack enable`)
 1. Run `pnpm install`
 1. Build the library using `pnpm run build`
+1. Run `pnpm lint` to check formatting, imports, and lint rules
 1. Test your changes with `pnpm test` and `pnpm run marktest`
 1. Run `pnpm changeset` for changes to package behavior, public APIs, or published types, and commit the generated release note
 1. Finally, submit a [pull request](https://help.github.com/articles/creating-a-pull-request-from-a-fork/)
@@ -29,3 +30,9 @@ Add reusable packages under `packages/` and applications under `apps/`. Each
 workspace owns its dependencies and scripts; use `workspace:*` for dependencies
 between workspaces. Keep application packages private. The shared build task
 caches `dist/**`; use a package-level `turbo.json` for different build outputs.
+
+Use `pnpm lint:fix` for safe Biome fixes and import organization, or
+`pnpm format` for formatting only. Biome uses two-space indentation and single
+quotes. Package manifests and generated files are excluded from these checks.
+`pnpm grammar` regenerates `packages/markdoc/src/grammar/tag.js` from the PEG grammar;
+do not edit or format the generated parser by hand.

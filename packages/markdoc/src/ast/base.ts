@@ -1,9 +1,9 @@
 import type {
-  AstType,
-  Config,
   Function as AstFunction,
-  Scalar,
+  AstType,
   Variable as AstVariable,
+  Config,
+  Scalar,
 } from '../types';
 
 export function isAst(value?: any): value is AstType {

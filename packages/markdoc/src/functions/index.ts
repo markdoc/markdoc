@@ -1,5 +1,5 @@
-import type { ConfigFunction } from '../types';
 import { truthy } from '../tags/conditional';
+import type { ConfigFunction } from '../types';
 
 const and: ConfigFunction = {
   transform(parameters) {

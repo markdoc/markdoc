@@ -1,7 +1,6 @@
-import Tag from './tag';
 import { Class } from './schema-types/class';
 import { Id } from './schema-types/id';
-import { isPromise } from './utils';
+import Tag from './tag';
 import type {
   Config,
   MaybePromise,
@@ -11,6 +10,7 @@ import type {
   Schema,
   Transformer,
 } from './types';
+import { isPromise } from './utils';
 
 type AttributesSchema = Schema['attributes'];
 
@@ -30,6 +30,7 @@ export default {
 
     const attrs = { ...globalAttributes, ...schema.attributes };
     for (const [key, attr] of Object.entries(attrs)) {
+      // biome-ignore lint/suspicious/noDoubleEquals: Preserve legacy coercion of render options.
       if (attr.render == false) continue;
 
       const name = typeof attr.render === 'string' ? attr.render : key;
@@ -60,7 +61,7 @@ export default {
 
   children(node: Node, config: Config = {}) {
     const children = node.children.flatMap<MaybePromise<RenderableTreeNodes>>(
-      (child) => this.node(child, config)
+      (child) => this.node(child, config),
     );
     if (children.some(isPromise)) {
       return Promise.all(children);
@@ -74,13 +75,13 @@ export default {
       return schema.transform(node, config);
 
     const children = this.children(node, config);
-    if (!schema || !schema.render) return children;
+    if (!schema?.render) return children;
 
     const attributes = this.attributes(node, config);
 
     if (isPromise(attributes) || isPromise(children)) {
       return Promise.all([attributes, children]).then(
-        (values) => new Tag(schema.render, ...values)
+        (values) => new Tag(schema.render, ...values),
       );
     }
 

@@ -1,6 +1,6 @@
 import Ast from './ast';
-import { OPEN, CLOSE, isIdentifier } from './utils';
 import type { AttributeValue, Function, Node, Value, Variable } from './types';
+import { CLOSE, isIdentifier, OPEN } from './utils';
 
 type Options = {
   allowIndentation?: boolean;
@@ -59,7 +59,7 @@ function formatScalar(v: Value): string | undefined {
       Object.entries(v)
         .map(
           ([key, value]) =>
-            `${isIdentifier(key) ? key : `"${key}"`}: ${formatScalar(value)}`
+            `${isIdentifier(key) ? key : `"${key}"`}: ${formatScalar(value)}`,
         )
         .join(SEP) +
       '}'
@@ -122,7 +122,7 @@ function* formatFunction(f: Function) {
 }
 
 function* trimStart(g: Generator<string>) {
-  let n;
+  let n: string;
   do {
     const { value, done } = g.next();
     if (done) return;
@@ -137,7 +137,7 @@ function* escapeMarkdownCharacters(s: string, characters: RegExp) {
     .replace(characters, '\\$&')
     // TODO keep &nbsp; as entity in the AST?
     // Non-breaking space (0xA0)
-    .replace(new RegExp('\xa0', 'g'), '&nbsp;');
+    .replace(/\xa0/g, '&nbsp;');
 }
 
 function* formatNode(n: Node, o: Options = {}) {
@@ -146,7 +146,7 @@ function* formatNode(n: Node, o: Options = {}) {
 
   switch (n.type) {
     case 'document': {
-      if (n.attributes.frontmatter && n.attributes.frontmatter.length) {
+      if (n.attributes.frontmatter?.length) {
         yield '---' + NL + n.attributes.frontmatter + NL + '---' + NL + NL;
       }
       yield* trimStart(formatChildren(n, no));
@@ -279,7 +279,7 @@ function* formatNode(n: Node, o: Options = {}) {
       }
       const open = OPEN + SPACE;
       const attributes = [...formatAttributes(n)].filter(
-        (v) => v !== undefined
+        (v) => v !== undefined,
       );
       const tag = [open + n.tag, ...attributes];
       const inlineTag = tag.join(SPACE);
@@ -311,7 +311,7 @@ function* formatNode(n: Node, o: Options = {}) {
     }
     case 'list': {
       const isLoose = n.children.some((n) =>
-        n.children.some((c) => c.type === 'paragraph')
+        n.children.some((c) => c.type === 'paragraph'),
       );
 
       for (let i = 0; i < n.children.length; i++) {
@@ -418,14 +418,14 @@ function* formatNode(n: Node, o: Options = {}) {
 
         yield NL;
         yield* formatTableRow(
-          head.map((cell, i) => cell + SPACE.repeat(widths[i] - cell.length))
+          head.map((cell, i) => cell + SPACE.repeat(widths[i] - cell.length)),
         );
         yield NL;
-        yield* formatTableRow(head.map((cell, i) => '-'.repeat(widths[i])));
+        yield* formatTableRow(head.map((_cell, i) => '-'.repeat(widths[i])));
         yield NL;
         for (const row of rows) {
           yield* formatTableRow(
-            row.map((cell, i) => cell + SPACE.repeat(widths[i] - cell.length))
+            row.map((cell, i) => cell + SPACE.repeat(widths[i] - cell.length)),
           );
           yield NL;
         }
@@ -462,7 +462,7 @@ function* formatNode(n: Node, o: Options = {}) {
 
 function* formatValue(
   v: Value | Value[],
-  o: Options = {}
+  o: Options = {},
 ): Generator<string, void, unknown> {
   switch (typeof v) {
     case 'undefined':

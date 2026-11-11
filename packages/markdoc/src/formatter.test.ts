@@ -86,7 +86,7 @@ function check(source, expected, options = {}) {
   const b = format(Markdoc.parse(tokenizer.tokenize(source)), options);
   // console.log(a, b);
   const d = diff(a, b);
-  if (d && d.includes('Compared values have no visual difference.')) return;
+  if (d?.includes('Compared values have no visual difference.')) return;
   throw d;
 }
 
@@ -896,14 +896,14 @@ ${'`'.repeat(4)}
         validAttribute: true,
       },
       [],
-      'tag'
+      'tag',
     );
 
     const expected = `{% tag validAttribute=true /%}`;
 
     const b = format(sourceNode);
     const d = diff(expected, b.trim());
-    if (d && d.includes('Compared values have no visual difference.')) return;
+    if (d?.includes('Compared values have no visual difference.')) return;
   });
 
   it('makes sure fences are formatted correctly if content has no ending newline', () => {

@@ -5,9 +5,9 @@ function validate(string, config) {
   return Markdoc.validate(Markdoc.parse(string), config);
 }
 
-describe('validate', function () {
-  describe('function validation', function () {
-    it('ensures that function exists', function () {
+describe('validate', () => {
+  describe('function validation', () => {
+    it('ensures that function exists', () => {
       const example = '{% foo bar=baz() /%}';
       const output = validate(example, {
         validation: { validateFunctions: true },
@@ -30,7 +30,7 @@ describe('validate', function () {
       ]);
     });
 
-    describe('return type checking', function () {
+    describe('return type checking', () => {
       const example = '{% foo bar=baz() /%}';
       const schema = {
         validation: { validateFunctions: true },
@@ -69,7 +69,7 @@ describe('validate', function () {
         },
       };
 
-      it('correctly handles union types', function () {
+      it('correctly handles union types', () => {
         const example = '{% union-tag-1 foo=withUnion() bar=withUnion() /%}';
         expect(validate(example, schema)).toEqual([]);
 
@@ -85,7 +85,7 @@ describe('validate', function () {
         ]);
       });
 
-      it('correctly handles return types for nested function calls', function () {
+      it('correctly handles return types for nested function calls', () => {
         const example = '{% foo bar=nested(baz(), number()) /%}';
         expect(validate(example, schema)).toEqual([]);
 
@@ -106,11 +106,11 @@ describe('validate', function () {
         ]);
       });
 
-      it('accepts a correct return type', function () {
+      it('accepts a correct return type', () => {
         expect(validate(example, schema)).toEqual([]);
       });
 
-      it('correctly handles no return type', function () {
+      it('correctly handles no return type', () => {
         const modifiedSchema = {
           ...schema,
           functions: { baz: {} },
@@ -119,7 +119,7 @@ describe('validate', function () {
         expect(validate(example, modifiedSchema)).toEqual([]);
       });
 
-      it('identifies an incorrect return type', function () {
+      it('identifies an incorrect return type', () => {
         const modifiedSchema = {
           ...schema,
           functions: { baz: { returns: Number } },
@@ -130,7 +130,7 @@ describe('validate', function () {
       });
     });
 
-    describe('checks parameters', function () {
+    describe('checks parameters', () => {
       const schema = {
         validation: { validateFunctions: true },
         functions: {
@@ -162,13 +162,13 @@ describe('validate', function () {
         },
       };
 
-      it('with a missing optional parameter', function () {
+      it('with a missing optional parameter', () => {
         expect(validate('{% foo bar=qux() /%}', schema)).toEqual([]);
       });
 
-      it('with a missing required parameter', function () {
+      it('with a missing required parameter', () => {
         expect(
-          validate('{% foo bar=requiredParam() /%}', schema)
+          validate('{% foo bar=requiredParam() /%}', schema),
         ).toDeepEqualSubset([
           {
             error: {
@@ -179,20 +179,20 @@ describe('validate', function () {
         ]);
       });
 
-      describe('accepts defined parameters', function () {
-        it('with keyed parameter', function () {
+      describe('accepts defined parameters', () => {
+        it('with keyed parameter', () => {
           expect(
-            validate('{% foo bar=qux(test="example") /%}', schema)
+            validate('{% foo bar=qux(test="example") /%}', schema),
           ).toEqual([]);
         });
       });
 
-      it('ignores parameters when there is no typing', function () {
+      it('ignores parameters when there is no typing', () => {
         expect(validate('{% foo bar=noTyping(foo=1) /%}', schema)).toEqual([]);
       });
 
-      describe('rejects undeclared parameters', function () {
-        it('with a keyed parameter', function () {
+      describe('rejects undeclared parameters', () => {
+        it('with a keyed parameter', () => {
           const output = validate('{% foo bar=baz(foo=1) /%}', schema);
           expect(output).toDeepEqualSubset([
             {
@@ -205,7 +205,7 @@ describe('validate', function () {
           ]);
         });
 
-        it('with a positional parameter', function () {
+        it('with a positional parameter', () => {
           expect(validate('{% foo bar=baz(1) /%}', schema)).toDeepEqualSubset([
             {
               type: 'tag',
@@ -217,7 +217,7 @@ describe('validate', function () {
           ]);
 
           expect(
-            validate('{% foo bar=baz(1, test=2) /%}', schema)
+            validate('{% foo bar=baz(1, test=2) /%}', schema),
           ).toDeepEqualSubset([
             {
               type: 'tag',
@@ -251,7 +251,7 @@ describe('validate', function () {
 bar
 {% /baz %}
       `,
-        config
+        config,
       );
       expect(block).toEqual([]);
     });
@@ -266,7 +266,7 @@ bar
 bar
 {% /foo %}
       `,
-        config
+        config,
       );
       expect(wrong[0]?.error.id).toEqual('tag-placement-invalid');
       expect(wrong[0]?.error.message).toContain('should be inline');
@@ -279,7 +279,7 @@ bar
 bar
 {% /bar %}
 `,
-        config
+        config,
       );
       expect(correct).toEqual([]);
       const wrong = validate(`this is inline {% bar %}bar{% /bar %}`, config);
@@ -549,7 +549,7 @@ bar
     it('simple case', () => {
       const example = `{% foo bar={baz: 3} /%}`;
 
-      function validator(value, config, name) {
+      function validator(value, _config, name) {
         return value.baz < 5
           ? [
               {
@@ -580,7 +580,7 @@ bar
 
       const errs = validate(example, config);
       expect(errs[0].error.message).toEqual(
-        "The value of 'bar.baz' must be less than five"
+        "The value of 'bar.baz' must be less than five",
       );
     });
 
@@ -588,7 +588,7 @@ bar
       const example = `{% foo bar={baz: 3} /%}`;
 
       class CustomType {
-        validate(value, config, name) {
+        validate(value, _config, name) {
           return value.baz < 5
             ? [
                 {
@@ -618,7 +618,7 @@ bar
 
       const errs = validate(example, config);
       expect(errs[0].error.message).toEqual(
-        "The value of 'bar.baz' must be less than five"
+        "The value of 'bar.baz' must be less than five",
       );
     });
   });
@@ -657,7 +657,7 @@ bar
         nodes: {
           heading: {
             ...Markdoc.nodes.heading,
-            validate(node, config) {
+            validate(_node, config) {
               if (config.validation.parents.find((p) => p.tag === 'foo'))
                 return [
                   {
@@ -691,7 +691,7 @@ bar
         tags: {
           foo: {},
           bar: {
-            validate(node, config) {
+            validate(_node, config) {
               const parents = config?.validation?.parents?.map((p) => p.type);
               expect(parents).toDeepEqual([
                 'document',

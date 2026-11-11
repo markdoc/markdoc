@@ -1,11 +1,11 @@
 // @ts-check
 
-import Tokenizer from '../src/tokenizer';
-import parser from '../src/parser';
-import Variable from '../src/ast/variable';
 import { any } from 'deep-assert';
+import Variable from '../src/ast/variable';
+import parser from '../src/parser';
+import Tokenizer from '../src/tokenizer';
 
-describe('Markdown parser', function () {
+describe('Markdown parser', () => {
   const fence = '```';
   const tokenizer = new Tokenizer({ allowComments: true });
 
@@ -15,8 +15,8 @@ describe('Markdown parser', function () {
     return parser(tokens, options);
   }
 
-  describe('handling options', function () {
-    it('no args', function () {
+  describe('handling options', () => {
+    it('no args', () => {
       const example = convert(`# This is a test`);
       expect(example.children[0]).toDeepEqual({
         ...any(),
@@ -28,7 +28,7 @@ describe('Markdown parser', function () {
       });
     });
 
-    it('filename as string', function () {
+    it('filename as string', () => {
       const example = convert(`# This is a test`, 'foo.md');
       expect(example.children[0]).toDeepEqual({
         ...any(),
@@ -40,7 +40,7 @@ describe('Markdown parser', function () {
       });
     });
 
-    it('filename as property', function () {
+    it('filename as property', () => {
       const example = convert(`# This is a test`, { file: 'foo.md' });
       expect(example.children[0]).toDeepEqual({
         ...any(),
@@ -52,7 +52,7 @@ describe('Markdown parser', function () {
       });
     });
 
-    it('location off', function () {
+    it('location off', () => {
       const example = convert(`# This is a test`, {
         file: 'foo.md',
         location: false,
@@ -60,7 +60,7 @@ describe('Markdown parser', function () {
       expect(example.children[0].location).toBeUndefined();
     });
 
-    it('location on', function () {
+    it('location on', () => {
       const example = convert(`# This is a test`, {
         file: 'foo.md',
         location: true,
@@ -73,8 +73,8 @@ describe('Markdown parser', function () {
     });
   });
 
-  describe('handling frontmatter', function () {
-    it('simple frontmatter', function () {
+  describe('handling frontmatter', () => {
+    it('simple frontmatter', () => {
       const example = convert(`
       ---
       foo: bar
@@ -91,7 +91,7 @@ describe('Markdown parser', function () {
       });
     });
 
-    it('frontmatter followed by content', function () {
+    it('frontmatter followed by content', () => {
       const example = convert(`
       ---
       foo: bar
@@ -112,8 +112,8 @@ describe('Markdown parser', function () {
     });
   });
 
-  describe('handling attributes', function () {
-    it('for emphasis', function () {
+  describe('handling attributes', () => {
+    it('for emphasis', () => {
       const items = (doc, n = 0) =>
         doc.children[0].children[0].children[n].attributes.marker;
 
@@ -136,12 +136,12 @@ describe('Markdown parser', function () {
       expect(items(example3a, 1)).toEqual('**');
     });
 
-    it('for heading', function () {
+    it('for heading', () => {
       const document = convert(`# Sample Heading`);
       expect(document.children[0].attributes).toDeepEqual({ level: 1 });
     });
 
-    it('for list', function () {
+    it('for list', () => {
       const unordered = convert(`
       * Example 1
       * Example 2
@@ -158,7 +158,7 @@ describe('Markdown parser', function () {
       expect(ordered.children[0].attributes.ordered).toEqual(true);
     });
 
-    it('for ordered list start', function () {
+    it('for ordered list start', () => {
       const unordered = convert(`
       * Example 1
       * Example 2
@@ -184,7 +184,7 @@ describe('Markdown parser', function () {
       expect(start(numberedStartAtOne)).toEqual(undefined);
     });
 
-    it('for link with one word', function () {
+    it('for link with one word', () => {
       const document = convert(`
       [foo](/bar)
       `);
@@ -193,7 +193,7 @@ describe('Markdown parser', function () {
       expect(link.attributes).toDeepEqual({ href: '/bar' });
     });
 
-    it('for link with one word and a title', function () {
+    it('for link with one word and a title', () => {
       const document = convert(`
       [foo](/bar "title")
       `);
@@ -202,7 +202,7 @@ describe('Markdown parser', function () {
       expect(link.attributes).toDeepEqual({ href: '/bar', title: 'title' });
     });
 
-    it('for link', function () {
+    it('for link', () => {
       const document = convert(`
       [this is a test](/bar)
       `);
@@ -211,7 +211,7 @@ describe('Markdown parser', function () {
       expect(link.attributes).toDeepEqual({ href: '/bar' });
     });
 
-    it('for text', function () {
+    it('for text', () => {
       const document = convert(`
       This is a test
       `);
@@ -220,7 +220,7 @@ describe('Markdown parser', function () {
       expect(p.attributes).toDeepEqual({ content: 'This is a test' });
     });
 
-    it('for code fence', function () {
+    it('for code fence', () => {
       const simple = convert(`
       ${fence}ruby
       This is a test
@@ -254,7 +254,7 @@ describe('Markdown parser', function () {
       });
     });
 
-    it('for image with no title', function () {
+    it('for image with no title', () => {
       const document = convert(`![foo](/url)`);
       const image = document.children[0].children[0].children[0];
       expect(image.attributes.title).toBe(undefined);
@@ -262,7 +262,7 @@ describe('Markdown parser', function () {
       expect(image.attributes.alt).toBe('foo');
     });
 
-    it('for image with a title', function () {
+    it('for image with a title', () => {
       const document = convert(`![foo](/url "title")`);
       const image = document.children[0].children[0].children[0];
       expect(image.attributes.title).toBe('title');
@@ -270,7 +270,7 @@ describe('Markdown parser', function () {
       expect(image.attributes.alt).toBe('foo');
     });
 
-    it('for table with alignments', function () {
+    it('for table with alignments', () => {
       const document = convert(`
       | Left | Center | Right |
       | :--- | :----: | ----: |
@@ -288,7 +288,7 @@ describe('Markdown parser', function () {
     });
   });
 
-  it('handling a header', function () {
+  it('handling a header', () => {
     const example = convert(`
     # Sample Heading
     
@@ -328,7 +328,7 @@ describe('Markdown parser', function () {
     });
   });
 
-  it('handling an image', function () {
+  it('handling an image', () => {
     const example = convert('![Alt](/logo.png)');
     expect(example).toDeepEqualSubset({
       type: 'document',
@@ -353,8 +353,8 @@ describe('Markdown parser', function () {
     });
   });
 
-  describe('handling lists', function () {
-    it('with bullets', function () {
+  describe('handling lists', () => {
+    it('with bullets', () => {
       const example = convert(`
       * foo
       * bar
@@ -395,7 +395,7 @@ describe('Markdown parser', function () {
       });
     });
 
-    it('with numbers', function () {
+    it('with numbers', () => {
       const example = convert(`
       1. foo
       2. bar
@@ -437,8 +437,8 @@ describe('Markdown parser', function () {
     });
   });
 
-  describe('handling fenced code', function () {
-    it('with a language', function () {
+  describe('handling fenced code', () => {
+    it('with a language', () => {
       const example = convert(`
       ${fence}ruby
       puts "foo"
@@ -456,7 +456,7 @@ describe('Markdown parser', function () {
       });
     });
 
-    it('with an annotation', function () {
+    it('with an annotation', () => {
       const example = convert(`
       ${fence}ruby {% #foo .bar %}
       test
@@ -480,9 +480,9 @@ describe('Markdown parser', function () {
     });
   });
 
-  describe('handling tags', function () {
-    describe('at block level', function () {
-      it('with a class', function () {
+  describe('handling tags', () => {
+    describe('at block level', () => {
+      it('with a class', () => {
         const example = convert(`
         {% callout .foo .bar %}
         ### Heading
@@ -531,7 +531,7 @@ describe('Markdown parser', function () {
         });
       });
 
-      it('with nesting', function () {
+      it('with nesting', () => {
         const example = convert(`
         {% callout %}
         {% callout %}
@@ -575,9 +575,9 @@ describe('Markdown parser', function () {
     });
   });
 
-  describe('handling annotations', function () {
-    describe('in a header', function () {
-      it('with an id', function () {
+  describe('handling annotations', () => {
+    describe('in a header', () => {
+      it('with an id', () => {
         const example = convert(`# Sample Heading {% #foo-bar %}`);
         expect(example).toDeepEqualSubset({
           type: 'document',
@@ -601,7 +601,7 @@ describe('Markdown parser', function () {
         });
       });
 
-      it('with a class', function () {
+      it('with a class', () => {
         const example = convert(`# Sample Heading {% .foo-bar .test %}`);
         expect(example).toDeepEqualSubset({
           type: 'document',
@@ -625,9 +625,9 @@ describe('Markdown parser', function () {
         });
       });
 
-      it('with complex values', function () {
+      it('with complex values', () => {
         const example = convert(
-          `# Sample Heading {% #asdf .foo-bar .test foo="bar" %}`
+          `# Sample Heading {% #asdf .foo-bar .test foo="bar" %}`,
         );
         expect(example).toDeepEqualSubset({
           type: 'document',
@@ -658,8 +658,8 @@ describe('Markdown parser', function () {
     });
   });
 
-  describe('handling variables', function () {
-    it('by itself on a line', function () {
+  describe('handling variables', () => {
+    it('by itself on a line', () => {
       const example = convert(`{% $test %}`);
       expect(example).toDeepEqualSubset({
         type: 'document',
@@ -682,7 +682,7 @@ describe('Markdown parser', function () {
       });
     });
 
-    it('in an inline text node', function () {
+    it('in an inline text node', () => {
       const example = convert(`This is a test: {% $test %}`);
       expect(example).toDeepEqualSubset({
         type: 'document',
@@ -706,7 +706,7 @@ describe('Markdown parser', function () {
       });
     });
 
-    it('with nested property access', function () {
+    it('with nested property access', () => {
       const example = convert('{% $bar.baz[1].test %}');
       expect(example).toDeepEqualSubset({
         type: 'document',
@@ -732,7 +732,7 @@ describe('Markdown parser', function () {
     });
   });
 
-  it('parsing nested tags with indentation should not throw', function () {
+  it('parsing nested tags with indentation should not throw', () => {
     expect(() => {
       convert(`
 {% tag1 %}
@@ -744,7 +744,7 @@ describe('Markdown parser', function () {
     }).not.toThrow();
   });
 
-  it('parsing comments', function () {
+  it('parsing comments', () => {
     const example = convert(`
     this is a test
 
@@ -760,8 +760,8 @@ describe('Markdown parser', function () {
     });
   });
 
-  describe('handles attribute errors correctly', function () {
-    it('with error for duplicate attributes', function () {
+  describe('handles attribute errors correctly', () => {
+    it('with error for duplicate attributes', () => {
       const example = convert(`{% foo bar=1 bar=2 bar=3 bar=4 /%}`);
       expect(example.children[0].errors.length).toBe(3);
       expect(example).toDeepEqualSubset({
@@ -779,7 +779,7 @@ describe('Markdown parser', function () {
       });
     });
 
-    it('with error for duplicate ids', function () {
+    it('with error for duplicate ids', () => {
       const example = convert(`{% foo #bar #baz #qux /%}`);
       expect(example.children[0].errors.length).toBe(2);
       expect(example).toDeepEqualSubset({
@@ -796,7 +796,7 @@ describe('Markdown parser', function () {
       });
     });
 
-    it('with annotation values', function () {
+    it('with annotation values', () => {
       const example = convert(`testing {% foo=1 foo=2 %}`);
       expect(example.children[0].errors.length).toBe(1);
       expect(example).toDeepEqualSubset({
@@ -810,7 +810,7 @@ describe('Markdown parser', function () {
       });
     });
 
-    it('across annotations on the same node', function () {
+    it('across annotations on the same node', () => {
       const example = convert(`testing {% foo=1 %} another test {% foo=1 %}`);
       expect(example.children[0].errors.length).toBe(1);
       expect(example).toDeepEqualSubset({
@@ -824,13 +824,13 @@ describe('Markdown parser', function () {
       });
     });
 
-    it('with no error for multiple classes', function () {
+    it('with no error for multiple classes', () => {
       const example = convert(`{% foo .bar .baz .qux /%}`);
       expect(example.children[0].errors.length).toBe(0);
     });
   });
 
-  it('displays error for annotations in a fence', function () {
+  it('displays error for annotations in a fence', () => {
     const example = convert(`
     ~~~
     test
@@ -843,7 +843,7 @@ describe('Markdown parser', function () {
     expect(example.children[0].errors[0]?.id).toEqual('no-inline-annotations');
   });
 
-  it('correctly identifies inlines', function () {
+  it('correctly identifies inlines', () => {
     const example = convert(`
     # This is a test
 
@@ -917,8 +917,8 @@ describe('Markdown parser', function () {
     });
   });
 
-  describe('handles structural errors correctly', function () {
-    it('with unmatched closing tag', function () {
+  describe('handles structural errors correctly', () => {
+    it('with unmatched closing tag', () => {
       const example = convert(`
     {% foo %}
     Test
@@ -928,7 +928,7 @@ describe('Markdown parser', function () {
       expect(example.children[0].errors[0].id).toEqual('missing-closing');
     });
 
-    it('missing opening', function () {
+    it('missing opening', () => {
       const example = convert(`
       This a test
       {% /foo %}
@@ -937,7 +937,7 @@ describe('Markdown parser', function () {
       expect(example.children[1].errors[0].id).toEqual('missing-opening');
     });
 
-    it('with missing closing tag', function () {
+    it('with missing closing tag', () => {
       const example = convert(`
     {% foo %}
     Test
@@ -947,7 +947,7 @@ describe('Markdown parser', function () {
     });
   });
 
-  describe('table parsing', function () {
+  describe('table parsing', () => {
     function setupTableDoc(rows: string[]) {
       return `
         {% table %}
@@ -959,7 +959,7 @@ describe('Markdown parser', function () {
       `;
     }
 
-    it('should preserve default if tag during table parsing without extra parser args', function () {
+    it('should preserve default if tag during table parsing without extra parser args', () => {
       const document = setupTableDoc([
         `
         {% if $fakeCondition.condition1 %}
@@ -980,7 +980,7 @@ describe('Markdown parser', function () {
       expect(tags).toContain('if');
     });
 
-    it('should not preserve unregistered tags during table parsing without extra parser args', function () {
+    it('should not preserve unregistered tags during table parsing without extra parser args', () => {
       const document = setupTableDoc([
         `
         {% if-pref conditions=[{platform: 'web'}] %}
@@ -1002,7 +1002,7 @@ describe('Markdown parser', function () {
       expect(tags).not.toContain('if-pref');
     });
 
-    it('should preserve all registered tags and ignore unregistered tags during table parsing with extra parser args', function () {
+    it('should preserve all registered tags and ignore unregistered tags during table parsing with extra parser args', () => {
       const document = setupTableDoc([
         `
         {% if-pref conditions=[{platform: 'web'}] %}

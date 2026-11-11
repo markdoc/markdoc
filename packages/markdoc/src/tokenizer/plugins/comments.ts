@@ -6,8 +6,8 @@ const CLOSE = '-->';
 function block(
   state: StateBlock,
   startLine: number,
-  endLine: number,
-  silent: boolean
+  _endLine: number,
+  silent: boolean,
 ): boolean {
   const start = state.bMarks[startLine] + state.tShift[startLine];
   if (!state.src.startsWith(OPEN, start)) return false;

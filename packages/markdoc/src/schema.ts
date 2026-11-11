@@ -1,5 +1,5 @@
-import type { Schema } from './types';
 import Tag from './tag';
+import type { Schema } from './types';
 
 export const document: Schema = {
   render: 'article',
@@ -29,7 +29,7 @@ export const heading: Schema = {
     return new Tag(
       `h${node.attributes['level']}`,
       node.transformAttributes(config),
-      node.transformChildren(config)
+      node.transformChildren(config),
     );
   },
 };
@@ -108,7 +108,7 @@ export const list: Schema = {
     return new Tag(
       node.attributes.ordered ? 'ol' : 'ul',
       node.transformAttributes(config),
-      node.transformChildren(config)
+      node.transformChildren(config),
     );
   },
 };

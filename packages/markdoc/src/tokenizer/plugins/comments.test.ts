@@ -1,6 +1,6 @@
 import Tokenizer from '..';
 
-describe('MarkdownIt Comments plugin', function () {
+describe('MarkdownIt Comments plugin', () => {
   const tokenizer = new Tokenizer({ allowComments: true });
 
   function parse(example) {
@@ -8,7 +8,7 @@ describe('MarkdownIt Comments plugin', function () {
     return tokenizer.tokenize(content);
   }
 
-  describe('inline comments', function () {
+  describe('inline comments', () => {
     const output = [
       { type: 'paragraph_open' },
       {
@@ -22,7 +22,7 @@ describe('MarkdownIt Comments plugin', function () {
       { type: 'paragraph_close' },
     ];
 
-    it('simple inline comment', function () {
+    it('simple inline comment', () => {
       const example = parse(`
       this is a test <!-- example comment --> foo
       `);
@@ -30,7 +30,7 @@ describe('MarkdownIt Comments plugin', function () {
       expect(example).toDeepEqualSubset(output);
     });
 
-    it('inline comment with a newline', function () {
+    it('inline comment with a newline', () => {
       const example = parse(`
       this is a test <!-- 
         example comment
@@ -41,7 +41,7 @@ describe('MarkdownIt Comments plugin', function () {
     });
   });
 
-  describe('block comments', function () {
+  describe('block comments', () => {
     const output = [
       { type: 'paragraph_open' },
       { type: 'inline' },
@@ -52,7 +52,7 @@ describe('MarkdownIt Comments plugin', function () {
       { type: 'paragraph_close' },
     ];
 
-    it('simple block comment after a paragraph', function () {
+    it('simple block comment after a paragraph', () => {
       const example = parse(`
       this is a test
 
@@ -66,7 +66,7 @@ describe('MarkdownIt Comments plugin', function () {
       expect(example).toDeepEqualSubset(output);
     });
 
-    it('block comment with ending on same line as content', function () {
+    it('block comment with ending on same line as content', () => {
       const example = parse(`
       this is a test
 
@@ -79,7 +79,7 @@ describe('MarkdownIt Comments plugin', function () {
       expect(example).toDeepEqualSubset(output);
     });
 
-    it('block comment one one line', function () {
+    it('block comment one one line', () => {
       const example = parse(`
       this is a test
 
@@ -91,13 +91,13 @@ describe('MarkdownIt Comments plugin', function () {
       expect(example).toDeepEqualSubset(output);
     });
 
-    it('block comment across multiple lines with blank lines', function () {
+    it('block comment across multiple lines with blank lines', () => {
       const actual = tokenizer.tokenize(
         `
       foo <!-- example
 
       comment --> bar
-      `.trim()
+      `.trim(),
       );
 
       const expected = [

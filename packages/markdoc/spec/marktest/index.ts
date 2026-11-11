@@ -1,6 +1,6 @@
+import { diffChars, diffJson } from 'diff';
 import { promises as fs } from 'fs';
 import { resolve } from 'path';
-import { diffJson, diffChars } from 'diff';
 import yaml from 'yaml-js';
 
 import markdoc from '../../index';
@@ -49,7 +49,7 @@ function checkMatch(diffs) {
 
 function run(
   { code = null, renderer = 'react', config = {}, expected = undefined } = {},
-  dynamic
+  dynamic,
 ) {
   if (renderer === 'html') {
     const transformed = markdoc.transform(code, config);
@@ -112,16 +112,17 @@ function formatValidation(filename, test, validation) {
 
     const validation = markdoc.validate(code, test.config);
 
-    let result;
+    let result: ReturnType<typeof run>;
     if (test.expectedError) {
       const output = validation.map((v) => v.error.message).join('\n');
       const diff = diffChars(
         (test.expectedError || '').trim(),
-        (output || '').trim()
+        (output || '').trim(),
       );
 
       result = checkMatch(diff) ? diff : false;
     } else {
+      // biome-ignore lint/suspicious/noDoubleEquals: Preserve fixture validation-option coercion.
       if (validation.length && test.validation != false)
         console.log(formatValidation(path, test, validation));
 
