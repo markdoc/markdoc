@@ -54,6 +54,7 @@ jobs:
 
       - name: Check for an unpublished package version
         id: unpublished
+        working-directory: packages/markdoc
         run: |
           package_name=$(jq -r '.name | @uri' package.json)
           package_version=$(jq -r .version package.json)
