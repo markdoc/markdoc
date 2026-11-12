@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 import markdoc from '../../index';
+import FunctionNode from './function';
 import Node from './node';
 import Variable from './variable';
 import { getAstValues } from './base';
@@ -58,6 +59,27 @@ describe('Node object', function () {
     expect(resolved.attributes.value.__proto__.src).toBe(
       'https://example.com/'
     );
+  });
+
+  it('resolves serialized function and variable attributes', function () {
+    const serialized = JSON.parse(
+      JSON.stringify({
+        direct: new Variable(['answer']),
+        computed: new FunctionNode('identity', {
+          0: new Variable(['answer']),
+        }),
+      })
+    );
+    const node = new Node('tag', serialized);
+    const resolved = node.resolve({
+      variables: { answer: 'resolved' },
+      functions: {
+        identity: { transform: (parameters) => parameters[0] },
+      },
+    });
+
+    expect(resolved.attributes.direct).toBe('resolved');
+    expect(resolved.attributes.computed).toBe('resolved');
   });
 
   describe('traversal', function () {

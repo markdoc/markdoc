@@ -5,6 +5,8 @@ import type {
   Scalar,
   Variable as AstVariable,
 } from '../types';
+import FunctionNode from './function';
+import VariableNode from './variable';
 
 export function isAst(value?: any): value is AstType {
   return !!value?.$$mdtype;
@@ -38,6 +40,11 @@ export function resolve(value: any, config: Config = {}): any {
 
   if (isAst(value) && value?.resolve instanceof Function)
     return value.resolve(config);
+
+  if (isFunction(value))
+    return new FunctionNode(value.name, value.parameters).resolve(config);
+
+  if (isVariable(value)) return new VariableNode(value.path).resolve(config);
 
   const prototype = Object.getPrototypeOf(value);
   if (prototype !== Object.prototype && prototype !== null) return value;
