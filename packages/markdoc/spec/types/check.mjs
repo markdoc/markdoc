@@ -15,14 +15,17 @@ import ts from 'typescript';
 import yaml from 'yaml-js';
 
 const root = fileURLToPath(new URL('../../', import.meta.url));
+const workspace = fileURLToPath(new URL('../../../../', import.meta.url));
 const fixtures = fileURLToPath(new URL('./', import.meta.url));
 // Keep consumers outside the repository so its dev dependencies cannot hide
 // missing dependencies in the published declaration graph.
 const consumer = mkdtempSync(join(tmpdir(), 'markdoc-types-'));
 const pnpm = process.platform === 'win32' ? 'pnpm.cmd' : 'pnpm';
-const { packageManager } = JSON.parse(readFileSync(join(root, 'package.json')));
+const { packageManager } = JSON.parse(
+  readFileSync(join(workspace, 'package.json'))
+);
 const { minimumReleaseAge } = yaml.load(
-  readFileSync(join(root, 'pnpm-workspace.yaml'), 'utf8')
+  readFileSync(join(workspace, 'pnpm-workspace.yaml'), 'utf8')
 );
 
 function check(name, files, options) {

@@ -4,7 +4,6 @@ on:
   push:
     branches: [main]
   pull_request:
-    types: [opened, synchronize]
 
 jobs:
   build:
@@ -13,19 +12,20 @@ jobs:
       contents: read
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
       - uses: pnpm/action-setup@v6
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        id: node
         with:
-          node-version: 20
-          cache: "pnpm"
-      - name: Install, build, and test with pnpm
+          node-version-file: '.node-version'
+          cache: 'pnpm'
+      - uses: actions/cache@v6
+        with:
+          path: .turbo/cache
+          key: ${{ runner.os }}-${{ runner.arch }}-node-${{ steps.node.outputs.node-version }}-turbo-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-${{ runner.arch }}-node-${{ steps.node.outputs.node-version }}-turbo-
+      - name: Install and check workspaces
         run: |
           pnpm install --frozen-lockfile
-          pnpm run build
-          pnpm run prettier:check
-          pnpm run lint
-          pnpm run type:check
-          pnpm run test:types
-          pnpm test
-          pnpm run marktest
+          pnpm run check

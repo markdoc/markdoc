@@ -11,8 +11,8 @@
       "skipFiles": ["<node_internals>/**"],
       "runtimeArgs": ["--import", "tsx"],
       "console": "integratedTerminal",
-      "program": "${workspaceFolder}/spec/marktest/index.ts",
-      "cwd": "${workspaceFolder}/spec/marktest",
+      "program": "${workspaceFolder}/packages/markdoc/spec/marktest/index.ts",
+      "cwd": "${workspaceFolder}/packages/markdoc/spec/marktest",
       "args": ["tests.yaml"]
     },
     {
@@ -22,8 +22,8 @@
       "skipFiles": ["<node_internals>/**"],
       "runtimeArgs": ["--import", "tsx"],
       "console": "integratedTerminal",
-      "program": "${workspaceFolder}/spec/marktest/index.ts",
-      "cwd": "${workspaceFolder}",
+      "program": "${workspaceFolder}/packages/markdoc/spec/marktest/index.ts",
+      "cwd": "${workspaceFolder}/packages/markdoc",
       "args": ["${file}:${lineNumber}"]
     }
   ]

@@ -83,13 +83,36 @@ Contributions and feedback are welcome and encouraged. Check out our [contributi
 
 ### Development
 
-Use [pnpm](https://pnpm.io/installation), with the version pinned in `package.json`.
+For development, use the Node version in `.node-version` and
+[pnpm](https://pnpm.io/installation), with the version pinned in `package.json`.
 If using Corepack, run `corepack enable` first.
+
+This repository uses pnpm workspaces and Turborepo:
+
+- `packages/markdoc` contains the published `@markdoc/markdoc` library, its tests, and build configuration.
+- `packages/*` is the home for additional packages.
+- `apps/*` is the home for applications.
+
+Run these commands from the repository root:
 
 1. Run `pnpm install`
 1. Run `pnpm run build`
 1. Run the tests using `pnpm test`
 1. Check the built package's TypeScript declarations using `pnpm run test:types`
+
+Add release notes with `pnpm changeset`. See the [Changesets guide](.changeset/README.md)
+for versioning and the release process.
+
+Run `pnpm run check` for all CI checks. Turborepo builds workspace dependencies
+first and caches build outputs in each package's `dist` directory.
+
+To work on Markdoc alone, use `pnpm --filter @markdoc/markdoc test` or
+`pnpm exec turbo run build --filter=@markdoc/markdoc`.
+
+New packages and apps should declare their own scripts and use `workspace:*`
+for dependencies on other workspaces. Applications should set `"private": true`.
+Packages with build outputs other than `dist` should configure those outputs
+in a package-level `turbo.json`.
 
 ## Code of conduct
 
