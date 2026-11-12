@@ -10,6 +10,17 @@ const React = {
 };
 
 describe('React dynamic renderer', function () {
+  it('preserves __proto__ as data without changing the props prototype', function () {
+    const attributes = Object.fromEntries([
+      ['__proto__', { src: 'javascript:alert(1)' }],
+      ['title', 'example'],
+    ]);
+    const output: any = dynamic(new Tag('iframe', attributes), React);
+    expect(Object.getPrototypeOf(output.attributes)).toBe(Object.prototype);
+    expect(Object.keys(output.attributes)).toEqual(['__proto__', 'title']);
+    expect(output.attributes.src).toBeUndefined();
+  });
+
   it('rendering a null node', function () {
     const example = { name: 'h1', children: ['test', null] };
     const output = dynamic(example, React);

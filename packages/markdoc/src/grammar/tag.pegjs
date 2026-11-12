@@ -78,9 +78,9 @@ Function =
     tail:FunctionParameterTail* { return head ? [head, ...tail] : []; }
   )?
   ')' {
-    let parameters = {};
-    for (let [index, {name, value}] of params.entries())
-      parameters[name || index] = value;
+    const parameters = Object.fromEntries(
+      params.map(({name, value}, index) => [name || index, value])
+    );
     return new Function(name, parameters);
   }
 
@@ -140,7 +140,7 @@ ValueHash =
   value:(
     head:ValueHashItem
     tail:ValueHashTail*
-    TrailingComma { return Object.assign(head, ...tail); }
+    TrailingComma { return Object.fromEntries([head, ...tail].flatMap(Object.entries)); }
   )?
   _* '}' { return value || {}; }
 

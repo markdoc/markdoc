@@ -1,7 +1,35 @@
 import { parse, SyntaxError } from '../../src/grammar/tag';
 import Variable from '../../src/ast/variable';
+import Function from '../../src/ast/function';
 
 describe('Markdoc tag parser', function () {
+  it('preserves __proto__ hash keys as own data properties in any position', function () {
+    for (const value of [
+      '{__proto__:{src:"unsafe"}, safe:true}',
+      '{safe:true, __proto__:{src:"unsafe"}}',
+    ]) {
+      const result = parse(`foo value=${value} /`);
+      const hash = result.meta.attributes[0].value;
+      expect(Object.getPrototypeOf(hash)).toBe(Object.prototype);
+      expect(Object.prototype.hasOwnProperty.call(hash, '__proto__')).toBe(
+        true
+      );
+      expect(hash.src).toBeUndefined();
+      expect(hash.__proto__.src).toBe('unsafe');
+    }
+  });
+
+  it('preserves __proto__ function parameters as own data properties', function () {
+    const result = parse('foo value=example(__proto__={src:"unsafe"}) /', {
+      Function,
+    });
+    const parameters = result.meta.attributes[0].value.parameters;
+    expect(Object.getPrototypeOf(parameters)).toBe(Object.prototype);
+    expect(Object.keys(parameters)).toEqual(['__proto__']);
+    expect(parameters.src).toBeUndefined();
+    expect(parameters.__proto__.src).toBe('unsafe');
+  });
+
   describe('tag parsing', function () {
     it('with a simple opening tag', function () {
       const example = parse('foo');

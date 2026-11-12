@@ -18,7 +18,16 @@ function annotate(node: Node, attributes: AttributeValue[]) {
 
     const { name, value, type } = attribute;
     if (type === 'attribute') {
-      if (node.attributes[name] !== undefined)
+      if (['__proto__', 'prototype', 'constructor'].includes(name)) {
+        node.errors.push({
+          id: 'attribute-name-invalid',
+          level: 'critical',
+          message: `Invalid attribute name: '${name}'`,
+        });
+        continue;
+      }
+
+      if (Object.prototype.hasOwnProperty.call(node.attributes, name))
         node.errors.push({
           id: 'duplicate-attribute',
           level: 'warning',
