@@ -63,8 +63,9 @@ function handleAttrs(token: Token, type: string) {
     case 'comment':
       return { content: (token.meta || {}).variable || token.content };
     case 'fence': {
-      // fence tokens always have `info` set (empty string if unused)
-      const [language] = token.info!.split(' ', 1);
+      // fence tokens always have `info` set (empty string if unused).
+      // CommonMark trims the info string; the language is its first word.
+      const [language] = token.info!.trim().split(/\s+/, 1);
       return language === '' || language === OPEN
         ? { content: token.content }
         : { content: token.content, language };
