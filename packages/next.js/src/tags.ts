@@ -1,9 +1,10 @@
-const Head = require('next/head');
-const Image = require('next/image');
-const Link = require('next/link');
-const Script = require('next/script');
+import Head = require('next/head');
+import Image = require('next/image');
+import Link = require('next/link');
+import Script = require('next/script');
+import type { Config, Schema } from '@markdoc/markdoc';
 
-exports.comment = {
+export const comment: Schema = {
   description: 'Use to comment the content itself',
   attributes: {},
   transform() {
@@ -11,13 +12,13 @@ exports.comment = {
   },
 };
 
-exports.head = {
+export const head: Schema<Config, typeof Head> = {
   render: Head,
   description: 'Renders a Next.js head tag',
   attributes: {},
 };
 
-exports.image = {
+export const image: Schema<Config, typeof Image> = {
   render: Image,
   description: 'Renders a Next.js image tag',
   // https://nextjs.org/docs/app/api-reference/components/image
@@ -64,7 +65,7 @@ exports.image = {
   },
 };
 
-exports.link = {
+export const link: Schema<Config, typeof Link> = {
   render: Link,
   description: 'Displays a Next.js link',
   attributes: {
@@ -110,13 +111,14 @@ exports.link = {
       type: Boolean,
     },
     target: {
-      description: 'HTML attribute anchor target ("_self", "_blank", "_parent", "_top")',
+      description:
+        'HTML attribute anchor target ("_self", "_blank", "_parent", "_top")',
       type: String,
-    }
+    },
   },
 };
 
-exports.script = {
+export const script: Schema<Config, typeof Script> = {
   render: Script,
   description: 'Renders a Next.js script tag',
   attributes: {
