@@ -54,6 +54,7 @@ jobs:
 
       - name: Check for unpublished package versions
         id: unpublished
+        working-directory: packages/markdoc
         run: |
           publish=false
           for manifest in packages/*/package.json; do
