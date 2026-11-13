@@ -1,0 +1,4 @@
+[submodule "examples/full-nextjs"]
+	path = examples/full-nextjs
+	url = git@github.com:markdoc/markdoc-starter.git
+	branch = main

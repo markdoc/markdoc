@@ -1,0 +1,34 @@
+{
+  "private": true,
+  "name": "@markdoc/docs",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "postbuild": "next-sitemap",
+    "start": "next start",
+    "lint": "next lint",
+    "deploy": "vercel",
+    "spec": "spec-md spec/index.md > public/spec.html"
+  },
+  "dependencies": {
+    "@docsearch/react": "^3.6.0",
+    "@markdoc/markdoc": "^0.5.4",
+    "@markdoc/next.js": "^0.3.7",
+    "codemirror": "^5",
+    "copy-to-clipboard": "^3.3.3",
+    "js-yaml": "^4.1.1",
+    "next": "14.2.35",
+    "prismjs": "^1.30.0",
+    "react": "18.2.0",
+    "react-codemirror2": "^9.0.1",
+    "react-dom": "18.2.0",
+    "sharp": "^0.34.5"
+  },
+  "devDependencies": {
+    "eslint": "8.11.0",
+    "eslint-config-next": "12.1.0",
+    "next-sitemap": "^2.5.28",
+    "spec-md": "^3.1.0",
+    "vercel": "^50"
+  }
+}
