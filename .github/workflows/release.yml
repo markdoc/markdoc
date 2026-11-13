@@ -52,18 +52,25 @@ jobs:
         with:
           persist-credentials: false
 
-      - name: Check for an unpublished package version
+      - name: Check for unpublished package versions
         id: unpublished
         run: |
-          package_name=$(jq -r '.name | @uri' package.json)
-          package_version=$(jq -r .version package.json)
-          http_status=$(curl --silent --show-error --retry 3 --output /dev/null --write-out '%{http_code}' \
-            "https://registry.npmjs.org/$package_name/$package_version")
-          case "$http_status" in
-            200) echo "publish=false" >> "$GITHUB_OUTPUT" ;;
-            404) echo "publish=true" >> "$GITHUB_OUTPUT" ;;
-            *) echo "::error::npm registry returned HTTP $http_status"; exit 1 ;;
-          esac
+          publish=false
+          for manifest in packages/*/package.json; do
+            if jq -e '.private == true' "$manifest" > /dev/null; then
+              continue
+            fi
+            package_name=$(jq -er '.name | @uri' "$manifest")
+            package_version=$(jq -er .version "$manifest")
+            http_status=$(curl --silent --show-error --retry 3 --output /dev/null --write-out '%{http_code}' \
+              "https://registry.npmjs.org/$package_name/$package_version")
+            case "$http_status" in
+              200) ;;
+              404) publish=true ;;
+              *) echo "::error::npm registry returned HTTP $http_status for $manifest"; exit 1 ;;
+            esac
+          done
+          echo "publish=$publish" >> "$GITHUB_OUTPUT"
 
   publish:
     needs: check
