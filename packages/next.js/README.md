@@ -75,11 +75,15 @@ Contributions and feedback are welcome. See the [contributing guide](https://git
 From the repository root, using the Node version in `.node-version`:
 
 1. Run `pnpm install`
-1. Run `pnpm exec turbo run test --filter=@markdoc/next.js`
+1. Run `pnpm exec turbo run test test:types type:check --filter=@markdoc/next.js`
 
-Turborepo builds the local `@markdoc/markdoc` dependency before running the tests.
-This package publishes its source directly and has no build step. Use
-`pnpm changeset` at the repository root to add release notes for `@markdoc/next.js`.
+Turborepo builds the local `@markdoc/markdoc` dependency and this package before
+running the tests. Edit the TypeScript files in `src`; the build generates
+CommonJS JavaScript and declarations in the ignored `dist` directory, which is
+published to npm. The package tests cover the compiled loader and packed-package
+imports and types with Next.js 14 and the installed Next.js version.
+
+Use `pnpm changeset` at the repository root to add release notes for `@markdoc/next.js`.
 
 ## Code of conduct
 
