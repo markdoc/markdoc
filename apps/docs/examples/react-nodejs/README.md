@@ -7,4 +7,6 @@ This example includes two applications:
 
 To start both applications, run `npm run start`, then view the client app in your browser at `http://localhost:5173/`.
 
-To build the production version, run `npm run build` to bundle the static files, then start the Node server with `node server.js`.
+To build the production version, run `npm run build` to bundle the static files
+into `static/`, then start the Node server with `node server.js` and open
+`http://localhost:4242/`. Express serves the built `static/index.html` and assets.

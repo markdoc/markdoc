@@ -49,10 +49,6 @@ app.get('/markdoc-api', (req, res) => {
   return res.json(content);
 });
 
-app.get('/', (req, res) => {
-  res.sendFile(join(__dirname, 'index.html'));
-});
-
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}`);
 });
