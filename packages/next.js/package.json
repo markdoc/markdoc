@@ -1,0 +1,51 @@
+{
+  "name": "@markdoc/next.js",
+  "version": "0.6.1",
+  "author": "Stripe, Inc.",
+  "description": "Markdoc plugin for Next.js",
+  "license": "MIT",
+  "main": "./src/index.js",
+  "types": "./src/index.d.ts",
+  "exports": {
+    ".": "./src/index.js",
+    "./*": "./src/*.js"
+  },
+  "scripts": {
+    "test": "jest"
+  },
+  "dependencies": {
+    "js-yaml": "^4.1.0"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.16.12",
+    "@babel/plugin-transform-modules-commonjs": "^7.16.8",
+    "@markdoc/markdoc": "*",
+    "@types/jest": "^27.4.1",
+    "enhanced-resolve": "^5.10.0",
+    "jest": "^30.5.1",
+    "jest-util": "^30.5.1",
+    "next": "*",
+    "react": "*",
+    "ts-jest": "^29.4.12",
+    "typescript": "4.6.2"
+  },
+  "peerDependencies": {
+    "@markdoc/markdoc": "*",
+    "next": "*",
+    "react": "*"
+  },
+  "directories": {
+    "test": "tests"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/markdoc/next.js.git"
+  },
+  "bugs": {
+    "url": "https://github.com/markdoc/next.js/issues"
+  },
+  "homepage": "https://markdoc.dev/docs/nextjs",
+  "jest": {
+    "preset": "ts-jest/presets/js-with-babel"
+  }
+}
