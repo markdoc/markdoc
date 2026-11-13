@@ -69,12 +69,17 @@ See [our docs](https://markdoc.dev/docs/nextjs) for more options.
 
 ## Contributing
 
-Contributions and feedback are welcomed and encouraged. Feel free to open PRs here, or open issues in the [Markdoc core repo](https://github.com/markdoc/markdoc).
+This package is maintained in [`packages/next.js` in the Markdoc repository](https://github.com/markdoc/markdoc/tree/main/packages/next.js).
+Contributions and feedback are welcome. See the [contributing guide](https://github.com/markdoc/markdoc/blob/main/.github/CONTRIBUTING.md).
 
-Follow these steps to set up the project:
+From the repository root, using the Node version in `.node-version`:
 
-1. Run `npm install`
-1. Run `npm test`
+1. Run `pnpm install`
+1. Run `pnpm exec turbo run test --filter=@markdoc/next.js`
+
+Turborepo builds the local `@markdoc/markdoc` dependency before running the tests.
+This package publishes its source directly and has no build step. Use
+`pnpm changeset` at the repository root to add release notes for `@markdoc/next.js`.
 
 ## Code of conduct
 

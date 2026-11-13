@@ -10,6 +10,11 @@ generated `.changeset/*.md` file with your change.
 
 Documentation, tests, and internal tooling changes can omit a changeset.
 
+`@markdoc/markdoc` and `@markdoc/next.js` are versioned independently. Select
+both when a change requires releases of both packages. The integration tests
+use the local Markdoc workspace; the published integration retains its existing
+peer dependency ranges.
+
 For Markdoc's 0.x releases:
 
 - `patch`: compatible fixes.
@@ -28,6 +33,12 @@ For Markdoc's 0.x releases:
    the **Version Packages** PR when changesets are present.
 2. Review the version, changelog, and lockfile changes. Close and reopen the
    bot-created PR to trigger its required `build` check, then merge once it passes.
-3. If the version is not yet on npm, a Core-team reviewer approves the `publish`
+3. If any public package version is not yet on npm, a Core-team reviewer approves the `publish`
    job in the `Release` workflow to publish packages and create Git tags and
    GitHub releases.
+
+Each published package must configure npm trusted publishing for the GitHub
+repository `markdoc/markdoc`, workflow `release.yml`, and environment `release`.
+Before the first release of `@markdoc/next.js` from this repository, update its
+trusted publisher from `markdoc/next.js` to `markdoc/markdoc` in the package's npm
+settings. Changesets publishes only versions missing from npm.

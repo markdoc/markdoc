@@ -25,6 +25,11 @@ Markdoc's source, tests, and build configuration live in `packages/markdoc`.
 To run a package script directly, use `pnpm --filter @markdoc/markdoc <script>`.
 For example, `pnpm --filter @markdoc/markdoc test` runs only Markdoc's unit tests.
 
+The Next.js integration lives in `packages/next.js`. Run
+`pnpm exec turbo run test --filter=@markdoc/next.js` to build the local Markdoc
+dependency before running the integration's tests. Its JavaScript source is
+published directly, so it does not have a build script.
+
 Add reusable packages under `packages/` and applications under `apps/`. Each
 workspace owns its dependencies and scripts; use `workspace:*` for dependencies
 between workspaces. Keep application packages private. The shared build task

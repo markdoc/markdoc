@@ -10,6 +10,9 @@
     ".": "./src/index.js",
     "./*": "./src/*.js"
   },
+  "files": [
+    "src"
+  ],
   "scripts": {
     "test": "jest"
   },
@@ -19,7 +22,7 @@
   "devDependencies": {
     "@babel/core": "^7.16.12",
     "@babel/plugin-transform-modules-commonjs": "^7.16.8",
-    "@markdoc/markdoc": "*",
+    "@markdoc/markdoc": "workspace:*",
     "@types/jest": "^27.4.1",
     "enhanced-resolve": "^5.10.0",
     "jest": "^30.5.1",
@@ -39,10 +42,11 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/markdoc/next.js.git"
+    "url": "git+https://github.com/markdoc/markdoc.git",
+    "directory": "packages/next.js"
   },
   "bugs": {
-    "url": "https://github.com/markdoc/next.js/issues"
+    "url": "https://github.com/markdoc/markdoc/issues"
   },
   "homepage": "https://markdoc.dev/docs/nextjs",
   "jest": {

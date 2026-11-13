@@ -90,6 +90,7 @@ If using Corepack, run `corepack enable` first.
 This repository uses pnpm workspaces and Turborepo:
 
 - `packages/markdoc` contains the published `@markdoc/markdoc` library, its tests, and build configuration.
+- `packages/next.js` contains the published `@markdoc/next.js` integration and its tests.
 - `packages/*` is the home for additional packages.
 - `apps/*` is the home for applications.
 
@@ -113,6 +114,10 @@ New packages and apps should declare their own scripts and use `workspace:*`
 for dependencies on other workspaces. Applications should set `"private": true`.
 Packages with build outputs other than `dist` should configure those outputs
 in a package-level `turbo.json`.
+
+The Next.js integration publishes its `src` directory directly and needs no
+build step. Run `pnpm exec turbo run test --filter=@markdoc/next.js` to build
+Markdoc and test the integration against the local library.
 
 ## Code of conduct
 
