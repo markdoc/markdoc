@@ -1,4 +1,4 @@
-import type {MarkdocNextJsSchema} from '../../../src';
+import type {MarkdocNextJsSchema} from '@markdoc/next.js';
 
 export const tag: MarkdocNextJsSchema = {
   transform(node, config) {

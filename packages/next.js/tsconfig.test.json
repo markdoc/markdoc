@@ -1,0 +1,9 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "rootDir": ".",
+    "isolatedModules": true,
+    "types": ["node", "jest"]
+  },
+  "include": ["tests/**/*.ts"]
+}

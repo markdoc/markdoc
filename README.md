@@ -115,9 +115,9 @@ for dependencies on other workspaces. Applications should set `"private": true`.
 Packages with build outputs other than `dist` should configure those outputs
 in a package-level `turbo.json`.
 
-The Next.js integration publishes its `src` directory directly and needs no
-build step. Run `pnpm exec turbo run test --filter=@markdoc/next.js` to build
-Markdoc and test the integration against the local library.
+The Next.js integration compiles its TypeScript source to JavaScript and type
+declarations in `dist`. Run `pnpm exec turbo run test test:types --filter=@markdoc/next.js`
+to build both packages and check the integration's runtime and published types.
 
 ## Code of conduct
 
