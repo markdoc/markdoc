@@ -5,6 +5,13 @@ export type SchemaConfig<R> = Omit<Config, 'tags' | 'nodes'> & {
   nodes?: Partial<Record<NodeType, Schema<Config, R>>>;
 };
 
+type Renderers<T> =
+  T extends Record<string, infer S>
+    ? S extends { render?: infer R }
+      ? R
+      : never
+    : never;
+
 // IDEA: explore better displayName functions
 function displayName(name: string): string {
   // Pascal case
@@ -40,7 +47,14 @@ function transformRecord<R>(config?: Record<string, Schema<Config, R>>) {
   return { output, components };
 }
 
-export function getSchema<R>(schema: SchemaConfig<R>) {
+export function getSchema<T extends SchemaConfig<unknown>>(
+  schema: T
+): Omit<T, 'tags' | 'nodes' | 'components'> & {
+  tags: Record<string, Schema>;
+  nodes: Record<string, Schema>;
+  components: Record<string, Renderers<T['tags']> | Renderers<T['nodes']>>;
+};
+export function getSchema(schema: SchemaConfig<unknown>) {
   const { output: tags, components: tagComponents } = transformRecord(
     schema.tags
   );

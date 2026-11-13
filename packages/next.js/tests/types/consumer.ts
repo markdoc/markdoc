@@ -60,7 +60,18 @@ const props: MarkdocNextJsPageProps = {
 function Callout({ children }: { children?: React.ReactNode }) {
   return React.createElement('aside', null, children);
 }
-const resolved = getSchema({ tags: { callout: { render: Callout } } });
+function Badge({ label }: { label: string }) {
+  return React.createElement('span', null, label);
+}
+// Different components can require different props within the same schema.
+const resolved = getSchema({
+  tags: {
+    callout: { render: Callout },
+    badge: { render: Badge },
+    comment: { transform: () => [] },
+  },
+  nodes: { paragraph: { render: Callout } },
+});
 Markdoc.renderers.react(props.markdoc!.content, React, {
   components: resolved.components,
 });
