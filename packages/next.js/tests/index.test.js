@@ -401,6 +401,27 @@ test('Turbopack configuration', () => {
   expect(configWithCustomExt.turbopack.rules['*.mdx']).toBeDefined();
 });
 
+test.each([
+  [/\.md$/, ['*.md', '*.mdoc']],
+  [/\.()$/, ['*.md', '*.mdoc']],
+  [/\.()\.(markdown|mdx)$/, ['*.markdown', '*.mdx']],
+  ['*.markdown', ['*.markdown']],
+])('Turbopack extension patterns for %s', (extension, expected) => {
+  const withMarkdoc = require('../src/index.js');
+  const config = withMarkdoc({extension})({turbopack: {}});
+  expect(Object.keys(config.turbopack.rules)).toEqual(expected);
+});
+
+test('Turbopack handles long pattern sources without a closing group', () => {
+  const withMarkdoc = require('../src/index.js');
+  const extension = /\.md$/;
+  Object.defineProperty(extension, 'source', {
+    value: '\\.(' + '\\.(('.repeat(25000),
+  });
+  const config = withMarkdoc({extension})({turbopack: {}});
+  expect(Object.keys(config.turbopack.rules)).toEqual(['*.md', '*.mdoc']);
+});
+
 afterAll(() => {
   consoleErrorMock.mockRestore();
   consoleDebugMock.mockRestore();
