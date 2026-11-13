@@ -88,10 +88,6 @@ export function useMarkdocCode(code) {
   return { ast, content, config, errors };
 }
 
-// NOTE: In development mode, you may see two CodeMirror editors rendered, one
-// on top of another. I don't know why this happens, but it does not occur in
-// production builds. You can verify this by running `npm run build && npm run
-// start`.
 function EditorInternal({ code, onChange, options, errors, cursor }) {
   const ref = React.useRef();
   const [key, setKey] = React.useState(0);
@@ -175,6 +171,10 @@ function EditorInternal({ code, onChange, options, errors, cursor }) {
         value={code}
         options={codeMirrorOptions}
         onBeforeChange={onBeforeChange}
+        editorWillUnmount={() => {
+          // react-codemirror2 leaves its DOM behind during Strict Mode remounts.
+          ref.current?.editor?.getWrapperElement().remove();
+        }}
         cursor={cursor}
       />
       <style jsx>
@@ -258,7 +258,7 @@ function Cursor({ children }) {
             transform:
               pos.top && pos.left
                 ? `translate(${pos.left + i * 8}px, ${pos.top}px)`
-                : '',
+                : undefined,
             transition: `transform ${DELAY}ms linear ${i * 1}ms`
           }}
         >
@@ -331,8 +331,7 @@ export function Sandbox({ height, options }) {
   const [mode, setMode] = React.useState('preview');
   const [hasInteracted, setInteracted] = React.useState(false);
 
-  const isInSandbox =
-    typeof window !== 'undefined' && window.location.pathname === '/sandbox';
+  const isInSandbox = router.pathname === '/sandbox';
 
   const { ast, content, config, errors } = useMarkdocCode(code);
 
