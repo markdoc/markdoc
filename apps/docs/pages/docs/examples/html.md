@@ -6,7 +6,7 @@ title: Using Markdoc with HTML and Web Components
 
 Markdoc supports [rendering Markdoc syntax into HTML](/docs/render#html) with the HTML renderer.
 
-To get started with the HTML renderer, check out [this example repo](https://github.com/markdoc/docs/tree/main/examples/html-nodejs) for how to use Markdoc with [`express`](https://expressjs.com/) and [Web Components](https://developer.mozilla.org/en-US/docs/Web/Web_Components). You can use the HTML renderer without Web Components to transform and render HTML, but we recommend using Web Components as a way to organize and encapsulate functionality for custom Markdoc components.
+To get started with the HTML renderer, check out [this example repo](https://github.com/markdoc/markdoc/tree/main/apps/docs/examples/html-nodejs) for how to use Markdoc with [`express`](https://expressjs.com/) and [Web Components](https://developer.mozilla.org/en-US/docs/Web/Web_Components). You can use the HTML renderer without Web Components to transform and render HTML, but we recommend using Web Components as a way to organize and encapsulate functionality for custom Markdoc components.
 
 ## Setup
 
@@ -21,7 +21,7 @@ This guide assumes that you have an `Express` app installed. If you're starting 
    ```
 
    ```js
-   // [schema/Callout.markdoc.js](https://github.com/markdoc/docs/blob/main/examples/html-nodejs/schema/Callout.markdoc.js)
+   // [schema/Callout.markdoc.js](https://github.com/markdoc/markdoc/blob/main/apps/docs/examples/html-nodejs/schema/Callout.markdoc.js)
 
    module.exports = {
      render: 'markdoc-callout',
@@ -37,7 +37,7 @@ This guide assumes that you have an `Express` app installed. If you're starting 
    ```
 
    ```js
-   // [schema/heading.markdoc.js](https://github.com/markdoc/docs/blob/main/examples/html-nodejs/schema/heading.markdoc.js)
+   // [schema/heading.markdoc.js](https://github.com/markdoc/markdoc/blob/main/apps/docs/examples/html-nodejs/schema/heading.markdoc.js)
 
    const { nodes } = require('@markdoc/markdoc');
 
@@ -66,7 +66,7 @@ This guide assumes that you have an `Express` app installed. If you're starting 
 2. Define a component for any custom tag. Since `heading` is a core Markdown [node](/docs/nodes), Markdoc already knows how to render it using the CommonMark spec. `Callout` needs a component since it's a custom tag. We used [`lit`](https://lit.dev/docs/) in our example to define a Web Component for the `markdoc-callout` element.
 
    ```js
-   // [src/Callout.js](https://github.com/markdoc/docs/blob/main/examples/html-nodejs/src/Callout.js)
+   // [src/Callout.js](https://github.com/markdoc/markdoc/blob/main/apps/docs/examples/html-nodejs/src/Callout.js)
 
    import { html, css, LitElement } from 'lit';
 
@@ -104,7 +104,7 @@ This guide assumes that you have an `Express` app installed. If you're starting 
 3. Parse your Markdoc documents on the server to create a map of your routes and Markdoc content. We call this a "content manifest" which is used during a request to return the right Markdoc content for the route.
 
    ```js
-   // [...](https://github.com/markdoc/docs/blob/main/examples/html-nodejs/createContentManifest.js#L19-L20)
+   // [...](https://github.com/markdoc/markdoc/blob/main/apps/docs/examples/html-nodejs/createContentManifest.js#L19-L20)
    const rawText = fs.readFileSync(file, 'utf-8');
    const ast = Markdoc.parse(rawText);
    ```
@@ -112,7 +112,7 @@ This guide assumes that you have an `Express` app installed. If you're starting 
 4. Call `Markdoc.transform` on the server with a config of your custom tags, nodes, and any variables you want your Markdoc content to access. Then, use the HTML Markdoc renderer (`Markdoc.renderers.html`) to render the transformed content into the HTML to display to your user.
 
    ```js
-   // [server.js](https://github.com/markdoc/docs/blob/main/examples/html-nodejs/server.js#L47)
+   // [server.js](https://github.com/markdoc/markdoc/blob/main/apps/docs/examples/html-nodejs/server.js#L47)
 
    const express = require('express');
 

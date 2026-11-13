@@ -95,7 +95,7 @@ jobs:
 
       - run: pnpm install --frozen-lockfile
 
-      - run: pnpm run build
+      - run: pnpm exec turbo run build --filter='./packages/*'
 
       - name: Publish
         uses: changesets/action@ae32849d5ba541f9ae29e40e22a623bc13562f51 # v2.1.2

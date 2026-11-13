@@ -151,6 +151,7 @@ export function ObjectDisplay({
     if (isObject(value) || Array.isArray(value)) {
       return (
         <ObjectDisplay
+          key={key}
           data={value}
           rootKey={key}
           hasTrailingComma={true}

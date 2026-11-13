@@ -6,6 +6,8 @@ yarn.lock
 out/
 .vscode
 .env
+.env.*
+!.env.example
 .vercel
 dist/
 # next-sitemap

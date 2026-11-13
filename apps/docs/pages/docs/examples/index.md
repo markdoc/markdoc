@@ -7,7 +7,7 @@ description:
 
 With Markdoc, it's easy to add functionality you'd commonly associate with documentation sites. The examples below cover loops, syntax highlighting, tabs, and more.
 
-If you're looking for other sample code, check out our collection of [example repos](https://github.com/markdoc/docs/tree/main/examples), or view the [source code for this site](https://github.com/markdoc/docs).
+If you're looking for other sample code, check out our collection of [example repos](https://github.com/markdoc/markdoc/tree/main/apps/docs/examples), or view the [source code for this site](https://github.com/markdoc/markdoc/tree/main/apps/docs).
 
 ## Loops
 
@@ -47,7 +47,7 @@ export const group = {
 You can hook up syntax highlighting for code blocks by creating a custom `fence` [node](/docs/nodes). This example shows how to do so with [Prism](https://prismjs.com/).
 
 ```js
-// [Source example](https://github.com/markdoc/docs/blob/main/components/Code.js)
+// [Source example](https://github.com/markdoc/markdoc/blob/main/apps/docs/components/Code.js)
 
 import 'prismjs';
 import 'prismjs/themes/prism.css';
@@ -171,7 +171,7 @@ const headings = collectHeadings(content);
 Then, render the headings in a list:
 
 ```js
-// [Source example](https://github.com/markdoc/docs/blob/main/components/Shell/TableOfContents.js)
+// [Source example](https://github.com/markdoc/markdoc/blob/main/apps/docs/components/Shell/TableOfContents.js)
 
 function TableOfContents({ headings }) {
   const items = headings.filter((item) => [2, 3].includes(item.level));

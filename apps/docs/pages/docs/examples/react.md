@@ -6,7 +6,7 @@ title: Using Markdoc with React
 
 Markdoc supports [rendering Markdoc syntax with React](/docs/render#react) out-of-the-box.
 
-To get started with React, check out [this example repo](https://github.com/markdoc/docs/tree/main/examples/react-nodejs) for how to use Markdoc with [`create-react-app`](https://create-react-app.dev/) and [`express`](https://expressjs.com/).
+To get started with React, check out [this example repo](https://github.com/markdoc/markdoc/tree/main/apps/docs/examples/react-nodejs) for how to use Markdoc with [`create-react-app`](https://create-react-app.dev/) and [`express`](https://expressjs.com/).
 
 ## Setup
 
@@ -67,7 +67,7 @@ Follow these steps to build a Markdoc app with [`create-react-app`](https://crea
 3. Parse your Markdoc documents on the server
 
    ```js
-   // [...](https://github.com/markdoc/docs/blob/main/examples/react-nodejs/createContentManifest.js#L13)
+   // [...](https://github.com/markdoc/markdoc/blob/main/apps/docs/examples/react-nodejs/createContentManifest.js#L13)
    const rawText = fs.readFileSync(file, 'utf-8');
    const ast = Markdoc.parse(rawText);
    ```
@@ -75,7 +75,7 @@ Follow these steps to build a Markdoc app with [`create-react-app`](https://crea
 4. Call `Markdoc.transform` on the server
 
    ```js
-   // [server.js](https://github.com/markdoc/docs/blob/main/examples/react-nodejs/server.js)
+   // [server.js](https://github.com/markdoc/markdoc/blob/main/apps/docs/examples/react-nodejs/server.js)
 
    const express = require('express');
 
@@ -166,4 +166,4 @@ Follow these steps to build a Markdoc app with [`create-react-app`](https://crea
    ```
 
 \
-Or, clone [this starter repo](https://github.com/markdoc/docs/tree/main/examples/react-nodejs) and follow the directions in the [README](https://github.com/markdoc/docs/tree/main/examples/react-nodejs/README.md).
+Or, clone [this starter repo](https://github.com/markdoc/markdoc/tree/main/apps/docs/examples/react-nodejs) and follow the directions in the [README](https://github.com/markdoc/markdoc/tree/main/apps/docs/examples/react-nodejs/README.md).

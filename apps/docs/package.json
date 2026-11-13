@@ -3,17 +3,17 @@
   "name": "@markdoc/docs",
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
-    "postbuild": "next-sitemap",
+    "build": "next build && next-sitemap",
     "start": "next start",
     "lint": "next lint",
     "deploy": "vercel",
     "spec": "spec-md spec/index.md > public/spec.html"
   },
   "dependencies": {
+    "@docsearch/css": "^3.6.0",
     "@docsearch/react": "^3.6.0",
-    "@markdoc/markdoc": "^0.5.4",
-    "@markdoc/next.js": "^0.3.7",
+    "@markdoc/markdoc": "workspace:*",
+    "@markdoc/next.js": "workspace:*",
     "codemirror": "^5",
     "copy-to-clipboard": "^3.3.3",
     "js-yaml": "^4.1.1",
@@ -25,8 +25,8 @@
     "sharp": "^0.34.5"
   },
   "devDependencies": {
-    "eslint": "8.11.0",
-    "eslint-config-next": "12.1.0",
+    "eslint": "8.57.1",
+    "eslint-config-next": "14.2.35",
     "next-sitemap": "^2.5.28",
     "spec-md": "^3.1.0",
     "vercel": "^50"
