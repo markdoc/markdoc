@@ -1,0 +1,21 @@
+{
+  "extends": ["//"],
+  "tasks": {
+    "build": {
+      "inputs": ["$TURBO_DEFAULT$", ".env*"],
+      "outputs": [
+        ".next/**",
+        "!.next/cache/**",
+        "!.next/dev/**",
+        "public/sitemap*.xml",
+        "public/robots.txt"
+      ]
+    },
+    "dev": {
+      "dependsOn": ["^build"]
+    },
+    "spec": {
+      "outputs": ["public/spec.html"]
+    }
+  }
+}

@@ -1,0 +1,15 @@
+node_modules
+.DS_Store
+.next
+*.log
+yarn.lock
+out/
+.vscode
+.env
+.env.*
+!.env.example
+.vercel
+dist/
+# next-sitemap
+sitemap*.xml
+robots.txt

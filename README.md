@@ -91,6 +91,7 @@ This repository uses pnpm workspaces and Turborepo:
 
 - `packages/markdoc` contains the published `@markdoc/markdoc` library, its tests, and build configuration.
 - `packages/next.js` contains the published `@markdoc/next.js` integration and its tests.
+- `apps/docs` contains the private documentation site deployed at [markdoc.dev](https://markdoc.dev).
 - `packages/*` is the home for additional packages.
 - `apps/*` is the home for applications.
 
@@ -118,6 +119,10 @@ in a package-level `turbo.json`.
 The Next.js integration publishes its `src` directory directly and needs no
 build step. Run `pnpm exec turbo run test --filter=@markdoc/next.js` to build
 Markdoc and test the integration against the local library.
+
+Run `pnpm dev --filter=@markdoc/docs` to develop the documentation site using the
+local packages. See the [app README](apps/docs/README.md) for environment and
+deployment setup.
 
 ## Code of conduct
 
