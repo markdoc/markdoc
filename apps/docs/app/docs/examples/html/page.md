@@ -1,10 +1,8 @@
 ---
-nextjs:
-  metadata:
-    title: Using Markdoc with HTML and Web Components
+title: Using Markdoc with HTML and Web Components
 ---
 
-# {% $markdoc.frontmatter.nextjs.metadata.title %}
+# {% $markdoc.frontmatter.title %}
 
 Markdoc supports [rendering Markdoc syntax into HTML](/docs/render#html) with the HTML renderer.
 

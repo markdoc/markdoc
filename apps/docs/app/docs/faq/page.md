@@ -1,10 +1,8 @@
 ---
-nextjs:
-  metadata:
-    title: Frequently asked questions
+title: Frequently asked questions
 ---
 
-# {% $markdoc.frontmatter.nextjs.metadata.title %}
+# {% $markdoc.frontmatter.title %}
 
 ## Is Markdoc compliant with the CommonMark specification?
 

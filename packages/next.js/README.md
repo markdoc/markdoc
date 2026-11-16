@@ -62,10 +62,8 @@ The first thing you'll need to do is install `@markdoc/next.js` and add it to yo
 
    ```md
    ---
-   nextjs:
-     metadata:
-       title: Get started with Markdoc
-       description: How to get started with Markdoc
+   title: Get started with Markdoc
+   description: How to get started with Markdoc
    ---
 
    # Get started with Markdoc
@@ -79,14 +77,36 @@ See [our docs](https://markdoc.dev/docs/nextjs) for more options.
 Next.js routing and layouts directly; no JavaScript wrapper is needed. Colocated
 Markdown with other filenames remains an importable synchronous component.
 
-The loader turns `nextjs.metadata` and `nextjs.revalidate` frontmatter into
-literal Next.js exports, so Next.js can statically analyze the route. Put shared
-metadata defaults and title templates in your usual `layout.js`. Other static
-route exports can be enabled with `nextjsExports`, for example:
+The loader turns top-level `title` and `description` frontmatter into a static
+Next.js `metadata` export. Other frontmatter fields remain document data. Put
+shared metadata defaults and title templates in your usual `layout.js`.
+
+Use `nextjs.metadata` for additional metadata or to override the inferred fields.
+Its fields take precedence, including explicit `null` or empty values; an empty
+object keeps the inferred defaults. For example, this keeps the document title
+and uses a different browser title:
+
+```yaml
+title: Getting started
+description: Set up your first Markdoc page
+nextjs:
+  metadata:
+    title: Get started with Markdoc
+    alternates:
+      canonical: /docs/getting-started
+  revalidate: 3600
+```
+
+The loader also emits `nextjs.revalidate` as a literal route export so Next.js
+can statically analyze it. Other static route exports can be enabled with
+`nextjsExports`, for example:
 
 ```js
 withMarkdoc({ nextjsExports: ['metadata', 'revalidate', 'dynamic', 'runtime'] })
 ```
+
+Excluding `metadata` from `nextjsExports` disables its export, including inferred
+metadata. Pages without metadata fields omit the export and inherit layout defaults.
 
 Frontmatter remains available inside the document through `$markdoc.frontmatter`.
 Native App Router page/layout modules export only their component and configured

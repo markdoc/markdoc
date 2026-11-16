@@ -206,8 +206,22 @@ async function load(this: LoaderContext, source: string): Promise<string> {
     : {};
   const nextjs =
     isRecord(frontmatter) && isRecord(frontmatter.nextjs)
-      ? frontmatter.nextjs
+      ? { ...frontmatter.nextjs }
       : {};
+  if (isRecord(frontmatter)) {
+    const metadata = Object.fromEntries(
+      ['title', 'description']
+        .filter((name) => Object.prototype.hasOwnProperty.call(frontmatter, name))
+        .map((name) => [name, frontmatter[name]])
+    );
+    if (Object.keys(metadata).length > 0) {
+      if (isRecord(nextjs.metadata)) {
+        nextjs.metadata = { ...metadata, ...nextjs.metadata };
+      } else if (!Object.prototype.hasOwnProperty.call(nextjs, 'metadata')) {
+        nextjs.metadata = metadata;
+      }
+    }
+  }
   // Next.js statically analyzes route exports. Emit literal values, not references
   // to frontmatter parsed at runtime, and omit settings the author hasn't supplied.
   const nextjsExportsCode = nextjsExports

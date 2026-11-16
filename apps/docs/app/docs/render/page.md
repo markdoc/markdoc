@@ -1,10 +1,8 @@
 ---
-nextjs:
-  metadata:
-    title: Phases of rendering
+title: Phases of rendering
 ---
 
-# {% $markdoc.frontmatter.nextjs.metadata.title %}
+# {% $markdoc.frontmatter.title %}
 
 Markdoc has three phases of rendering: `parse`, `transform`, and `render`. Each phase operates on the output of the previous phases.
 

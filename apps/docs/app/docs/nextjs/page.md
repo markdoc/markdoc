@@ -1,11 +1,9 @@
 ---
-nextjs:
-  metadata:
-    title: Using Markdoc with Next.js
-    description: Learn how to integrate Markdoc into a Next.js project.
+title: Using Markdoc with Next.js
+description: Learn how to integrate Markdoc into a Next.js project.
 ---
 
-# {% $markdoc.frontmatter.nextjs.metadata.title %}
+# {% $markdoc.frontmatter.title %}
 
 Using the `@markdoc/next.js` package/plugin allows you to create custom `.md` and `.mdoc` pages in your Next.js apps, and automatically render them with Markdoc.
 
@@ -50,10 +48,8 @@ Follow these steps to get started with `@markdoc/next.js`.
 
    ```
    ---
-   nextjs:
-     metadata:
-       title: Get started with Markdoc
-       description: How to get started with Markdoc
+   title: Get started with Markdoc
+   description: How to get started with Markdoc
    ---
 
    # Get started with Markdoc
@@ -68,10 +64,30 @@ the page and be imported as components without becoming routes.
 
 ### Metadata and route settings
 
-Use `nextjs.metadata` in frontmatter for the standard [Next.js metadata object](https://nextjs.org/docs/app/api-reference/functions/generate-metadata).
-The loader emits a static `metadata` export. Define shared defaults, title
-templates, and social images in `app/layout.js` as usual. You can also set
-`nextjs.revalidate` to emit a static revalidation interval.
+Top-level `title` and `description` frontmatter become the page's static
+[Next.js metadata export](https://nextjs.org/docs/app/api-reference/functions/generate-metadata).
+Other frontmatter fields remain document data. Define shared defaults, title
+templates, and social images in `app/layout.js` as usual.
+
+For additional metadata or overrides, use `nextjs.metadata`. Its fields take
+precedence over the top-level defaults, including explicit `null` or empty values;
+an empty object keeps the defaults. You can also set `nextjs.revalidate` to emit a
+static revalidation interval:
+
+```yaml
+title: Getting started
+description: Set up your first Markdoc page
+nextjs:
+  metadata:
+    title: Get started with Markdoc
+    alternates:
+      canonical: /docs/getting-started
+  revalidate: 3600
+```
+
+Here, `$markdoc.frontmatter.title` remains `Getting started`, while Next.js uses
+`Get started with Markdoc` as the metadata title. Pages without metadata fields
+inherit their layout's defaults.
 
 The plugin discovers `app/` and `pages/`, including `src/app/` and `src/pages/`,
 from the project directory. For a Pages Router project, keep using files such as
@@ -103,7 +119,7 @@ You can pass options to `withMarkdoc` to adjust how the plugin behaves.
 
 - `nextjsExports`
 - `string[]`
-- Static App Router exports read from `nextjs` frontmatter. Defaults to `['metadata', 'revalidate']`. Include other static route settings such as `dynamic` or `runtime` when needed.
+- Static App Router exports to emit. Defaults to `['metadata', 'revalidate']`. Metadata defaults to top-level `title` and `description`, with overrides from `nextjs.metadata`; other exports read from `nextjs` frontmatter. Exclude `metadata` to disable its export, or include other static route settings such as `dynamic` or `runtime` when needed.
 
 {% /table %}
 

@@ -208,6 +208,7 @@ test('app router', async () => {
 
   expect(page).toEqual({
     default: expect.any(Function),
+    metadata: {title: 'Custom title'},
   });
 
   expect(await page.default({})).toEqual(
@@ -215,20 +216,61 @@ test('app router', async () => {
   );
 });
 
+test('app router metadata uses flat title and description without other frontmatter', async () => {
+  const context = options({appDir: true});
+  const output = await callLoader(context, source.replace('---', '---\ndescription: A custom description\nauthor: Someone\ndraft: true'));
+  expect(evaluate(output, context.resourcePath).metadata).toEqual({
+    title: 'Custom title',
+    description: 'A custom description',
+  });
+});
+
 test('app router metadata', async () => {
   const webpackThis = options({appDir: true});
   const output = await callLoader(
     webpackThis,
-    source.replace('---', '---\nnextjs:\n  metadata:\n    title: Metadata title\n    alternates:\n      canonical: /test\n  revalidate: 3600')
+    source.replace('---', '---\ndescription: A custom description\nnextjs:\n  metadata:\n    title: Metadata title\n    alternates:\n      canonical: /test\n  revalidate: 3600')
   );
 
   expect(evaluate(output, webpackThis.resourcePath)).toEqual({
     default: expect.any(Function),
-    metadata: {title: 'Metadata title', alternates: {canonical: '/test'}},
+    metadata: {title: 'Metadata title', description: 'A custom description', alternates: {canonical: '/test'}},
     revalidate: 3600,
   });
   expect(output).toContain('export const revalidate = 3600;');
   expect(output).not.toContain('export const markdoc');
+  expect(await evaluate(output, webpackThis.resourcePath).default({})).toEqual(
+    React.createElement('article', undefined, React.createElement('h1', undefined, 'Custom title'))
+  );
+});
+
+test.each([
+  ['{}', {title: 'Custom title', description: 'A custom description'}],
+  ['{title: null, description: ""}', {title: null, description: ''}],
+  ['null', null],
+])('respects explicit metadata %s with flat defaults', async (metadata, expected) => {
+  const context = options({appDir: true});
+  const output = await callLoader(context, source.replace('---', `---\ndescription: A custom description\nnextjs:\n  metadata: ${metadata}`));
+  expect(evaluate(output, context.resourcePath).metadata).toEqual(expected);
+});
+
+test.each([
+  '# Hello',
+  '---\nnull\n---\n# Hello',
+  '---\nauthor: Someone\n---\n# Hello',
+])('omits metadata when no metadata fields are supplied: %s', async (source) => {
+  const context = options({appDir: true});
+  const output = await callLoader(context, source);
+  expect(evaluate(output, context.resourcePath)).toEqual({default: expect.any(Function)});
+});
+
+test('can exclude metadata from configured Next.js exports', async () => {
+  const context = options({appDir: true, nextjsExports: ['revalidate']});
+  const output = await callLoader(context, source.replace('---', '---\nnextjs:\n  metadata:\n    title: Metadata title\n  revalidate: 0'));
+  expect(evaluate(output, context.resourcePath)).toEqual({
+    default: expect.any(Function),
+    revalidate: 0,
+  });
 });
 
 test('supports configured static Next.js exports', async () => {

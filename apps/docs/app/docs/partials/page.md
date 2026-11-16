@@ -1,10 +1,8 @@
 ---
-nextjs:
-  metadata:
-    title: Partials
+title: Partials
 ---
 
-# {% $markdoc.frontmatter.nextjs.metadata.title %}
+# {% $markdoc.frontmatter.title %}
 
 Markdoc uses partials to reuse content across documents. A separate Markdoc file stores the content, and it's referenced from within the partial tag.
 

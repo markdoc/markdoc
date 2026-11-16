@@ -171,7 +171,7 @@ async function getMarkdocData(context = {}) {
 }
 
 
-
+export const metadata = {"title":"Custom title"};
 export default async function MarkdocComponent(props) {
   const markdoc = await getMarkdocData();
   // Only execute HMR code in development

@@ -1,11 +1,9 @@
 ---
-nextjs:
-  metadata:
-    title: Tags
-    description: Use tags to extend Markdown. With tags you can use native Markdoc components or custom-built React components.
+title: Tags
+description: Use tags to extend Markdown. With tags you can use native Markdoc components or custom-built React components.
 ---
 
-# {% $markdoc.frontmatter.nextjs.metadata.title %}
+# {% $markdoc.frontmatter.title %}
 
 Tags are a syntactic extension of standard Markdown. You can use native Markdoc tags, like [tables](#table), [conditionals](#if/else), and [partials](#partial), or create custom React components.
 

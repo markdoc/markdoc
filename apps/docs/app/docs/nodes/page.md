@@ -1,10 +1,8 @@
 ---
-nextjs:
-  metadata:
-    title: Nodes
+title: Nodes
 ---
 
-# {% $markdoc.frontmatter.nextjs.metadata.title %}
+# {% $markdoc.frontmatter.title %}
 
 
 Nodes are elements that Markdoc inherits from Markdown, specifically the [CommonMark specification](https://commonmark.org/). Markdoc nodes enable you to customize how your document renders without using any custom syntax—it consists entirely of Markdown. Customizing nodes lets you extend your implementation incrementally.

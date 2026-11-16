@@ -1,11 +1,9 @@
 ---
-nextjs:
-  metadata:
-    title: Config objects
-    description: Pass customizations into the rendering pipeline using a config object
+title: Config objects
+description: Pass customizations into the rendering pipeline using a config object
 ---
 
-# {% $markdoc.frontmatter.nextjs.metadata.title %}
+# {% $markdoc.frontmatter.title %}
 
 When you customize Markdoc, you must pass your customization into the rendering pipeline. The most common way to do this is to provide a config object to the [transform](/docs/render#transform) phase of rendering. 
 

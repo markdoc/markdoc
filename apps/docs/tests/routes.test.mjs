@@ -22,8 +22,7 @@ const pages = await Promise.all(
     return {
       route:
         `/${file.split(path.sep).join('/')}`.replace(/\/page\.md$/, '') || '/',
-      metadata: yaml.load(source.match(/^---\n([\s\S]*?)\n---/)[1]).nextjs
-        .metadata
+      metadata: yaml.load(source.match(/^---\n([\s\S]*?)\n---/)[1])
     };
   })
 );

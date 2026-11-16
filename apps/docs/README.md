@@ -36,23 +36,22 @@ The app uses Next.js 16's App Router and Turbopack. Each document is a native
 and imported as components without becoming routes. The sitemap discovers the
 site's static `page.md` routes.
 
-Use `nextjs.metadata` in frontmatter for Next.js metadata:
+Use top-level `title` and `description` in frontmatter for Next.js metadata:
 
 ```md
 ---
-nextjs:
-  metadata:
-    title: Frequently asked questions
-    description: Answers to common questions about Markdoc.
+title: Frequently asked questions
+description: Answers to common questions about Markdoc.
 ---
 
-# {% $markdoc.frontmatter.nextjs.metadata.title %}
+# {% $markdoc.frontmatter.title %}
 ```
 
-The root layout supplies the title template, canonical URLs, and shared social
-metadata. Next.js inherits those defaults and combines them with each page's
-metadata. The homepage sets its full title because the title template applies
-only to child route segments.
+For additional metadata or overrides, use `nextjs.metadata`; its fields take
+precedence over the top-level defaults. The root layout supplies the title
+template, canonical URLs, and shared social metadata. Next.js inherits those
+defaults and combines them with each page's metadata. The homepage sets its full
+title because the title template applies only to child route segments.
 
 `app/layout.js` owns global styles, fonts, and the shared shell. The interactive
 components use client boundaries, with a Styled JSX registry for server-rendered

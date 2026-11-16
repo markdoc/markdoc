@@ -1,10 +1,8 @@
 ---
-nextjs:
-  metadata:
-    title: What is Markdoc?
+title: What is Markdoc?
 ---
 
-# {% $markdoc.frontmatter.nextjs.metadata.title %}
+# {% $markdoc.frontmatter.title %}
 
 Markdoc is a Markdown-based document format and a framework for content publishing. It was designed internally at Stripe to meet the needs of our user-facing [product documentation](https://docs.stripe.com). Markdoc extends Markdown with a [custom syntax](/docs/syntax) for tags and annotations, providing a way to tailor content to individual users and introduce interactive elements.
 
