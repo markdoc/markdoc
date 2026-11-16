@@ -1,0 +1,984 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter&display=swap');
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+* {
+  margin: 0;
+}
+
+:root {
+  --default-vertical-spacing: 0.75rem;
+  --nav-height: 71.594px;
+  --footer-height: 61px;
+  --landing-page-max-width: 1200px;
+
+  --sans: -apple-system, BlinkMacSystemFont, Inter, Segoe UI, Helvetica Neue,
+    sans-serif;
+  --serif: Tiempos, serif;
+  --mono: GT America Mono, Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono',
+    monospace;
+
+  --font-size-0: 8px;
+  --font-size-1: 12px;
+  --font-size-2: 13px;
+  --font-size-3: 16px;
+  --font-size-4: 18px;
+  --font-size-5: 24px;
+  --font-size-6: 32px;
+  --font-size-7: 38px;
+  --font-size-jumbo: 79px;
+
+  --line-height-1: 16px;
+  --line-height-2: 20px;
+  --line-height-3: 25px;
+  --line-height-4: 28px;
+  --line-height-5: 32px;
+  --line-height-6: 40px;
+  --line-height-7: 48px;
+  --line-height-jumbo: 90px;
+}
+
+:root,
+.light {
+  --white: #ffffff;
+  --black: #18181b;
+  --black-light: #58585f;
+  --black-medium: #2c2c30;
+  --gray-light: #f6f9fc;
+  --gray-medium: #dce6e9;
+
+  --yellow: #ffd848;
+  --purple: #6e00f5;
+  --green: #0a993e;
+  --blue: #0073e6;
+  --magenta: #dc34dc;
+
+  --theme: var(--yellow);
+  --stripe: #0a2540;
+
+  --light: var(--white);
+  --dark: var(--black);
+  --text: var(--dark);
+
+  --contrast-dark: var(--dark);
+  --code-background: var(--gray-light);
+  --code-border: var(--gray-medium);
+  --toc-border: rgba(0, 0, 0, 0.14);
+  --translucent: rgba(0, 0, 0, 0.4);
+  --page-border: var(--dark);
+
+  --docsearch-primary-color: var(--black-medium) !important;
+  --docsearch-logo-color: var(--black-medium) !important;
+}
+
+.dark {
+  --stripe: var(--white);
+
+  --light: var(--black);
+  --dark: var(--white);
+  --text: var(--dark);
+  --gray-medium: #3C4049;
+  --page-border: var(--gray-medium);
+
+  --contrast-dark: var(--black-medium);
+  --code-background: var(--black-medium);
+  --code-border: var(--black-light);
+  --toc-border: var(--black-light);
+  --translucent: rgba(255, 255, 255, 0.4);
+}
+
+.dark,
+/* Landing page uses a custom pre w/ a black background and --dark mode colors */
+.page--landing pre[class*='language-'],
+.sandbox .CodeMirror {
+  --light: var(--black);
+  --dark: var(--white);
+  --text: var(--dark);
+
+  --purple: var(--yellow); /* Change purple to yellow in dark mode */
+  --green: #00d924;
+  --blue: #80e9ff;
+  --magenta: #ff80ff;
+}
+
+
+html,
+body,
+#__next {
+  height: 100%;
+  padding: 0;
+  margin: 0;
+  font-family: var(--sans);
+}
+
+#__next {
+  /* https://www.joshwcomeau.com/css/custom-css-reset/ */
+  isolation: isolate;
+}
+
+body {
+  color: var(--text);
+  background: var(--light);
+  font-family: var(--sans);
+}
+
+body ::selection,
+body.dark ::selection{
+  color: var(--black) !important;
+  background: var(--theme) !important;
+}
+
+body.modal-is-active {
+  /* Override the body scrolling behavior when there's a modal open in order to avoid dual scroll bars */
+  overflow: hidden;
+}
+
+a {
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 1px;
+  transition: opacity 300ms ease;
+}
+
+a:hover {
+  opacity: 0.75;
+}
+
+.primary a,
+a.primary {
+  text-decoration: none;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.primary a:hover,
+a.primary:hover {
+  opacity: 1;
+}
+
+.primary a::after,
+a.primary::after {
+  content: '\00a0→';
+  position: relative;
+  display: inline-block;
+  transition: transform 300ms ease;
+}
+
+.primary a:hover::after,
+a.primary:hover::after {
+  transform: translateX(3px);
+}
+
+button {
+  cursor: pointer;
+  appearance: none;
+  border: none;
+  background: none;
+}
+
+/* https://www.joshwcomeau.com/css/custom-css-reset/ */
+input,
+button,
+textarea,
+select {
+  font: inherit;
+}
+
+p,
+span,
+a,
+li,
+code,
+td,
+kbd,
+.heading {
+  -webkit-font-smoothing: antialiased;
+  color: inherit;
+}
+
+p,
+.heading,
+blockquote {
+  position: relative;
+  padding-bottom: var(--default-vertical-spacing);
+}
+
+p {
+  text-rendering: optimizeLegibility;
+  font-size: var(--font-size-3);
+  line-height: var(--line-height-3);
+}
+
+p:last-child {
+  padding-bottom: 0;
+}
+
+h1,
+.h1 {
+  font-size: var(--font-size-7);
+  line-height: var(--line-height-7);
+}
+
+h2,
+.h2 {
+  font-size: var(--font-size-5);
+  line-height: var(--line-height-5);
+  margin-top: 2.5rem;
+}
+
+h3,
+.h3 {
+  font-size: var(--font-size-4);
+  line-height: var(--line-height-4);
+  margin-top: 2rem;
+}
+
+h4,
+.h4 {
+  font-size: var(--font-size-3);
+  line-height: var(--line-height-3);
+  margin-top: 1rem;
+}
+
+h5,
+.h5 {
+  font-size: var(--font-size-3);
+  line-height: var(--line-height-3);
+  font-weight: normal;
+}
+
+.jumbo {
+  font-family: var(--serif);
+  letter-spacing: -0.01em;
+  font-weight: 400;
+
+}
+
+h1.jumbo {
+  font-size: var(--font-size-jumbo);
+  line-height: var(--line-height-jumbo);
+}
+
+h2.jumbo {
+  font-size: 72px;
+  line-height: 84px;
+  margin-top: 0;
+  padding-bottom: 1.5rem;
+}
+
+h3.jumbo {
+  font-size: 43px;
+  line-height: 52px;
+}
+
+blockquote {
+  margin: 1.3rem 0 1.1rem;
+}
+
+li {
+  margin: 10px 0;
+}
+
+code {
+  font-size: inherit;
+  font-size: 15px;
+  font-family: var(--mono);
+  font-weight: 500;
+  padding: 1px 2px;
+  background: var(--code-background);
+  border: 1px solid var(--code-border);
+  border-radius: 3px;
+  white-space: nowrap;
+}
+
+img {
+  max-width: 100%;
+}
+
+p a + a > img {
+  margin-left: 0.75rem;
+}
+
+pre {
+  border-radius: 3px;
+  border: 1px solid var(--code-border);
+}
+
+kbd {
+  font-family: var(--mono);
+}
+
+table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  margin-top: 2rem;
+  margin-bottom: 2rem;
+  overflow: hidden;
+}
+
+th,
+td > strong {
+  font-size: var(--font-size-3);
+  line-height: var(--line-height-3);
+  font-family: var(--sans);
+  font-weight: 500;
+  text-align: left;
+  padding: 0 16px 8px;
+}
+
+td {
+  padding: 12px 16px 16px;
+  background-clip: padding-box;
+  border-bottom: 1px solid var(--code-border);
+}
+
+tr:first-child td {
+  border-top: 1px solid var(--code-border);
+}
+
+tr td:first-child {
+  border-left: 1px solid var(--code-border);
+}
+
+tr td:last-child {
+  border-right: 1px solid var(--code-border);
+}
+
+tr:first-child td:first-child {
+  border-top-left-radius: 3px;
+}
+tr:last-child td:first-child {
+  border-bottom-left-radius: 3px;
+}
+tr:first-child td:last-child {
+  border-top-right-radius: 3px;
+}
+tr:last-child td:last-child {
+  border-bottom-right-radius: 3px;
+}
+
+article {
+  display: flex;
+  flex-grow: 1;
+  flex-direction: column;
+  max-width: 100%;
+  min-width: 0;
+}
+
+/* Helper classes */
+.relative {
+  position: relative;
+}
+
+.flex {
+  display: flex;
+}
+
+.row {
+  flex-direction: row;
+}
+
+.column {
+  flex-direction: column;
+}
+
+.equal-width {
+  flex: 1 1 0px;
+}
+
+.prefers-no-animation {
+  display: none;
+}
+
+/* Syntax highlighting */
+pre[class*='language-'] {
+  /* Override Prism styles */
+  text-shadow: none !important;
+  color: var(--text) !important;
+  background: var(--code-background) !important;
+  font-size: 14px !important;
+  line-height: 22px !important;
+  font-family: var(--mono) !important;
+  margin: 0 0 var(--default-vertical-spacing) !important;
+}
+
+pre[class*='language-'] .md-link {
+  color: inherit !important;
+}
+
+.token {
+  color: var(--text) !important;
+  background: transparent !important;
+}
+
+.token.comment {
+  color: var(--translucent) !important;
+}
+
+pre .token.string,
+pre .token.boolean,
+pre .token.number {
+  color: var(--magenta) !important;
+}
+
+pre .token.function,
+pre .token.tagType,
+pre .token.tag {
+  color: var(--blue) !important;
+}
+
+pre .token.keyword,
+.cm-attribute {
+  color: var(--purple) !important;
+}
+
+pre .token.variable {
+  color: var(--green) !important;
+}
+
+.sandbox span.cm-comment {
+  color: var(--gray-medium);
+}
+
+.sandbox span.cm-keyword,
+.sandbox span.cm-tag {
+  color: var(--blue);
+}
+
+.sandbox span.cm-string {
+  color: var(--magenta);
+}
+
+.sandbox span.cm-number,
+.sandbox span.cm-atom {
+  color: var(--purple);
+}
+
+.sandbox span.cm-link,
+.sandbox span.cm-url {
+  text-decoration: none;
+  color: var(--theme);
+}
+
+.sandbox span.cm-property {
+  color: inherit;
+}
+
+.sandbox span.cm-strong,
+.sandbox span.cm-header {
+  font-weight: normal;
+}
+
+main .CodeMirror,
+main .react-codemirror2 {
+  width: 100%;
+  cursor: text;
+  height: 100%;
+  font-family: var(--mono);
+  font-size: 13px;
+  line-height: 21px;
+}
+
+/* CodeMirror styles to apply to in page editor too */
+main .CodeMirror-gutters {
+  background-color: var(--contrast-dark);
+  border-right: 1px solid rgba(255, 255, 255, 0.22);
+  padding-right: 8px
+}
+
+main .CodeMirror-selected,
+main .CodeMirror-selectedtext {
+  color: var(--black) !important;
+  background: var(--theme) !important;
+}
+
+main .CodeMirror-linenumber {
+  color: rgba(255, 255, 255, 0.22);
+}
+
+main .CodeMirror-cursor {
+  border-color: var(--theme);
+}
+
+/* https://discourse.webflow.com/t/hide-overflow-scroll-bar/195259/5?utm_source=google&utm_medium=search&utm_campaign=general-paid-workhorse&utm_term=keyword-targeting&utm_content=dynamic-search-ads-t1&gclid=CjwKCAjwu_mSBhAYEiwA5BBmf7fOfY_lM89BGr3aT67riZ1XrK7uHxBpH5vDwiyJg9rVeu5EwXQiCRoC7VYQAvD_BwE */
+main .CodeMirror-scroll {
+  overflow-x: hidden;
+  -ms-overflow-style: none; /* for Internet Explorer, Edge */
+  scrollbar-width: none; /* for Firefox */
+}
+
+main .CodeMirror-scroll::-webkit-scrollbar {
+  display: none; /* for Chrome, Safari, and Opera */
+}
+
+@media screen and (max-width: 1291px) /* 1200px / 0.9 */ {
+  :root {
+    --landing-page-max-width: 93vw;
+  }
+}
+
+@media screen and (max-width: 1000px) {
+  :root {
+    --landing-page-max-width: calc(100vw - 60px);
+    --font-size-jumbo: 55px;
+    --line-height-jumbo: 65px;
+  }
+  h2.jumbo {
+    font-size: 43px;
+    line-height: 55px;
+  }
+  h3.jumbo {
+    font-size: 35px;
+    line-height: 46px;
+  }
+}
+
+@media screen and (max-width: 600px) {
+  :root {
+    --landing-page-max-width: 90vw;
+    --font-size-jumbo: 38px;
+    --line-height-jumbo: 45px;
+  }
+  p {
+    font-size: var(--font-size-3);
+    line-height: var(--line-height-3);
+  }
+  h2.jumbo {
+    font-size: 34px;
+    line-height: 47px;
+  }
+  blockquote {
+    margin: 0.75rem 0;
+  }
+  .no-mobile {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion) {
+  .prefers-animation {
+    display: none;
+  }
+  .prefers-no-animation {
+    display: initial;
+  }
+}
+
+/* SideNav styles */
+.sidenav {
+  position: sticky;
+  top: var(--nav-height);
+  height: calc(100vh - var(--nav-height));
+  flex: 0 0 240px;
+  overflow-y: auto;
+  padding: 2rem 0 2rem 2rem;
+}
+
+.sidenav h3 {
+  font-weight: 500;
+  margin: 0.5rem 0 0;
+  padding-bottom: 0.5rem;
+}
+
+.sidenav ul {
+  margin: 0;
+  padding: 0;
+}
+
+.sidenav li {
+  list-style-type: none;
+  margin: 0 0 0.7rem 0.7rem;
+  font-size: 14px;
+  font-weight: 400;
+}
+
+.sidenav li a {
+  text-decoration: none;
+}
+
+.sidenav li a:hover,
+.sidenav li.active > a {
+  text-decoration: underline;
+}
+
+@media screen and (max-width: 600px) {
+  .sidenav {
+    display: none;
+  }
+}
+
+/* TableOfContents styles */
+.toc {
+  position: sticky;
+  top: calc(2.5rem + var(--nav-height));
+  max-height: calc(100vh - var(--nav-height));
+  flex: 0 0 240px;
+  align-self: flex-start;
+  margin-bottom: 1rem;
+  padding: 0.25rem 0 0;
+  border-left: 1px solid var(--toc-border);
+}
+
+.toc ul {
+  margin: 0;
+  padding: 0;
+}
+
+.toc li {
+  list-style-type: none;
+  margin: 0 0 1rem 1.5rem;
+  font-size: 14px;
+  font-weight: 400;
+}
+
+.toc li a {
+  text-decoration: none;
+}
+
+.toc li a:hover,
+.toc li.active a {
+  text-decoration: underline;
+}
+
+.toc li.padded {
+  padding-left: 1rem;
+}
+
+@media screen and (max-width: 1000px) {
+  .toc {
+    display: none;
+  }
+}
+
+/* Main article padding for docs pages */
+main article {
+  padding: 2rem 1.5rem 3rem;
+}
+
+/* Page layout */
+.page {
+  display: flex;
+  flex-grow: 1;
+  padding-top: var(--nav-height);
+  min-height: 100vh;
+  max-width: 100vw;
+}
+
+.dark .page {
+  border-bottom-color: var(--black-light);
+}
+
+.skip-nav {
+  border: 0;
+  clip: rect(0 0 0 0);
+  height: 1px;
+  width: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  position: absolute;
+  text-decoration: none;
+}
+
+.skip-nav:focus {
+  padding: 1rem;
+  position: fixed;
+  top: 10px;
+  left: 10px;
+  background: var(--light);
+  z-index: 1000;
+  width: auto;
+  height: auto;
+  clip: auto;
+}
+
+main {
+  flex-grow: 1;
+  max-width: 100%;
+  /* https://stackoverflow.com/questions/36230944/prevent-flex-items-from-overflowing-a-container */
+  min-width: 0;
+}
+
+/* Landing page overrides */
+.page--landing .footer-bar {
+  background: var(--gray-light);
+}
+
+.dark .page--landing .footer-bar {
+  background: var(--black);
+}
+
+.page--landing .footer-bar .theme-toggle button.light {
+  background: var(--white);
+}
+
+/* Move top border to first section */
+.page--landing .section hr {
+  border: none;
+  margin: 6.5rem 0;
+  height: 2px;
+  background-image: linear-gradient(
+    to right,
+    var(--dark) 33%,
+    rgba(255, 255, 255, 0) 0%
+  );
+  background-position: bottom;
+  background-size: 6px 2px;
+  background-repeat: repeat-x;
+}
+
+.page--landing .nav-bar nav {
+  border-bottom: none;
+}
+
+.page--landing .hero {
+  border-top: 1px solid var(--page-border);
+  margin: 0 auto;
+  max-width: var(--landing-page-max-width);
+}
+
+.page--landing p {
+  letter-spacing: 0.3px;
+}
+
+.page--landing .get-started p,
+.page--landing blockquote p,
+.page--landing table td p {
+  font-size: var(--font-size-4);
+  line-height: var(--line-height-4);
+  font-weight: 400;
+}
+
+.page--landing blockquote {
+  max-width: 520px;
+}
+
+/* Style hero section */
+.page--landing .hero {
+  padding: 4rem 0 6rem;
+}
+
+.page--landing .get-started {
+  background: var(--theme);
+  padding: 115px 0 120px;
+}
+
+.page--landing .get-started .left ::selection {
+  background: #ffe279 !important;
+}
+
+.page--landing .try {
+  padding-top: 0;
+  padding-bottom: 65px;
+}
+
+.page--landing .try span.cm-keyword,
+.page--landing .try span.cm-tag,
+.page--landing .try span.cm-string {
+  color: inherit;
+}
+
+.page--landing .try span.cm-link,
+.page--landing .try span.cm-url {
+  color: var(--yellow);
+}
+
+.page--landing .value-props {
+  padding-top: 0px;
+}
+
+.page--landing .by-stripe {
+  padding-top: 110px;
+}
+
+.page--landing .sandbox {
+  border-radius: 3px;
+}
+
+.page--landing .sandbox .preview p {
+  letter-spacing: initial;
+}
+
+.dark .page--landing .get-started {
+  background: var(--black-medium);
+}
+
+.page--landing .get-started section .primary {
+  padding: 1rem 0 0;
+}
+
+.page--landing .get-started section .side-by-side .left {
+  /* separate top and bottom on mobile */
+  padding-bottom: 1rem;
+}
+
+.page--landing pre[class*='language-'] {
+  border: none;
+  background: var(--black) !important;
+  padding: 25px;
+}
+
+/* Make "npm install" code block thinner */
+.page--landing .code:first-of-type pre[class*='language-'] {
+  padding: 20px 25px;
+}
+
+.page--landing .nav-bar nav {
+  max-width: var(--landing-page-max-width);
+  padding: 1rem 0 1.1rem;
+}
+
+.page--landing .side-by-side {
+  margin: 0;
+}
+
+.page--landing .side-by-side .column {
+  border-right: none;
+  padding-top: 0px;
+  overflow: initial;
+}
+
+.page--landing .code button {
+  display: none;
+}
+
+.page--landing table {
+  margin: 0;
+  table-layout: fixed;
+}
+
+.page--landing table tr {
+  display: flex;
+  gap: 56px;
+}
+
+.page--landing table td {
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  flex: 1 0 0;
+  border-width: 0px;
+  gap: 4px;
+}
+
+.page--landing table h3 {
+  font-size: 28px;
+  line-height: 38px;
+  margin: 0;
+  letter-spacing: 0;
+}
+
+@media screen and (max-width: 1000px) {
+  .page--landing table tr {
+    flex-direction: column;
+    gap: 52px;
+  }
+
+  .page--landing table td {
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 36px;
+  }
+
+  .page--landing table h3 {
+    font-size: 24px;
+    line-height: 33px;
+  }
+
+  .page--landing .hero {
+    padding: 3rem 0 5.3rem;
+  }
+
+  .page--landing .get-started {
+    padding: 65px 0 85px;
+  }
+
+  .page--landing .try {
+    padding: 0;
+  }
+
+  .page--landing .try section {
+    max-width: unset;
+  }
+
+  .page--landing .value-props {
+    padding-top: 4.5rem;
+  }
+
+  .page--landing .by-stripe {
+    padding-top: 5.3125rem;
+  }
+}
+
+@media screen and (max-width: 600px) {
+  .page--landing .section hr {
+    margin: 3rem 0;
+  }
+
+  .page--landing table tr {
+    flex-direction: column;
+    gap: 30px;
+  }
+
+  .page--landing table td {
+    /* https://stackoverflow.com/questions/23556364/how-to-convert-columns-to-rows-using-css */
+    display: block;
+    gap: 8px;
+  }
+
+  .page--landing .hero {
+    padding: 2rem 0 0;
+    border-top: none;
+  }
+
+  .page--landing .get-started {
+    padding: 60px 0 60px;
+  }
+
+  .page--landing .value-props {
+    padding-top: 0;
+  }
+
+  .page--landing .by-stripe {
+    padding-top: 3.75rem;
+  }
+}
+
+/* Footer bar styles */
+.footer-bar {
+  flex: 1;
+  padding: 0;
+  border-top: none;
+}
+
+.footer-bar footer {
+  margin: 0 auto;
+  max-width: calc(100% - 4rem);
+}
+
+.page--docs .footer-bar {
+  border-top: 1px solid var(--page-border);
+}
+
+.page--docs main article {
+  padding: 2rem 1.5rem 3rem;
+}
+
+.page--landing .footer-bar {
+  padding: 1rem 0;
+}
+
+.page--landing .footer-bar footer {
+  max-width: var(--landing-page-max-width);
+}
+
+@media screen and (max-width: 600px) {
+  .footer-bar {
+    padding: 2.5rem 0;
+  }
+}

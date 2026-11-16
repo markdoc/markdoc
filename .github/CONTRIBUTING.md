@@ -30,6 +30,12 @@ The Next.js integration lives in `packages/next.js`. Run
 dependency before running the integration's tests. Its JavaScript source is
 published directly, so it does not have a build script.
 
+The documentation site lives in `apps/docs`. Run
+`pnpm dev --filter=@markdoc/docs` to build its local dependencies and start Next.js,
+or `pnpm build --filter=@markdoc/docs` for a production build including sitemaps.
+The app stays private and does not need npm changesets. Its `examples/` directory
+contains standalone reference projects, outside the workspace package globs.
+
 Add reusable packages under `packages/` and applications under `apps/`. Each
 workspace owns its dependencies and scripts; use `workspace:*` for dependencies
 between workspaces. Keep application packages private. The shared build task

@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<!-- Built with spec-md https://spec-md.com -->
+<html>
+<head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1"><title>Markdoc tag syntax specification</title>
+<style>/** * prism.js default theme for JavaScript, CSS and HTML * Based on dabblet (http://dabblet.com) * @author Lea Verou */ code[class*="language-"], pre[class*="language-"] { 	color: black; 	background: none; 	text-shadow: 0 1px white; 	font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace; 	font-size: 1em; 	text-align: left; 	white-space: pre; 	word-spacing: normal; 	word-break: normal; 	word-wrap: normal; 	line-height: 1.5; 	-moz-tab-size: 4; 	-o-tab-size: 4; 	tab-size: 4; 	-webkit-hyphens: none; 	-moz-hyphens: none; 	-ms-hyphens: none; 	hyphens: none; } pre[class*="language-"]::-moz-selection, pre[class*="language-"] ::-moz-selection, code[class*="language-"]::-moz-selection, code[class*="language-"] ::-moz-selection { 	text-shadow: none; 	background: #b3d4fc; } pre[class*="language-"]::selection, pre[class*="language-"] ::selection, code[class*="language-"]::selection, code[class*="language-"] ::selection { 	text-shadow: none; 	background: #b3d4fc; } @media print { 	code[class*="language-"], 	pre[class*="language-"] { 		text-shadow: none; 	} } /* Code blocks */ pre[class*="language-"] { 	padding: 1em; 	margin: .5em 0; 	overflow: auto; } :not(pre) > code[class*="language-"], pre[class*="language-"] { 	background: #f5f2f0; } /* Inline code */ :not(pre) > code[class*="language-"] { 	padding: .1em; 	border-radius: .3em; 	white-space: normal; } .token.comment, .token.prolog, .token.doctype, .token.cdata { 	color: slategray; } .token.punctuation { 	color: #999; } .token.namespace { 	opacity: .7; } .token.property, .token.tag, .token.boolean, .token.number, .token.constant, .token.symbol, .token.deleted { 	color: #905; } .token.selector, .token.attr-name, .token.string, .token.char, .token.builtin, .token.inserted { 	color: #690; } .token.operator, .token.entity, .token.url, .language-css .token.string, .style .token.string { 	color: #9a6e3a; 	/* This background color was intended by the author of this theme. */ 	background: hsla(0, 0%, 100%, .5); } .token.atrule, .token.attr-value, .token.keyword { 	color: #07a; } .token.function, .token.class-name { 	color: #DD4A68; } .token.regex, .token.important, .token.variable { 	color: #e90; } .token.important, .token.bold { 	font-weight: bold; } .token.italic { 	font-style: italic; } .token.entity { 	cursor: help; }</style>
+<style>:root{color:#333;font-family:Cambria,"Palatino Linotype",Palatino,"Liberation Serif",serif;font-size:15px;line-height:1.5;--mono-font-size: 13px;--indent: 1rem;--list-indent: 1.5rem;--dfn-indent: 0rem}@media (min-width: 720px){:root{font-size:17px;--mono-font-size: 15px;--indent: 2rem;--list-indent: 2rem;--dfn-indent: 2rem}}body{margin:3rem 0 3rem}article{margin:0 1rem}@media (min-width: 720px){body{margin:6rem auto 3rem;max-width:800px;padding-left:75px;padding-right:clamp(0px,calc((100vw - 800px) * .25),75px)}}.source-link{display:none}@media screen and (min-width: 720px){.source-link{display:block;position:absolute;width:18px;fill:#ccc;opacity:.3}.source-link:hover{opacity:1}}.outdated-selection-link,.selection-link{position:absolute;display:block;color:#fff;--selection-background-color: #cacee0;background:var(--selection-background-color);border-radius:4px;font-size:36px;height:23px;line-height:48px;text-align:center;text-decoration:none;width:25px;user-select:none;-moz-user-select:none;-webkit-user-select:none;-ms-user-select:none}.outdated-selection-link:hover,.selection-link:hover{text-decoration:none}.outdated-selection-link:before,.selection-link:before{border:5px solid transparent;content:"";height:0;margin-top:-5px;margin-right:-5px;position:absolute;right:1px;top:50%;width:0}@media (max-width: 719px){.outdated-selection-link:before,.selection-link:before{border-bottom-color:var(--selection-background-color);border-top:0;right:50%;top:1px}}@media (min-width: 720px){.outdated-selection-link:before,.selection-link:before{border-left-color:var(--selection-background-color);border-right:0;right:1px;top:50%}}.selection-link:hover{--selection-background-color: #3b5998}.outdated-selection-link{--selection-background-color: #f0babe;font-size:21px;font-weight:800;line-height:27px}.outdated-selection-link:hover:after{content:"This selection content has changed since this link was created.";font:9pt/11pt Cambria,"Palatino Linotype",Palatino,"Liberation Serif",serif;position:absolute;display:block;white-space:nowrap;padding:2px 5px 1px;top:-20px;background:black;color:#fff}a{color:#3b5998;text-decoration:none}a:hover{text-decoration:underline}img{max-width:100%}dl{margin:1rem 0 1rem var(--dfn-indent)}dd{margin:.25em 0 .5em var(--indent)}dd+dd{margin-top:1rem}dfn,.spec-ref{font-style:italic}dfn>a,.spec-ref>a{color:inherit}h1,h2,h3,h4,h5,h6{font-weight:bold;margin:3em 0 1em;position:relative}@media (min-width: 720px){header>h1{margin:6em 0 3em}}h1{font-size:1.5em;margin-top:5em}h2,h3{font-size:1.25em}h4,h5,h6{font-size:1em}section{padding-top:1rem;margin-top:-1rem}section.subsec>h6{margin-top:2em}section.subsec>h6>a{color:#333}section .spec-secid{margin-right:1ex}@media (min-width: 720px){section .spec-secid{position:absolute;right:100%;text-align:right;white-space:nowrap}}footer{font-size:75%;opacity:.5;text-align:center;margin-top:12rem}.spec-toc{margin:1rem 0 3rem}.spec-toc .title{content:"Contents";display:block;font-weight:bold;margin:5em 0 1em}.spec-toc .spec-secid{margin-right:1ex}.spec-toc ol{list-style:none;padding-left:0;margin-top:0;margin-bottom:0}.spec-toc ol ol{list-style:none;padding-left:2ex;margin-bottom:.25em}.spec-toc li{position:relative;padding:5px 0 0 30px;margin:-5px 0 0 -30px}.spec-toc a{color:#333}.spec-toc a:hover{text-decoration:none}.spec-toc a .spec-secid{color:#3b5998}.spec-toc a:hover .spec-secid{text-decoration:underline}.spec-toc .toggle{display:none}.spec-toc .toggle+label{cursor:pointer;left:6px;opacity:1;padding:5px 6px 5px 7px;position:absolute;top:6px;transform:rotate(0deg);transition:all .18s ease-in-out}.spec-toc .toggle+label:after{border-color:transparent transparent transparent #bbc;border-style:solid;border-width:6px 0 6px 7px;content:" ";display:block;height:0;width:0}@media (pointer: fine){.spec-toc .toggle+label{left:10px;padding:3px 5px 3px 6px;top:8px}}.spec-toc .toggle:checked+label{transform:rotate(90deg)}@media (hover: hover){.spec-toc li:not(:hover)>.toggle:checked+label{opacity:0}}.spec-toc .toggle:not(:checked)~ol{max-height:0;overflow:hidden;margin:0}.spec-sidebar-toggle{display:none}.spec-sidebar-toggle+label>.spec-sidebar-button{position:fixed;right:0;top:0;padding:10px 15px;font-size:30px;color:#000000b3;z-index:2;cursor:pointer;user-select:none;-moz-user-select:none;-webkit-user-select:none;-ms-user-select:none}.spec-sidebar-toggle:checked+label:after{content:"";position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:0}.spec-sidebar{display:none;position:fixed;right:0;top:0;width:min(320px,calc(100vw - 48px));font-size:14px;line-height:1.75;overflow-y:scroll;height:100%;padding:0 0 5rem 30px;box-sizing:border-box;background:#f0f0f0;box-shadow:inset 1px 0 rgba(0,0,0,.05),-4px 0 8px -2px rgba(0,0,0,.04);overscroll-behavior:contain}.spec-sidebar{user-select:none;-moz-user-select:none;-webkit-user-select:none;-ms-user-select:none}.spec-sidebar-toggle:checked~.spec-sidebar{display:block}.spec-sidebar .viewing>a:after{color:#8b9;content:"\2022";margin-left:1ex}@media (min-width: 1220px){.spec-sidebar-toggle+label{display:none}.spec-sidebar{display:block;box-shadow:inset 1px 0 rgba(0,0,0,.05),inset 4px 0 8px -2px rgba(0,0,0,.08)!important}body{padding-right:345px}}.spec-note{background:#FEFEF3;border-left:solid 4px #F4E925;margin:1rem -1rem;min-width:70vw;padding:8px 1rem 12px calc(1rem - 4px);width:-moz-fit-content;width:-webkit-fit-content;width:fit-content}@media (min-width: 720px){.spec-note{min-width:416px}}.spec-note>a:first-child{color:#6c6613;display:block;font:italic 11pt/18pt Cambria,"Palatino Linotype",Palatino,"Liberation Serif",serif;opacity:.6;user-select:none}.spec-todo{color:#666;margin:1em 0 1em 5em;min-height:1em}.spec-todo::before{content:"todo";display:block;float:left;margin-left:-5em;text-transform:uppercase}.spec-index ol{list-style-type:none;margin:0 0 0 var(--indent);padding:0;column-width:210px;column-gap:var(--indent)}.spec-index ol li{width:min-content;white-space:nowrap}pre,code{font-family:Consolas,Monaco,"Andale Mono","Ubuntu Mono",monospace;font-size:var(--mono-font-size);font-weight:inherit}code{background:rgba(0,0,0,.03);margin:-2px -1px;padding:3px 3px;white-space:pre-wrap}pre>code{background:none;font-weight:inherit;margin:0;padding:0;white-space:pre}pre{background:#FAFAFA;border-left:solid 4px #E9E9E9;margin:1rem -1rem;min-width:70vw;padding:12px 1rem 12px calc(1rem - 4px);width:-moz-fit-content;width:-webkit-fit-content;width:fit-content;max-width:calc(100vw - 2rem);overflow-y:scroll}@media (min-width: 720px){pre{min-width:40ch}}.spec-example{background:#FAFAFF;border-left:solid 4px #BBBBFF;padding-top:8px}.spec-counter-example{background:#FFFAFA;border-left:solid 4px #FFBBBB;padding-top:8px}.spec-example>a,.spec-counter-example>a{display:block;font:italic 11pt/18pt Cambria,"Palatino Linotype",Palatino,"Liberation Serif",serif;opacity:.6;user-select:none}.spec-counter-example>a{color:#98593b}table{border-collapse:collapse}th{background-color:#f9f9f9}td,th{border:1px solid #D0D0D0;padding:.4em;vertical-align:baseline}ol,ul{padding-left:var(--list-indent)}li>ol,li>ul{margin-top:.25em;margin-bottom:.5em}li+li{margin-top:.25em}li.task{list-style-type:none;position:relative}li.task>input:first-child{margin-left:0;position:absolute;transform:translateX(calc(-100% - 1ch))}ins{background-color:#00c81e14;text-decoration:none}del{background-color:#c8000014}.spec-added,.spec-removed{border-left:4px solid;margin-left:-18px;padding-left:14px}.spec-added{border-color:#396}.spec-removed{border-color:#933;text-decoration:line-through}.spec-keyword{font-weight:bold}.spec-string{font-family:Consolas,Monaco,monospace;font-size:85%;white-space:pre}var{font-style:italic}*[data-name]{transition:.15s background ease-out;border-radius:2px;padding:0 3px;margin:0 -3px}.spec-semantic,.spec-algo{margin:1rem 0 1rem var(--dfn-indent)}.spec-semantic>.spec-nt::after,.spec-algo>.spec-call:first-child::after{content:":";font-style:normal;font-weight:bold;margin-left:1ex}.spec-semantic ol,.spec-semantic ol ol ol ol,.spec-algo ol,.spec-algo ol ol ol ol{list-style-type:decimal}.spec-semantic ol ol,.spec-semantic ol ol ol ol ol,.spec-algo ol ol,.spec-algo ol ol ol ol ol{list-style-type:lower-alpha}.spec-semantic ol ol ol,.spec-semantic ol ol ol ol ol ol,.spec-algo ol ol ol,.spec-algo ol ol ol ol ol ol{list-style-type:lower-roman}.spec-call>a{color:inherit}.spec-production{margin:1rem 0 1rem var(--dfn-indent)}.spec-production>.spec-nt::after{content:":";font-style:normal;font-weight:bold;margin:0 1ex}.spec-semantic.d2>.spec-nt::after,.spec-production.d2>.spec-nt::after{content:"::"}.spec-semantic.d3>.spec-nt::after,.spec-production.d3>.spec-nt::after{content:":::"}.spec-production>.spec-rhs{line-height:1.1;margin:.25em 0 .5em calc(2 * var(--indent));text-indent:calc(-1 * var(--indent))}.spec-semantic>.spec-rhs{display:inline-block;text-indent:calc(-1 * var(--indent));margin-left:calc(1ex + var(--indent))}.spec-rhs>*{text-indent:0}.spec-oneof{display:inline}.spec-oneof::before{content:"one of";font-style:normal;font-weight:bold}.spec-oneof-grid{max-width:calc(100vw - 2rem);overflow:scroll;margin:-1ex -1rem;padding:1ex 1rem}.spec-oneof-grid>table{margin-left:var(--indent)}.spec-oneof .spec-rhs{border:none;margin:0;padding:0 0 0 1rem;vertical-align:baseline;white-space:pre}.spec-oneof .spec-rhs:first-child{padding:0}.spec-rhs .spec-constrained:not(:first-child),.spec-rhs .spec-quantified:not(:first-child),.spec-rhs .spec-nt:not(:first-child),.spec-rhs .spec-t:not(:first-child),.spec-rhs .spec-rx:not(:first-child),.spec-rhs .spec-prose:not(:first-child),.spec-rhs .spec-empty:not(:first-child),.spec-rhs .spec-lookahead:not(:first-child){margin-left:1ex;display:inline-block}.spec-condition{font-size:85%}.spec-condition::before{content:"[if "}.spec-condition.not::before{content:"[if not "}.spec-condition::after{content:"]"}.spec-empty,.spec-prose{color:#666}.spec-nt{font-style:italic}.spec-nt>a{color:inherit}.spec-quantifiers,.spec-params{font-size:65%;font-style:normal;vertical-align:sub}.spec-quantifier.list{color:#3348d3}.spec-quantifier.optional{color:#83238e}.spec-params,.spec-condition{color:#1c7758}.spec-params::before{content:"["}.spec-params::after{content:"]"}.spec-quantifier:not(:last-child)::after,.spec-param:not(:last-child)::after{color:#666;content:", "}.spec-param.conditional::before{content:"?"}.spec-param.negated::before{content:"!"}.spec-t,.spec-rx{color:#333;font-family:monospace;font-weight:bold}.spec-butnot::before{color:#666;content:"but not";font-family:Cambria,"Palatino Linotype",Palatino,"Liberation Serif",serif;font-weight:normal;margin-right:1ex}.spec-butnot>*:not(:first-child)::before{color:#666;content:"or";font-family:Cambria,"Palatino Linotype",Palatino,"Liberation Serif",serif;font-weight:normal;margin-right:1ex}.spec-rhs .spec-oneof::before,.spec-rhs .spec-butnot::before{margin-left:1ex}.spec-lookahead>*{margin:0!important}.spec-lookahead>*:not(:first-child)::before{color:#666;content:", ";font-family:Cambria,"Palatino Linotype",Palatino,"Liberation Serif",serif;font-style:normal;font-weight:normal}.spec-lookahead::before{color:#666;content:"[lookahead = ";font-family:Cambria,"Palatino Linotype",Palatino,"Liberation Serif",serif;font-style:normal;font-weight:normal}.spec-lookahead.not::before{content:"[lookahead \2260  "}.spec-lookahead.set::before{content:"[lookahead \2208  {";margin-right:0}.spec-lookahead.set.not::before{content:"[lookahead \2209  {"}.spec-lookahead.ntset::before{content:"[lookahead \2208  ";margin-right:0}.spec-lookahead.ntset.not::before{content:"[lookahead \2209  "}.spec-lookahead::after{color:#666;content:"]"}.spec-lookahead.set::after{content:"}]"}.token.atrule,.token.attr-value,.token.keyword,.token.property,.token.selector,.token.attr-name,.token.builtin,.token.entity,.token.url,.token.inserted{color:#1b1994b0;background:none}.token.tag,.token.boolean,.token.number,.token.string,.token.char,.token.constant,.token.symbol,.token.regex,.token.important,.token.variable,.token.function,.token.class-name,.token.deleted{color:#a20764bd}.token.comment,.token.prolog,.token.doctype,.token.cdata,.token.description{color:inherit;opacity:.3}.token.punctuation{color:inherit;opacity:.5}.token.operator,.token.namespace{color:inherit;opacity:.7}</style>
+<script>(function(){var r,a=[];document.addEventListener("readystatechange",function(){document.readyState==="interactive"&&u()});function u(){var n=document.querySelector('label[for="spec-sidebar-toggle"]');n.addEventListener("scroll",o),n.addEventListener("touchmove",o);function o(d){d.preventDefault()}for(var t=document.getElementsByTagName("section"),e=0;e<t.length;e++)t[e].getAttribute("secid")&&a.push(t[e]);var i=window.scrollY,c=!1;window.addEventListener("scroll",function(d){i=window.scrollY,c||(c=!0,window.requestAnimationFrame(function(){s(i),c=!1}))})}function s(n){for(var o=n+document.documentElement.clientHeight/4,t,e=a.length-1;e>=0;e--)if(a[e].offsetTop<o){t=a[e];break}var i=t&&t.getAttribute("secid");i!==r&&(r&&l(r,!1),i&&l(i,!0),r=i)}function l(n,o){document.getElementById("_sidebar_"+n).className=o?"viewing":"";for(var t=n.split(".");t.length;){var e=document.getElementById("_toggle_"+t.join("."));e&&(e.checked=o),t.pop()}}s(window.scrollY);})();</script>
+<script>(function(){var n=document.getElementsByTagName("style")[0].sheet,e;function u(){e&&(n.deleteRule(e),e=void 0)}function d(t){u(),e=n.insertRule('*[data-name="'+t+'"] { background: rgba(230,215,0,0.12); }',n.cssRules.length)}document.documentElement.addEventListener("mouseover",function(t){var a=t.target.attributes["data-name"];a&&d(a.value)});document.documentElement.addEventListener("mouseout",u);})();</script>
+<script>(function(){var R="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_",o,p,r,g;document.addEventListener("selectionchange",E);window.addEventListener("resize",C);window.addEventListener("hashchange",x);window.addEventListener("load",x);function S(n){y(new URL(n.target.href))}function x(){y(window.location)}function y(n){var e=n.hash.match(/^#sel-([A-Za-z0-9-_]+)$/);if(!!e){g=e[1],r=k(g);var t=r.getBoundingClientRect(),d=Math.max(20,Math.floor((window.innerHeight-t.height)*.4));window.scrollTo(0,window.scrollY+t.y-d);var c=document.getSelection();c.empty(),c.addRange(r),C()}}function E(n){var e=document.getSelection();if(e.isCollapsed)o&&(o.parentNode.removeChild(o),o=null);else{var t=e.getRangeAt(0);(!r||t.compareBoundaryPoints(Range.START_TO_START,r)!==0||t.compareBoundaryPoints(Range.END_TO_END,r)!==0)&&(r=t,g=B(r),C())}}function C(){if(!!r){p||(p=document.getElementsByTagName("article")[0]),o||(o=document.createElement("a"),document.body.appendChild(o)),o.href="#sel-"+g,o.onclick=S,o.className=r.isOutdated?"outdated-selection-link":"selection-link",o.innerText=r.isOutdated?"!":"\u201F";var n=window.innerWidth<720,e=r.getBoundingClientRect();if(n)o.style.left=Math.floor(e.x+e.width/2+window.scrollX-13)+"px",o.style.top=Math.floor(e.bottom+window.scrollY+10)+"px";else{var t=p.getBoundingClientRect().x;o.style.left=Math.floor(t+window.scrollX-37)+"px",o.style.top=Math.floor(e.y+window.scrollY-3)+"px"}}}function B(n){var e="",t=N(n.startContainer),d=N(n.endContainer),c=M(t,d);return l(c),l(t.slice(c.length).concat(n.startOffset)),l(d.slice(c.length).concat(n.endOffset)),i(L(n.toString())),e;function i(a){do e+=R[a&31|(a>31?32:0)],a>>=5;while(a>0)}function l(a){i(a.length);for(var h=0;h<a.length;h++)i(a[h])}}function k(n){for(var e=new Array(64),t=0;t<64;t++)e[R.charCodeAt(t)]=t;var d=0,c=m(),i=m(),l=m(),a=w(),h=i.pop(),P=O(c.concat(i)),T=l.pop(),A=O(c.concat(l)),u=document.createRange();return u.setStart(P,h),u.setEnd(A,T),u.isOutdated=a!==void 0&&a!==L(u.toString()),u;function w(){for(var s=0,v=0;d<n.length;){var f=e[n.charCodeAt(d++)];if(s|=(f&31)<<v,v+=5,f<32)return s}}function m(){var s=w();if(s!=null){for(var v=new Array(s),f=0;f<s;f++)v[f]=w();return v}}}function N(n){for(var e=[];n!=document.body;){var t=n.parentNode;e.push(Array.prototype.indexOf.call(t.childNodes,n)),n=t}return e.reverse()}function O(n){for(var e=document.body,t=0;t<n.length&&e;t++)e=e.childNodes[n[t]];return e}function M(n,e){for(var t=0;t<n.length&&t<e.length&&n[t]===e[t];)t++;return n.slice(0,t)}function L(n){for(var e=2166136261,t=0;t<n.length;++t)e^=n.charCodeAt(t),e+=(e<<1)+(e<<4)+(e<<7)+(e<<8)+(e<<24);return(e>>15^e)&32767}})();</script>
+</head>
+<body><article>
+<header>
+<h1>Markdoc tag syntax specification</h1>
+<section id="intro">
+<table>
+<tbody>
+<tr>
+  <th><strong>Version:<strong></th>
+  <td>0.1.0 Draft</td>
+</tr>
+<tr>
+  <th><strong>Author:</strong></th>
+  <td>Ryan Paul</td>
+</tr>
+</tbody>
+</table><p>Markdoc is a Markdown-based document format and a framework for content publishing. Markdoc extends Markdown with a custom syntax for tags and annotations, providing a way to tailor content to individual users and introduce interactive elements. This specification describes the syntax of Markdoc tags and how to parse them within Markdown content.</p>
+<div id="note-8d20e" class="spec-note">
+<a href="#note-8d20e">Note</a>
+This specification is an early draft and is still largely a work in progress. </div>
+</section>
+<nav class="spec-toc">
+<div class="title">Contents</div>
+<ol>
+<li><a href="#sec-Tags"><span class="spec-secid">1</span>Tags</a><ol>
+<li><a href="#sec-Opening-tag"><span class="spec-secid">1.1</span>Opening tag</a></li>
+<li><a href="#sec-Self-closing-tag"><span class="spec-secid">1.2</span>Self-closing tag</a></li>
+<li><a href="#sec-Closing-tag"><span class="spec-secid">1.3</span>Closing tag</a></li>
+<li><a href="#sec-Tag-forms"><span class="spec-secid">1.4</span>Tag forms</a><ol>
+<li><a href="#sec-Block-form"><span class="spec-secid">1.4.1</span>Block form</a></li>
+<li><a href="#sec-Inline-form"><span class="spec-secid">1.4.2</span>Inline form</a></li>
+</ol>
+</li>
+<li><a href="#sec-Annotation"><span class="spec-secid">1.5</span>Annotation</a></li>
+<li><a href="#sec-Attributes"><span class="spec-secid">1.6</span>Attributes</a><ol>
+<li><a href="#sec-Shorthand-attribute"><span class="spec-secid">1.6.1</span>Shorthand attribute</a></li>
+</ol>
+</li>
+</ol>
+</li>
+<li><a href="#sec-Interpolation"><span class="spec-secid">2</span>Interpolation</a></li>
+<li><a href="#sec-Values"><span class="spec-secid">3</span>Values</a><ol>
+<li><a href="#sec-Primitive-values"><span class="spec-secid">3.1</span>Primitive values</a><ol>
+<li><a href="#sec-Null"><span class="spec-secid">3.1.1</span>Null</a></li>
+<li><a href="#sec-Boolean"><span class="spec-secid">3.1.2</span>Boolean</a></li>
+<li><a href="#sec-Number"><span class="spec-secid">3.1.3</span>Number</a></li>
+<li><a href="#sec-String"><span class="spec-secid">3.1.4</span>String</a></li>
+</ol>
+</li>
+<li><a href="#sec-Compound-values"><span class="spec-secid">3.2</span>Compound values</a><ol>
+<li><a href="#sec-Array"><span class="spec-secid">3.2.1</span>Array</a></li>
+<li><a href="#sec-Hash"><span class="spec-secid">3.2.2</span>Hash</a></li>
+</ol>
+</li>
+<li><a href="#sec-Variable"><span class="spec-secid">3.3</span>Variable</a></li>
+<li><a href="#sec-Function"><span class="spec-secid">3.4</span>Function</a></li>
+</ol>
+</li>
+<li><a href="#sec-Space"><span class="spec-secid">4</span>Space</a></li>
+<li><a href="#sec-Identifier"><span class="spec-secid">5</span>Identifier</a></li>
+<li><a href="#index"><span class="spec-secid">§</span>Index</a></li>
+</ol>
+</nav>
+</header>
+<section id="sec-Tags" secid="1">
+<h1><span class="spec-secid" title="link to this section"><a href="#sec-Tags">1</a></span>Tags</h1>
+<div class="spec-production d2" id="TagStart">
+<span class="spec-nt"><a href="#TagStart" data-name="TagStart">TagStart</a></span><div class="spec-rhs"><span class="spec-t">{%</span></div>
+</div>
+<div class="spec-production d2" id="TagEnd">
+<span class="spec-nt"><a href="#TagEnd" data-name="TagEnd">TagEnd</a></span><div class="spec-rhs"><span class="spec-t">%}</span></div>
+</div>
+<div class="spec-production d2" id="TagInterior">
+<span class="spec-nt"><a href="#TagInterior" data-name="TagInterior">TagInterior</a></span><div class="spec-oneof"><div class="spec-oneof-grid"><table>
+<tr>
+<td class="spec-rhs"><span class="spec-nt"><a href="#TagOpen" data-name="TagOpen">TagOpen</a></span></td></tr>
+<tr>
+<td class="spec-rhs"><span class="spec-nt"><a href="#TagSelfClosing" data-name="TagSelfClosing">TagSelfClosing</a></span></td></tr>
+<tr>
+<td class="spec-rhs"><span class="spec-nt"><a href="#TagClose" data-name="TagClose">TagClose</a></span></td></tr>
+</table></div></div>
+</div>
+<div class="spec-production d2" id="Tag">
+<span class="spec-nt"><a href="#Tag" data-name="Tag">Tag</a></span><div class="spec-rhs"><span class="spec-nt"><a href="#TagStart" data-name="TagStart">TagStart</a></span><span class="spec-quantified"><span class="spec-nt"><a href="#Space" data-name="Space">Space</a></span><span class="spec-quantifiers"><span class="spec-quantifier list">list</span><span class="spec-quantifier optional">opt</span></span></span><span class="spec-nt"><a href="#TagInterior" data-name="TagInterior">TagInterior</a></span><span class="spec-nt"><a href="#TagEnd" data-name="TagEnd">TagEnd</a></span></div>
+</div>
+<p>A Markdoc <span class="spec-nt"><a href="#Tag" data-name="Tag">Tag</a></span> is a piece of markup that applies custom behavior or formatting in a Markdoc document. Tags can be nested, making it possible to express hierarchy or apply custom formatting to enclosed children. Matched pairs of opening tags and closing tags signify the beginning and end of a tag element that encloses children.</p>
+<pre id="example-fc243" class="spec-example"><a href="#example-fc243">Example № 1</a><code>{% example %}
+This paragraph is nested within a Markdoc tag.
+{% /example %}
+</code></pre>
+<p>Tags can also be self-closing, containing no nested content:</p>
+<pre id="example-ffc10" class="spec-example"><a href="#example-ffc10">Example № 2</a><code>{% example /%}
+</code></pre>
+<p>The <dfn id="tag-delimiters"><a href="#tag-delimiters" data-name="tag-delimiters">tag delimiters</a></dfn> (<span class="spec-nt"><a href="#TagStart" data-name="TagStart">TagStart</a></span> and <span class="spec-nt"><a href="#TagEnd" data-name="TagEnd">TagEnd</a></span>) indicate the presence of a Markdoc tag within Markdown content. Characters within the delimiters are treated as the <span class="spec-nt"><a href="#TagInterior" data-name="TagInterior">TagInterior</a></span>. When a <span class="spec-nt"><a href="#TagStart" data-name="TagStart">TagStart</a></span> delimiter is detected in a Markdown document, the parser should scan forward until it finds the first <span class="spec-nt"><a href="#TagEnd" data-name="TagEnd">TagEnd</a></span> delimiter that is not enclosed within a <span class="spec-nt"><a href="#ValueString" data-name="ValueString">ValueString</a></span> in order to determine where the tag ends.</p>
+<p>Determining what behavior and formatting is applied by a given Markdoc tag and its attributes is left to individual Markdoc implementations.</p>
+<section id="sec-Opening-tag" secid="1.1">
+<h2><span class="spec-secid" title="link to this section"><a href="#sec-Opening-tag">1.1</a></span>Opening tag</h2>
+<div class="spec-production d2" id="PrimaryAttribute">
+<span class="spec-nt"><a href="#PrimaryAttribute" data-name="PrimaryAttribute">PrimaryAttribute</a></span><div class="spec-rhs"><span class="spec-quantified"><span class="spec-nt"><a href="#Space" data-name="Space">Space</a></span><span class="spec-quantifiers"><span class="spec-quantifier list">list</span></span></span><span class="spec-nt"><a href="#Value" data-name="Value">Value</a></span></div>
+</div>
+<div class="spec-production d2" id="AttributeItem">
+<span class="spec-nt"><a href="#AttributeItem" data-name="AttributeItem">AttributeItem</a></span><div class="spec-rhs"><span class="spec-quantified"><span class="spec-nt"><a href="#Space" data-name="Space">Space</a></span><span class="spec-quantifiers"><span class="spec-quantifier list">list</span></span></span><span class="spec-nt"><a href="#Attribute" data-name="Attribute">Attribute</a></span></div>
+</div>
+<div class="spec-production d2" id="TagOpen">
+<span class="spec-nt"><a href="#TagOpen" data-name="TagOpen">TagOpen</a></span><div class="spec-rhs"><span class="spec-nt"><a href="#Identifier" data-name="Identifier">Identifier</a></span><span class="spec-quantified"><span class="spec-nt"><a href="#PrimaryAttribute" data-name="PrimaryAttribute">PrimaryAttribute</a></span><span class="spec-quantifiers"><span class="spec-quantifier optional">opt</span></span></span><span class="spec-quantified"><span class="spec-nt"><a href="#AttributeItem" data-name="AttributeItem">AttributeItem</a></span><span class="spec-quantifiers"><span class="spec-quantifier list">list</span><span class="spec-quantifier optional">opt</span></span></span><span class="spec-quantified"><span class="spec-nt"><a href="#Space" data-name="Space">Space</a></span><span class="spec-quantifiers"><span class="spec-quantifier list">list</span><span class="spec-quantifier optional">opt</span></span></span></div>
+</div>
+<p>An <dfn id="opening-tag"><a href="#opening-tag" data-name="opening-tag">opening tag</a></dfn> indicates the start of a Markdoc tag element that contains nested children. An opening tag&rsquo;s <span class="spec-nt"><a href="#TagInterior" data-name="TagInterior">TagInterior</a></span> must include the name of the tag and can include zero or more tag attributes.</p>
+<p>A tag may optionally have an unnamed <span class="spec-nt"><a href="#PrimaryAttribute" data-name="PrimaryAttribute">PrimaryAttribute</a></span> value following the <span class="spec-nt"><a href="#Identifier" data-name="Identifier">Identifier</a></span>:</p>
+<pre id="example-d5983" class="spec-example"><a href="#example-d5983">Example № 3</a><code>{% if $foo %}
+This is a paragraph in an `if` tag.
+{% /if %}
+</code></pre>
+</section>
+<section id="sec-Self-closing-tag" secid="1.2">
+<h2><span class="spec-secid" title="link to this section"><a href="#sec-Self-closing-tag">1.2</a></span>Self-closing tag</h2>
+<div class="spec-production d2" id="TagSelfClosing">
+<span class="spec-nt"><a href="#TagSelfClosing" data-name="TagSelfClosing">TagSelfClosing</a></span><div class="spec-rhs"><span class="spec-nt"><a href="#TagOpen" data-name="TagOpen">TagOpen</a></span><span class="spec-t">/</span></div>
+</div>
+<p>A <dfn id="self-closing-tag"><a href="#self-closing-tag" data-name="self-closing-tag">self-closing tag</a></dfn>, indicated by a forward-slash at the end of the <span class="spec-nt"><a href="#TagInterior" data-name="TagInterior">TagInterior</a></span>, indicates a Markdoc tag element that does not contain nested children. A self-closing tag&rsquo;s <span class="spec-nt"><a href="#TagInterior" data-name="TagInterior">TagInterior</a></span> must include the name of the tag and can include zero or more tag attributes. </p>
+</section>
+<section id="sec-Closing-tag" secid="1.3">
+<h2><span class="spec-secid" title="link to this section"><a href="#sec-Closing-tag">1.3</a></span>Closing tag</h2>
+<div class="spec-production d2" id="TagClose">
+<span class="spec-nt"><a href="#TagClose" data-name="TagClose">TagClose</a></span><div class="spec-rhs"><span class="spec-t">/</span><span class="spec-nt"><a href="#Identifier" data-name="Identifier">Identifier</a></span><span class="spec-quantified"><span class="spec-nt"><a href="#Space" data-name="Space">Space</a></span><span class="spec-quantifiers"><span class="spec-quantifier list">list</span><span class="spec-quantifier optional">opt</span></span></span></div>
+</div>
+<p>A <dfn id="closing-tag"><a href="#closing-tag" data-name="closing-tag">closing tag</a></dfn>, indicated by a forward-slash at the start of the <span class="spec-nt"><a href="#TagInterior" data-name="TagInterior">TagInterior</a></span>, indicates the end of a Markdoc tag element that contains nested children. A closing tag&rsquo;s <span class="spec-nt"><a href="#TagInterior" data-name="TagInterior">TagInterior</a></span> may include include the name of the tag and optional trailing whitespace. A closing tag corresponds to the most recent <span class="spec-ref"><a href="#opening-tag" data-name="opening-tag">opening tag</a></span> that has the same tag name.</p>
+<div id="note-fcbd8" class="spec-note">
+<a href="#note-fcbd8">Note</a>
+A future draft will specify the expected parsing behavior for malformed documents with mismatched opening and closing tags.</div>
+</section>
+<section id="sec-Tag-forms" secid="1.4">
+<h2><span class="spec-secid" title="link to this section"><a href="#sec-Tag-forms">1.4</a></span>Tag forms</h2>
+<p>Markdoc tags can be used as either <a href="https://spec.commonmark.org/0.30/#blocks-and-inlines">block or inline</a> elements in a Markdown document.</p>
+<section id="sec-Block-form" secid="1.4.1">
+<h3><span class="spec-secid" title="link to this section"><a href="#sec-Block-form">1.4.1</a></span>Block form</h3>
+<p>A tag should be parsed as a block-level element when its opening and closing markers each appear on a line by themselves with no other characters except whitespace. In the following example, the tag <code>foo</code> should be parsed as a block-level element that contains a single paragraph:</p>
+<pre id="example-3c449" class="spec-example"><a href="#example-3c449">Example № 4</a><code>{% foo %}
+This is content inside of a block-level tag
+{% /foo %}
+</code></pre>
+</section>
+<section id="sec-Inline-form" secid="1.4.2">
+<h3><span class="spec-secid" title="link to this section"><a href="#sec-Inline-form">1.4.2</a></span>Inline form</h3>
+<p>When the <span class="spec-ref"><a href="#opening-tag" data-name="opening-tag">opening tag</a></span> and <span class="spec-ref"><a href="#closing-tag" data-name="closing-tag">closing tag</a></span> appear on the same line within a paragraph, the tag should be treated as an inline document element nested inside of the block-level paragraph element:</p>
+<pre id="example-15c64" class="spec-example"><a href="#example-15c64">Example № 5</a><code>This is a paragraph {% foo %}that contains a tag{% /foo %}
+</code></pre>
+<p>When the <span class="spec-ref"><a href="#opening-tag" data-name="opening-tag">opening tag</a></span> and <span class="spec-ref"><a href="#closing-tag" data-name="closing-tag">closing tag</a></span> appear on the same line with no other surrounding content, the tag should still be treated as an inline document element, nested within an implied block-level paragraph element:</p>
+<pre id="example-b5086" class="spec-example"><a href="#example-b5086">Example № 6</a><code>{% foo %}This is content inside of an inline tag{% /foo %}
+</code></pre>
+</section>
+</section>
+<section id="sec-Annotation" secid="1.5">
+<h2><span class="spec-secid" title="link to this section"><a href="#sec-Annotation">1.5</a></span>Annotation</h2>
+<div class="spec-production d2" id="Annotation">
+<span class="spec-nt"><a href="#Annotation" data-name="Annotation">Annotation</a></span><div class="spec-rhs"><span class="spec-nt"><span data-name="TagBegin">TagBegin</span></span><span class="spec-quantified"><span class="spec-nt"><a href="#Space" data-name="Space">Space</a></span><span class="spec-quantifiers"><span class="spec-quantifier list">list</span><span class="spec-quantifier optional">opt</span></span></span><span class="spec-quantified"><span class="spec-nt"><a href="#Attribute" data-name="Attribute">Attribute</a></span><span class="spec-quantifiers"><span class="spec-quantifier list">list</span><span class="spec-quantifier optional">opt</span></span></span><span class="spec-quantified"><span class="spec-nt"><a href="#Space" data-name="Space">Space</a></span><span class="spec-quantifiers"><span class="spec-quantifier list">list</span><span class="spec-quantifier optional">opt</span></span></span><span class="spec-nt"><a href="#TagEnd" data-name="TagEnd">TagEnd</a></span></div>
+</div>
+<p>An <span class="spec-nt"><a href="#Annotation" data-name="Annotation">Annotation</a></span> applies <span class="spec-nt"><a href="#Attribute" data-name="Attribute">Attribute</a></span>s to the enclosing Markdown block. The attributes within the annotation are treated as though they are attributes on the document node itself. For example, an annotation can be used to add a CSS class to a heading node:</p>
+<pre id="example-484b0" class="spec-example"><a href="#example-484b0">Example № 7</a><code># Heading {% .example %}
+</code></pre>
+<p>An <span class="spec-nt"><a href="#Annotation" data-name="Annotation">Annotation</a></span> may only be used as an inline document node. When an annotation appears on a line by itself, it is treated as though it is nested in a block-level paragraph element. Within an <span class="spec-nt"><a href="#Annotation" data-name="Annotation">Annotation</a></span>, each <span class="spec-nt"><a href="#Attribute" data-name="Attribute">Attribute</a></span> is separated by a space. </p>
+</section>
+<section id="sec-Attributes" secid="1.6">
+<h2><span class="spec-secid" title="link to this section"><a href="#sec-Attributes">1.6</a></span>Attributes</h2>
+<div class="spec-production d2" id="Attribute">
+<span class="spec-nt"><a href="#Attribute" data-name="Attribute">Attribute</a></span><div class="spec-oneof"><div class="spec-oneof-grid"><table>
+<tr>
+<td class="spec-rhs"><span class="spec-nt"><a href="#AttributeFull" data-name="AttributeFull">AttributeFull</a></span></td></tr>
+<tr>
+<td class="spec-rhs"><span class="spec-nt"><a href="#AttributeShorthand" data-name="AttributeShorthand">AttributeShorthand</a></span></td></tr>
+</table></div></div>
+</div>
+<div class="spec-production d2" id="AttributeFull">
+<span class="spec-nt"><a href="#AttributeFull" data-name="AttributeFull">AttributeFull</a></span><div class="spec-rhs"><span class="spec-nt"><a href="#Identifier" data-name="Identifier">Identifier</a></span><span class="spec-t">=</span><span class="spec-nt"><a href="#Value" data-name="Value">Value</a></span></div>
+</div>
+<p>There are two types of attributes: full attributes (<span class="spec-nt"><a href="#AttributeFull" data-name="AttributeFull">AttributeFull</a></span>) and shorthand attributes (<span class="spec-nt"><a href="#AttributeShorthand" data-name="AttributeShorthand">AttributeShorthand</a></span>).</p>
+<p>A full <span class="spec-nt"><a href="#Attribute" data-name="Attribute">Attribute</a></span> is a key-value pair that consists of an <span class="spec-nt"><a href="#Identifier" data-name="Identifier">Identifier</a></span> and a <span class="spec-nt"><a href="#Value" data-name="Value">Value</a></span> separated by an <span class="spec-t">=</span> sign. The <span class="spec-nt"><a href="#Identifier" data-name="Identifier">Identifier</a></span> serves as the <span class="spec-nt"><a href="#Attribute" data-name="Attribute">Attribute</a></span>&lsquo;s key. No whitespace is permitted between the tokens that make up an <span class="spec-nt"><a href="#Attribute" data-name="Attribute">Attribute</a></span>.</p>
+<pre id="example-b9c14" class="spec-example"><a href="#example-b9c14">Example № 8</a><code>{% foo="bar" baz=[1, 2, 3] %}
+</code></pre>
+<section id="sec-Shorthand-attribute" secid="1.6.1">
+<h3><span class="spec-secid" title="link to this section"><a href="#sec-Shorthand-attribute">1.6.1</a></span>Shorthand attribute</h3>
+<div class="spec-production d2" id="AttributeShorthand">
+<span class="spec-nt"><a href="#AttributeShorthand" data-name="AttributeShorthand">AttributeShorthand</a></span><div class="spec-rhs"><span class="spec-nt"><a href="#ShorthandSigil" data-name="ShorthandSigil">ShorthandSigil</a></span><span class="spec-nt"><a href="#Identifier" data-name="Identifier">Identifier</a></span></div>
+</div>
+<div class="spec-production d2" id="ShorthandSigil">
+<span class="spec-nt"><a href="#ShorthandSigil" data-name="ShorthandSigil">ShorthandSigil</a></span><div class="spec-oneof"><div class="spec-oneof-grid"><table>
+<tr>
+<td class="spec-rhs"><span class="spec-t">#</span></td><td class="spec-rhs"><span class="spec-t">.</span></td></tr>
+</table></div></div>
+</div>
+<p>A shorthand attribute consists of a <span class="spec-nt"><a href="#ShorthandSigil" data-name="ShorthandSigil">ShorthandSigil</a></span> followed by an <span class="spec-nt"><a href="#Identifier" data-name="Identifier">Identifier</a></span>. The sigil represents the attribute&rsquo;s key. The following table describes the attribute key represented by each sigil:</p>
+<table>
+<thead>
+<tr>
+<th>Sigil</th>
+<th>Key</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><span class="spec-t">#</span></td>
+<td><code>id</code></td>
+</tr>
+<tr>
+<td><span class="spec-t">.</span></td>
+<td><code>class</code></td>
+</tr>
+</tbody>
+</table>
+<p>A shorthand attribute is equivalent to a full attribute that uses the key represented by the sigil. The following examples produce the same output:</p>
+<pre id="example-c3735" class="spec-example"><a href="#example-c3735">Example № 9</a><code>{% #foo .bar %}
+</code></pre>
+<pre id="example-acb0d" class="spec-example"><a href="#example-acb0d">Example № 10</a><code>{% id="foo" class="bar" %}
+</code></pre>
+<p>When there are multiple shorthand attributes that use the class sigil (<span class="spec-t">.</span>), the parser combines them into a single <code>class</code> attribute. The following examples are equivalent:</p>
+<pre id="example-5386d" class="spec-example"><a href="#example-5386d">Example № 11</a><code>{% .foo .bar .baz %}
+</code></pre>
+<pre id="example-40541" class="spec-example"><a href="#example-40541">Example № 12</a><code>{% class="foo bar baz" %}
+</code></pre>
+</section>
+</section>
+</section>
+<section id="sec-Interpolation" secid="2">
+<h1><span class="spec-secid" title="link to this section"><a href="#sec-Interpolation">2</a></span>Interpolation</h1>
+<div class="spec-production d2" id="Interpolation">
+<span class="spec-nt"><a href="#Interpolation" data-name="Interpolation">Interpolation</a></span><div class="spec-rhs"><span class="spec-t">{%</span><span class="spec-quantified"><span class="spec-nt"><a href="#Space" data-name="Space">Space</a></span><span class="spec-quantifiers"><span class="spec-quantifier list">list</span><span class="spec-quantifier optional">opt</span></span></span><span class="spec-nt"><a href="#InterpolationValue" data-name="InterpolationValue">InterpolationValue</a></span><span class="spec-quantified"><span class="spec-nt"><a href="#Space" data-name="Space">Space</a></span><span class="spec-quantifiers"><span class="spec-quantifier list">list</span><span class="spec-quantifier optional">opt</span></span></span><span class="spec-t">%}</span></div>
+</div>
+<div class="spec-production d2" id="InterpolationValue">
+<span class="spec-nt"><a href="#InterpolationValue" data-name="InterpolationValue">InterpolationValue</a></span><div class="spec-oneof"><div class="spec-oneof-grid"><table>
+<tr>
+<td class="spec-rhs"><span class="spec-nt"><a href="#Function" data-name="Function">Function</a></span></td></tr>
+<tr>
+<td class="spec-rhs"><span class="spec-nt"><a href="#Variable" data-name="Variable">Variable</a></span></td></tr>
+</table></div></div>
+</div>
+<p><span class="spec-nt"><a href="#Interpolation" data-name="Interpolation">Interpolation</a></span> is used to insert a Markdoc variable or the return value of a Markdoc function into the text of the Markdown document. Interpolation can only be used inside of an inline document node. When an interpolation appears on a line by itself, it is implicitly nested as inline content within a paragraph.</p>
+<pre id="example-9e48a" class="spec-example"><a href="#example-9e48a">Example № 13</a><code>Hello {% $username %}
+</code></pre>
+</section>
+<section id="sec-Values" secid="3">
+<h1><span class="spec-secid" title="link to this section"><a href="#sec-Values">3</a></span>Values</h1>
+<div class="spec-production d2" id="Value">
+<span class="spec-nt"><a href="#Value" data-name="Value">Value</a></span><div class="spec-oneof"><div class="spec-oneof-grid"><table>
+<tr>
+<td class="spec-rhs"><span class="spec-nt"><a href="#PrimitiveValue" data-name="PrimitiveValue">PrimitiveValue</a></span></td></tr>
+<tr>
+<td class="spec-rhs"><span class="spec-nt"><a href="#CompoundValue" data-name="CompoundValue">CompoundValue</a></span></td></tr>
+<tr>
+<td class="spec-rhs"><span class="spec-nt"><a href="#Variable" data-name="Variable">Variable</a></span></td></tr>
+<tr>
+<td class="spec-rhs"><span class="spec-nt"><a href="#Function" data-name="Function">Function</a></span></td></tr>
+</table></div></div>
+</div>
+<section id="sec-Primitive-values" secid="3.1">
+<h2><span class="spec-secid" title="link to this section"><a href="#sec-Primitive-values">3.1</a></span>Primitive values</h2>
+<div class="spec-production d2" id="PrimitiveValue">
+<span class="spec-nt"><a href="#PrimitiveValue" data-name="PrimitiveValue">PrimitiveValue</a></span><div class="spec-oneof"><div class="spec-oneof-grid"><table>
+<tr>
+<td class="spec-rhs"><span class="spec-nt"><a href="#ValueNull" data-name="ValueNull">ValueNull</a></span></td></tr>
+<tr>
+<td class="spec-rhs"><span class="spec-nt"><a href="#ValueBoolean" data-name="ValueBoolean">ValueBoolean</a></span></td></tr>
+<tr>
+<td class="spec-rhs"><span class="spec-nt"><a href="#ValueNumber" data-name="ValueNumber">ValueNumber</a></span></td></tr>
+<tr>
+<td class="spec-rhs"><span class="spec-nt"><a href="#ValueString" data-name="ValueString">ValueString</a></span></td></tr>
+</table></div></div>
+</div>
+<section id="sec-Null" secid="3.1.1">
+<h3><span class="spec-secid" title="link to this section"><a href="#sec-Null">3.1.1</a></span>Null</h3>
+<div class="spec-production d2" id="ValueNull">
+<span class="spec-nt"><a href="#ValueNull" data-name="ValueNull">ValueNull</a></span><div class="spec-rhs"><span class="spec-t">null</span></div>
+</div>
+<p>A null value is represented with the keyword <span class="spec-keyword">null</span>.</p>
+</section>
+<section id="sec-Boolean" secid="3.1.2">
+<h3><span class="spec-secid" title="link to this section"><a href="#sec-Boolean">3.1.2</a></span>Boolean</h3>
+<div class="spec-production d2" id="ValueBoolean">
+<span class="spec-nt"><a href="#ValueBoolean" data-name="ValueBoolean">ValueBoolean</a></span><div class="spec-oneof"><div class="spec-oneof-grid"><table>
+<tr>
+<td class="spec-rhs"><span class="spec-t">true</span></td></tr>
+<tr>
+<td class="spec-rhs"><span class="spec-t">false</span></td></tr>
+</table></div></div>
+</div>
+</section>
+<section id="sec-Number" secid="3.1.3">
+<h3><span class="spec-secid" title="link to this section"><a href="#sec-Number">3.1.3</a></span>Number</h3>
+<div class="spec-production d2" id="ValueNumber">
+<span class="spec-nt"><a href="#ValueNumber" data-name="ValueNumber">ValueNumber</a></span><div class="spec-rhs"><span class="spec-quantified"><span class="spec-t">-</span><span class="spec-quantifiers"><span class="spec-quantifier optional">opt</span></span></span><span class="spec-quantified"><span class="spec-nt"><a href="#Digit" data-name="Digit">Digit</a></span><span class="spec-quantifiers"><span class="spec-quantifier list">list</span></span></span><span class="spec-quantified"><span class="spec-nt"><a href="#Fraction" data-name="Fraction">Fraction</a></span><span class="spec-quantifiers"><span class="spec-quantifier optional">opt</span></span></span></div>
+</div>
+<div class="spec-production d2" id="Digit">
+<span class="spec-nt"><a href="#Digit" data-name="Digit">Digit</a></span><div class="spec-rhs"><span class="spec-rx">/[0-9]/</span></div>
+</div>
+<div class="spec-production d2" id="Fraction">
+<span class="spec-nt"><a href="#Fraction" data-name="Fraction">Fraction</a></span><div class="spec-rhs"><span class="spec-t">.</span><span class="spec-quantified"><span class="spec-nt"><a href="#Digit" data-name="Digit">Digit</a></span><span class="spec-quantifiers"><span class="spec-quantifier list">list</span></span></span></div>
+</div>
+</section>
+<section id="sec-String" secid="3.1.4">
+<h3><span class="spec-secid" title="link to this section"><a href="#sec-String">3.1.4</a></span>String</h3>
+<div class="spec-production d2" id="ValueString">
+<span class="spec-nt"><a href="#ValueString" data-name="ValueString">ValueString</a></span><div class="spec-rhs"><span class="spec-t">"</span><span class="spec-quantified"><span class="spec-nt"><a href="#StringElement" data-name="StringElement">StringElement</a></span><span class="spec-quantifiers"><span class="spec-quantifier list">list</span><span class="spec-quantifier optional">opt</span></span></span><span class="spec-t">"</span></div>
+</div>
+<div class="spec-production d2" id="StringElement">
+<span class="spec-nt"><a href="#StringElement" data-name="StringElement">StringElement</a></span><div class="spec-oneof"><div class="spec-oneof-grid"><table>
+<tr>
+<td class="spec-rhs"><span class="spec-nt"><a href="#StringCharacter" data-name="StringCharacter">StringCharacter</a></span></td></tr>
+<tr>
+<td class="spec-rhs"><span class="spec-nt"><a href="#StringEscapeSequence" data-name="StringEscapeSequence">StringEscapeSequence</a></span></td></tr>
+</table></div></div>
+</div>
+<div class="spec-production d2" id="StringEscapeSequence">
+<span class="spec-nt"><a href="#StringEscapeSequence" data-name="StringEscapeSequence">StringEscapeSequence</a></span><div class="spec-rhs"><span class="spec-t">\</span><span class="spec-nt"><a href="#StringEscapeCharacter" data-name="StringEscapeCharacter">StringEscapeCharacter</a></span></div>
+</div>
+<div class="spec-production d2" id="StringEscapeCharacter">
+<span class="spec-nt"><a href="#StringEscapeCharacter" data-name="StringEscapeCharacter">StringEscapeCharacter</a></span><div class="spec-oneof"><div class="spec-oneof-grid"><table>
+<tr>
+<td class="spec-rhs"><span class="spec-t">"</span></td><td class="spec-rhs"><span class="spec-t">\</span></td><td class="spec-rhs"><span class="spec-t">n</span></td><td class="spec-rhs"><span class="spec-t">r</span></td><td class="spec-rhs"><span class="spec-t">t</span></td></tr>
+</table></div></div>
+</div>
+<div class="spec-production d2" id="StringCharacter">
+<span class="spec-nt"><a href="#StringCharacter" data-name="StringCharacter">StringCharacter</a></span><div class="spec-rhs"><span class="spec-constrained"><span class="spec-prose">any character</span><span class="spec-butnot"><span class="spec-t">"</span><span class="spec-t">\</span></span></span></div>
+</div>
+</section>
+</section>
+<section id="sec-Compound-values" secid="3.2">
+<h2><span class="spec-secid" title="link to this section"><a href="#sec-Compound-values">3.2</a></span>Compound values</h2>
+<div class="spec-production d2" id="CompoundValue">
+<span class="spec-nt"><a href="#CompoundValue" data-name="CompoundValue">CompoundValue</a></span><div class="spec-oneof"><div class="spec-oneof-grid"><table>
+<tr>
+<td class="spec-rhs"><span class="spec-nt"><a href="#ValueArray" data-name="ValueArray">ValueArray</a></span></td></tr>
+<tr>
+<td class="spec-rhs"><span class="spec-nt"><a href="#ValueHash" data-name="ValueHash">ValueHash</a></span></td></tr>
+</table></div></div>
+</div>
+<section id="sec-Array" secid="3.2.1">
+<h3><span class="spec-secid" title="link to this section"><a href="#sec-Array">3.2.1</a></span>Array</h3>
+<div class="spec-production d2" id="ValueArray">
+<span class="spec-nt"><a href="#ValueArray" data-name="ValueArray">ValueArray</a></span><div class="spec-rhs"><span class="spec-t">[</span><span class="spec-quantified"><span class="spec-nt"><a href="#Space" data-name="Space">Space</a></span><span class="spec-quantifiers"><span class="spec-quantifier list">list</span><span class="spec-quantifier optional">opt</span></span></span><span class="spec-quantified"><span class="spec-nt"><a href="#ArrayItem" data-name="ArrayItem">ArrayItem</a></span><span class="spec-quantifiers"><span class="spec-quantifier list">list</span><span class="spec-quantifier optional">opt</span></span></span><span class="spec-quantified"><span class="spec-nt"><a href="#ArrayItemWithOptionalComma" data-name="ArrayItemWithOptionalComma">ArrayItemWithOptionalComma</a></span><span class="spec-quantifiers"><span class="spec-quantifier optional">opt</span></span></span><span class="spec-quantified"><span class="spec-nt"><a href="#Space" data-name="Space">Space</a></span><span class="spec-quantifiers"><span class="spec-quantifier list">list</span><span class="spec-quantifier optional">opt</span></span></span><span class="spec-t">]</span></div>
+</div>
+<div class="spec-production d2" id="ArrayItem">
+<span class="spec-nt"><a href="#ArrayItem" data-name="ArrayItem">ArrayItem</a></span><div class="spec-rhs"><span class="spec-nt"><a href="#Value" data-name="Value">Value</a></span><span class="spec-quantified"><span class="spec-nt"><a href="#Space" data-name="Space">Space</a></span><span class="spec-quantifiers"><span class="spec-quantifier list">list</span><span class="spec-quantifier optional">opt</span></span></span><span class="spec-t">,</span><span class="spec-quantified"><span class="spec-nt"><a href="#Space" data-name="Space">Space</a></span><span class="spec-quantifiers"><span class="spec-quantifier list">list</span><span class="spec-quantifier optional">opt</span></span></span></div>
+</div>
+<div class="spec-production d2" id="ArrayItemWithOptionalComma">
+<span class="spec-nt"><a href="#ArrayItemWithOptionalComma" data-name="ArrayItemWithOptionalComma">ArrayItemWithOptionalComma</a></span><div class="spec-rhs"><span class="spec-nt"><a href="#Value" data-name="Value">Value</a></span><span class="spec-quantified"><span class="spec-nt"><a href="#Space" data-name="Space">Space</a></span><span class="spec-quantifiers"><span class="spec-quantifier list">list</span><span class="spec-quantifier optional">opt</span></span></span><span class="spec-quantified"><span class="spec-t">,</span><span class="spec-quantifiers"><span class="spec-quantifier optional">opt</span></span></span></div>
+</div>
+<p>An array value (<span class="spec-nt"><a href="#ValueArray" data-name="ValueArray">ValueArray</a></span>) consists of a matched pair of square brackets containing a comma-delimited sequence of <span class="spec-nt"><a href="#Value" data-name="Value">Value</a></span>s. A matched pair of square brackets that contains nothing or only whitespace is parsed as an empty array value. An optional trailing comma is permitted within non-empty arrays. Arrays may be nested to an infinite level of depth and may contain Markdoc <span class="spec-nt"><a href="#Variable" data-name="Variable">Variable</a></span>s or <span class="spec-nt"><a href="#Function" data-name="Function">Function</a></span> invocations.</p>
+<pre id="example-9baeb" class="spec-example"><a href="#example-9baeb">Example № 14</a><code>{% foo=[1, false, ["bar", $baz]] %}
+</code></pre>
+</section>
+<section id="sec-Hash" secid="3.2.2">
+<h3><span class="spec-secid" title="link to this section"><a href="#sec-Hash">3.2.2</a></span>Hash</h3>
+<div class="spec-production d2" id="ValueHash">
+<span class="spec-nt"><a href="#ValueHash" data-name="ValueHash">ValueHash</a></span><div class="spec-rhs"><span class="spec-t">{</span><span class="spec-quantified"><span class="spec-nt"><a href="#Space" data-name="Space">Space</a></span><span class="spec-quantifiers"><span class="spec-quantifier list">list</span><span class="spec-quantifier optional">opt</span></span></span><span class="spec-quantified"><span class="spec-nt"><a href="#HashItem" data-name="HashItem">HashItem</a></span><span class="spec-quantifiers"><span class="spec-quantifier list">list</span><span class="spec-quantifier optional">opt</span></span></span><span class="spec-quantified"><span class="spec-nt"><a href="#HashItemWithOptionalComma" data-name="HashItemWithOptionalComma">HashItemWithOptionalComma</a></span><span class="spec-quantifiers"><span class="spec-quantifier optional">opt</span></span></span><span class="spec-quantified"><span class="spec-nt"><a href="#Space" data-name="Space">Space</a></span><span class="spec-quantifiers"><span class="spec-quantifier list">list</span><span class="spec-quantifier optional">opt</span></span></span><span class="spec-t">}</span></div>
+</div>
+<div class="spec-production d2" id="HashItem">
+<span class="spec-nt"><a href="#HashItem" data-name="HashItem">HashItem</a></span><div class="spec-rhs"><span class="spec-nt"><a href="#HashKeyValue" data-name="HashKeyValue">HashKeyValue</a></span><span class="spec-t">,</span><span class="spec-quantified"><span class="spec-nt"><a href="#Space" data-name="Space">Space</a></span><span class="spec-quantifiers"><span class="spec-quantifier list">list</span><span class="spec-quantifier optional">opt</span></span></span></div>
+</div>
+<div class="spec-production d2" id="HashKeyValue">
+<span class="spec-nt"><a href="#HashKeyValue" data-name="HashKeyValue">HashKeyValue</a></span><div class="spec-rhs"><span class="spec-nt"><a href="#HashKey" data-name="HashKey">HashKey</a></span><span class="spec-t">:</span><span class="spec-quantified"><span class="spec-nt"><a href="#Space" data-name="Space">Space</a></span><span class="spec-quantifiers"><span class="spec-quantifier list">list</span><span class="spec-quantifier optional">opt</span></span></span><span class="spec-nt"><a href="#Value" data-name="Value">Value</a></span><span class="spec-quantified"><span class="spec-nt"><a href="#Space" data-name="Space">Space</a></span><span class="spec-quantifiers"><span class="spec-quantifier list">list</span><span class="spec-quantifier optional">opt</span></span></span></div>
+</div>
+<div class="spec-production d2" id="HashItemWithOptionalComma">
+<span class="spec-nt"><a href="#HashItemWithOptionalComma" data-name="HashItemWithOptionalComma">HashItemWithOptionalComma</a></span><div class="spec-rhs"><span class="spec-nt"><a href="#HashKeyValue" data-name="HashKeyValue">HashKeyValue</a></span><span class="spec-quantified"><span class="spec-t">,</span><span class="spec-quantifiers"><span class="spec-quantifier optional">opt</span></span></span></div>
+</div>
+<div class="spec-production d2" id="HashKey">
+<span class="spec-nt"><a href="#HashKey" data-name="HashKey">HashKey</a></span><div class="spec-oneof"><div class="spec-oneof-grid"><table>
+<tr>
+<td class="spec-rhs"><span class="spec-nt"><a href="#Identifier" data-name="Identifier">Identifier</a></span></td></tr>
+<tr>
+<td class="spec-rhs"><span class="spec-nt"><span data-name="String">String</span></span></td></tr>
+</table></div></div>
+</div>
+<p>A hash value (<span class="spec-nt"><a href="#ValueHash" data-name="ValueHash">ValueHash</a></span>) consists of a matched pair of curly braces containing a comma-delimited sequence of key-value pairs (<span class="spec-nt"><a href="#HashKeyValue" data-name="HashKeyValue">HashKeyValue</a></span>). A matched pair of curly braces that contains nothing or only whitespace is parsed as an empty hash value. An optional trailing comma is permitted within non-empty hashes. Hashes may be nested to an infinite level of depth and may contain Markdoc <span class="spec-nt"><a href="#Variable" data-name="Variable">Variable</a></span>s or <span class="spec-nt"><a href="#Function" data-name="Function">Function</a></span> invocations as values. The <span class="spec-nt"><a href="#HashKey" data-name="HashKey">HashKey</a></span> may consist of either a bare identifier or a string surrounded by double quotes.</p>
+<pre id="example-88cb3" class="spec-example"><a href="#example-88cb3">Example № 15</a><code>{% foo={key: "example value", "quoted key": $variable} %}
+</code></pre>
+</section>
+</section>
+<section id="sec-Variable" secid="3.3">
+<h2><span class="spec-secid" title="link to this section"><a href="#sec-Variable">3.3</a></span>Variable</h2>
+<div class="spec-production d2" id="Variable">
+<span class="spec-nt"><a href="#Variable" data-name="Variable">Variable</a></span><div class="spec-rhs"><span class="spec-nt"><a href="#VariableSigil" data-name="VariableSigil">VariableSigil</a></span><span class="spec-nt"><a href="#Identifier" data-name="Identifier">Identifier</a></span><span class="spec-quantified"><span class="spec-nt"><a href="#VariableTail" data-name="VariableTail">VariableTail</a></span><span class="spec-quantifiers"><span class="spec-quantifier list">list</span><span class="spec-quantifier optional">opt</span></span></span></div>
+</div>
+<div class="spec-production d2" id="VariableTail">
+<span class="spec-nt"><a href="#VariableTail" data-name="VariableTail">VariableTail</a></span><div class="spec-oneof"><div class="spec-oneof-grid"><table>
+<tr>
+<td class="spec-rhs"><span class="spec-t">.</span></td><td class="spec-rhs"><span class="spec-nt"><a href="#Identifier" data-name="Identifier">Identifier</a></span></td></tr>
+<tr>
+<td class="spec-rhs"><span class="spec-t">[</span></td><td class="spec-rhs"><span class="spec-nt"><a href="#VariableSegmentValue" data-name="VariableSegmentValue">VariableSegmentValue</a></span></td><td class="spec-rhs"><span class="spec-t">]</span></td></tr>
+</table></div></div>
+</div>
+<div class="spec-production d2" id="VariableSegmentValue">
+<span class="spec-nt"><a href="#VariableSegmentValue" data-name="VariableSegmentValue">VariableSegmentValue</a></span><div class="spec-oneof"><div class="spec-oneof-grid"><table>
+<tr>
+<td class="spec-rhs"><span class="spec-nt"><a href="#ValueNumber" data-name="ValueNumber">ValueNumber</a></span></td></tr>
+<tr>
+<td class="spec-rhs"><span class="spec-nt"><a href="#ValueString" data-name="ValueString">ValueString</a></span></td></tr>
+<tr>
+<td class="spec-rhs"><span class="spec-nt"><a href="#Variable" data-name="Variable">Variable</a></span></td></tr>
+</table></div></div>
+</div>
+<div class="spec-production d2" id="VariableSigil">
+<span class="spec-nt"><a href="#VariableSigil" data-name="VariableSigil">VariableSigil</a></span><div class="spec-oneof"><div class="spec-oneof-grid"><table>
+<tr>
+<td class="spec-rhs"><span class="spec-t">$</span></td><td class="spec-rhs"><span class="spec-t">@</span></td></tr>
+</table></div></div>
+</div>
+<p>A <span class="spec-nt"><a href="#Variable" data-name="Variable">Variable</a></span> allows Markdoc content to incorporate an external value. Variables may be used for <span class="spec-nt"><a href="#Interpolation" data-name="Interpolation">Interpolation</a></span> or in place of a value in tag attributes. Variables consist of multiple segments, which are intended to support accessing a value that is deeply nested in a complex data structure. A <span class="spec-nt"><a href="#Variable" data-name="Variable">Variable</a></span> segment can be an identifier or a square-bracket enclosed value. Determining how to resolve a <span class="spec-nt"><a href="#Variable" data-name="Variable">Variable</a></span> into a value is left up to individual Markdoc implementations.</p>
+<pre id="example-b6b0e" class="spec-example"><a href="#example-b6b0e">Example № 16</a><code>{% foo=$bar.baz[10].qux %}
+</code></pre>
+<div id="note-7df74" class="spec-note">
+<a href="#note-7df74">Note</a>
+A future draft will specify the expected behavior of variables with the <code>$</code> and <code>@</code> sigils. Presently, the <code>$</code> sigil should be treated as a conventional variable and the <code>@</code> sigil is reserved for future use.</div>
+</section>
+<section id="sec-Function" secid="3.4">
+<h2><span class="spec-secid" title="link to this section"><a href="#sec-Function">3.4</a></span>Function</h2>
+<div class="spec-production d2" id="Function">
+<span class="spec-nt"><a href="#Function" data-name="Function">Function</a></span><div class="spec-rhs"><span class="spec-nt"><a href="#Identifier" data-name="Identifier">Identifier</a></span><span class="spec-t">(</span><span class="spec-quantified"><span class="spec-nt"><a href="#Space" data-name="Space">Space</a></span><span class="spec-quantifiers"><span class="spec-quantifier list">list</span><span class="spec-quantifier optional">opt</span></span></span><span class="spec-quantified"><span class="spec-nt"><a href="#FunctionParameters" data-name="FunctionParameters">FunctionParameters</a></span><span class="spec-quantifiers"><span class="spec-quantifier list">list</span><span class="spec-quantifier optional">opt</span></span></span><span class="spec-quantified"><span class="spec-nt"><a href="#Space" data-name="Space">Space</a></span><span class="spec-quantifiers"><span class="spec-quantifier list">list</span><span class="spec-quantifier optional">opt</span></span></span><span class="spec-t">)</span></div>
+</div>
+<div class="spec-production d2" id="FunctionParameters">
+<span class="spec-nt"><a href="#FunctionParameters" data-name="FunctionParameters">FunctionParameters</a></span><div class="spec-rhs"><span class="spec-nt"><a href="#Value" data-name="Value">Value</a></span><span class="spec-quantified"><span class="spec-nt"><a href="#FunctionParameterTail" data-name="FunctionParameterTail">FunctionParameterTail</a></span><span class="spec-quantifiers"><span class="spec-quantifier list">list</span><span class="spec-quantifier optional">opt</span></span></span></div>
+</div>
+<div class="spec-production d2" id="FunctionParameterTail">
+<span class="spec-nt"><a href="#FunctionParameterTail" data-name="FunctionParameterTail">FunctionParameterTail</a></span><div class="spec-rhs"><span class="spec-quantified"><span class="spec-nt"><a href="#Space" data-name="Space">Space</a></span><span class="spec-quantifiers"><span class="spec-quantifier list">list</span><span class="spec-quantifier optional">opt</span></span></span><span class="spec-t">,</span><span class="spec-quantified"><span class="spec-nt"><a href="#Space" data-name="Space">Space</a></span><span class="spec-quantifiers"><span class="spec-quantifier list">list</span><span class="spec-quantifier optional">opt</span></span></span><span class="spec-nt"><a href="#FunctionParameter" data-name="FunctionParameter">FunctionParameter</a></span></div>
+</div>
+<div class="spec-production d2" id="FunctionParameter">
+<span class="spec-nt"><a href="#FunctionParameter" data-name="FunctionParameter">FunctionParameter</a></span><div class="spec-oneof"><div class="spec-oneof-grid"><table>
+<tr>
+<td class="spec-rhs"><span class="spec-nt"><a href="#FunctionParameterNamed" data-name="FunctionParameterNamed">FunctionParameterNamed</a></span></td></tr>
+<tr>
+<td class="spec-rhs"><span class="spec-nt"><a href="#Value" data-name="Value">Value</a></span></td></tr>
+</table></div></div>
+</div>
+<div class="spec-production d2" id="FunctionParameterNamed">
+<span class="spec-nt"><a href="#FunctionParameterNamed" data-name="FunctionParameterNamed">FunctionParameterNamed</a></span><div class="spec-rhs"><span class="spec-nt"><a href="#Identifier" data-name="Identifier">Identifier</a></span><span class="spec-t">=</span><span class="spec-nt"><a href="#Value" data-name="Value">Value</a></span></div>
+</div>
+<p>A function consists of an <span class="spec-nt"><a href="#Identifier" data-name="Identifier">Identifier</a></span> followed by <span class="spec-nt"><a href="#FunctionParameters" data-name="FunctionParameters">FunctionParameters</a></span> enclosed in parentheses. Functions are used to incorporate external logic in a Markdoc document. </p>
+<p>A <span class="spec-nt"><a href="#FunctionParameter" data-name="FunctionParameter">FunctionParameter</a></span> may be either a <span class="spec-nt"><a href="#Value" data-name="Value">Value</a></span> or a key-value pair separated by an equals sign. Functions may be used for <span class="spec-nt"><a href="#Interpolation" data-name="Interpolation">Interpolation</a></span> or in place of a value in tag attributes. Function parameters may be any valid <span class="spec-nt"><a href="#Value" data-name="Value">Value</a></span>, including a <span class="spec-nt"><a href="#Variable" data-name="Variable">Variable</a></span> or another <span class="spec-nt"><a href="#Function" data-name="Function">Function</a></span>. Determining how to evaluate a <span class="spec-nt"><a href="#Function" data-name="Function">Function</a></span> is left up to individual Markdoc implementations. </p>
+<div id="note-8c430" class="spec-note">
+<a href="#note-8c430">Note</a>
+A future draft will specify a default set of built-in functions that should be included in Markdoc implementations.</div>
+</section>
+</section>
+<section id="sec-Space" secid="4">
+<h1><span class="spec-secid" title="link to this section"><a href="#sec-Space">4</a></span>Space</h1>
+<div class="spec-production d2" id="Space">
+<span class="spec-nt"><a href="#Space" data-name="Space">Space</a></span><div class="spec-oneof"><div class="spec-oneof-grid"><table>
+<tr>
+<td class="spec-rhs"><span class="spec-prose">Space (U+0020)</span></td></tr>
+<tr>
+<td class="spec-rhs"><span class="spec-prose">Horizontal Tab (U+0009)</span></td></tr>
+<tr>
+<td class="spec-rhs"><span class="spec-prose">New Line (U+000A)</span></td></tr>
+</table></div></div>
+</div>
+</section>
+<section id="sec-Identifier" secid="5">
+<h1><span class="spec-secid" title="link to this section"><a href="#sec-Identifier">5</a></span>Identifier</h1>
+<div class="spec-production d2" id="Identifier">
+<span class="spec-nt"><a href="#Identifier" data-name="Identifier">Identifier</a></span><div class="spec-rhs"><span class="spec-rx">/[a-zA-Z]/</span><span class="spec-quantified"><span class="spec-nt"><a href="#IdentifierTail" data-name="IdentifierTail">IdentifierTail</a></span><span class="spec-quantifiers"><span class="spec-quantifier list">list</span><span class="spec-quantifier optional">opt</span></span></span></div>
+</div>
+<div class="spec-production d2" id="IdentifierTail">
+<span class="spec-nt"><a href="#IdentifierTail" data-name="IdentifierTail">IdentifierTail</a></span><div class="spec-rhs"><span class="spec-rx">/[-_a-zA-Z0-9]/</span></div>
+</div>
+</section>
+<section id="index" secid="index" class="spec-index">
+<h1>
+<span class="spec-secid" title="link to the index"><a href="#index">§</a></span>Index</h1>
+<ol>
+<li><a href="#Annotation">Annotation</a></li>
+<li><a href="#ArrayItem">ArrayItem</a></li>
+<li><a href="#ArrayItemWithOptionalComma">ArrayItemWithOptionalComma</a></li>
+<li><a href="#Attribute">Attribute</a></li>
+<li><a href="#AttributeFull">AttributeFull</a></li>
+<li><a href="#AttributeItem">AttributeItem</a></li>
+<li><a href="#AttributeShorthand">AttributeShorthand</a></li>
+<li><a href="#closing-tag">closing tag</a></li>
+<li><a href="#CompoundValue">CompoundValue</a></li>
+<li><a href="#Digit">Digit</a></li>
+<li><a href="#Fraction">Fraction</a></li>
+<li><a href="#Function">Function</a></li>
+<li><a href="#FunctionParameter">FunctionParameter</a></li>
+<li><a href="#FunctionParameterNamed">FunctionParameterNamed</a></li>
+<li><a href="#FunctionParameters">FunctionParameters</a></li>
+<li><a href="#FunctionParameterTail">FunctionParameterTail</a></li>
+<li><a href="#HashItem">HashItem</a></li>
+<li><a href="#HashItemWithOptionalComma">HashItemWithOptionalComma</a></li>
+<li><a href="#HashKey">HashKey</a></li>
+<li><a href="#HashKeyValue">HashKeyValue</a></li>
+<li><a href="#Identifier">Identifier</a></li>
+<li><a href="#IdentifierTail">IdentifierTail</a></li>
+<li><a href="#Interpolation">Interpolation</a></li>
+<li><a href="#InterpolationValue">InterpolationValue</a></li>
+<li><a href="#opening-tag">opening tag</a></li>
+<li><a href="#PrimaryAttribute">PrimaryAttribute</a></li>
+<li><a href="#PrimitiveValue">PrimitiveValue</a></li>
+<li><a href="#self-closing-tag">self-closing tag</a></li>
+<li><a href="#ShorthandSigil">ShorthandSigil</a></li>
+<li><a href="#Space">Space</a></li>
+<li><a href="#StringCharacter">StringCharacter</a></li>
+<li><a href="#StringElement">StringElement</a></li>
+<li><a href="#StringEscapeCharacter">StringEscapeCharacter</a></li>
+<li><a href="#StringEscapeSequence">StringEscapeSequence</a></li>
+<li><a href="#Tag">Tag</a></li>
+<li><a href="#tag-delimiters">tag delimiters</a></li>
+<li><a href="#TagClose">TagClose</a></li>
+<li><a href="#TagEnd">TagEnd</a></li>
+<li><a href="#TagInterior">TagInterior</a></li>
+<li><a href="#TagOpen">TagOpen</a></li>
+<li><a href="#TagSelfClosing">TagSelfClosing</a></li>
+<li><a href="#TagStart">TagStart</a></li>
+<li><a href="#Value">Value</a></li>
+<li><a href="#ValueArray">ValueArray</a></li>
+<li><a href="#ValueBoolean">ValueBoolean</a></li>
+<li><a href="#ValueHash">ValueHash</a></li>
+<li><a href="#ValueNull">ValueNull</a></li>
+<li><a href="#ValueNumber">ValueNumber</a></li>
+<li><a href="#ValueString">ValueString</a></li>
+<li><a href="#Variable">Variable</a></li>
+<li><a href="#VariableSegmentValue">VariableSegmentValue</a></li>
+<li><a href="#VariableSigil">VariableSigil</a></li>
+<li><a href="#VariableTail">VariableTail</a></li>
+</ol>
+</section>
+</article>
+<footer>
+Written in <a href="https://spec-md.com" target="_blank">Spec Markdown</a>.</footer>
+<input hidden class="spec-sidebar-toggle" type="checkbox" id="spec-sidebar-toggle" aria-hidden /><label for="spec-sidebar-toggle" aria-hidden><div class="spec-sidebar-button">&#x2630;</div></label>
+<div class="spec-sidebar" aria-hidden>
+<div class="spec-toc">
+<div class="title"><a href="#">Markdoc tag syntax specification</a></div>
+<ol><li id="_sidebar_1"><a href="#sec-Tags"><span class="spec-secid">1</span>Tags</a>
+<input hidden class="toggle" type="checkbox" id="_toggle_1" /><label for="_toggle_1"></label>
+<ol>
+<li id="_sidebar_1.1"><a href="#sec-Opening-tag"><span class="spec-secid">1.1</span>Opening tag</a></li>
+<li id="_sidebar_1.2"><a href="#sec-Self-closing-tag"><span class="spec-secid">1.2</span>Self-closing tag</a></li>
+<li id="_sidebar_1.3"><a href="#sec-Closing-tag"><span class="spec-secid">1.3</span>Closing tag</a></li>
+<li id="_sidebar_1.4"><a href="#sec-Tag-forms"><span class="spec-secid">1.4</span>Tag forms</a>
+<input hidden class="toggle" type="checkbox" id="_toggle_1.4" /><label for="_toggle_1.4"></label>
+<ol>
+<li id="_sidebar_1.4.1"><a href="#sec-Block-form"><span class="spec-secid">1.4.1</span>Block form</a></li>
+<li id="_sidebar_1.4.2"><a href="#sec-Inline-form"><span class="spec-secid">1.4.2</span>Inline form</a></li>
+</ol>
+</li>
+<li id="_sidebar_1.5"><a href="#sec-Annotation"><span class="spec-secid">1.5</span>Annotation</a></li>
+<li id="_sidebar_1.6"><a href="#sec-Attributes"><span class="spec-secid">1.6</span>Attributes</a>
+<input hidden class="toggle" type="checkbox" id="_toggle_1.6" /><label for="_toggle_1.6"></label>
+<ol>
+<li id="_sidebar_1.6.1"><a href="#sec-Shorthand-attribute"><span class="spec-secid">1.6.1</span>Shorthand attribute</a></li>
+</ol>
+</li>
+</ol>
+</li>
+<li id="_sidebar_2"><a href="#sec-Interpolation"><span class="spec-secid">2</span>Interpolation</a></li>
+<li id="_sidebar_3"><a href="#sec-Values"><span class="spec-secid">3</span>Values</a>
+<input hidden class="toggle" type="checkbox" id="_toggle_3" /><label for="_toggle_3"></label>
+<ol>
+<li id="_sidebar_3.1"><a href="#sec-Primitive-values"><span class="spec-secid">3.1</span>Primitive values</a>
+<input hidden class="toggle" type="checkbox" id="_toggle_3.1" /><label for="_toggle_3.1"></label>
+<ol>
+<li id="_sidebar_3.1.1"><a href="#sec-Null"><span class="spec-secid">3.1.1</span>Null</a></li>
+<li id="_sidebar_3.1.2"><a href="#sec-Boolean"><span class="spec-secid">3.1.2</span>Boolean</a></li>
+<li id="_sidebar_3.1.3"><a href="#sec-Number"><span class="spec-secid">3.1.3</span>Number</a></li>
+<li id="_sidebar_3.1.4"><a href="#sec-String"><span class="spec-secid">3.1.4</span>String</a></li>
+</ol>
+</li>
+<li id="_sidebar_3.2"><a href="#sec-Compound-values"><span class="spec-secid">3.2</span>Compound values</a>
+<input hidden class="toggle" type="checkbox" id="_toggle_3.2" /><label for="_toggle_3.2"></label>
+<ol>
+<li id="_sidebar_3.2.1"><a href="#sec-Array"><span class="spec-secid">3.2.1</span>Array</a></li>
+<li id="_sidebar_3.2.2"><a href="#sec-Hash"><span class="spec-secid">3.2.2</span>Hash</a></li>
+</ol>
+</li>
+<li id="_sidebar_3.3"><a href="#sec-Variable"><span class="spec-secid">3.3</span>Variable</a></li>
+<li id="_sidebar_3.4"><a href="#sec-Function"><span class="spec-secid">3.4</span>Function</a></li>
+</ol>
+</li>
+<li id="_sidebar_4"><a href="#sec-Space"><span class="spec-secid">4</span>Space</a></li>
+<li id="_sidebar_5"><a href="#sec-Identifier"><span class="spec-secid">5</span>Identifier</a></li>
+<li id="_sidebar_index"><a href="#index"><span class="spec-secid">§</span>Index</a></li>
+</ol>
+</div>
+</div>
+</body>
+</html>

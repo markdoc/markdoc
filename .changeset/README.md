@@ -42,3 +42,7 @@ repository `markdoc/markdoc`, workflow `release.yml`, and environment `release`.
 Before the first release of `@markdoc/next.js` from this repository, update its
 trusted publisher from `markdoc/next.js` to `markdoc/markdoc` in the package's npm
 settings. Changesets publishes only versions missing from npm.
+
+The documentation site in `apps/docs` is private and is deployed separately.
+Docs-only changes do not need a changeset. The npm release workflow builds only
+library packages under `packages/`; CI also builds and lints the app.
