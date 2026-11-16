@@ -27,9 +27,11 @@ To run a package script directly, use `pnpm --filter @markdoc/markdoc <script>`.
 For example, `pnpm --filter @markdoc/markdoc test` runs only Markdoc's unit tests.
 
 The Next.js integration lives in `packages/next.js`. Run
-`pnpm exec turbo run test --filter=@markdoc/next.js` to build the local Markdoc
-dependency before running the integration's tests. Its JavaScript source is
-published directly, so it does not have a build script.
+`pnpm exec turbo run test test:types --filter=@markdoc/next.js` to build both
+packages and check the integration's runtime and published types. Edit the
+TypeScript files in `src`; the build generates JavaScript and declarations in
+the ignored `dist` directory. Run `pnpm exec turbo run type:check --filter=@markdoc/next.js`
+to check source types.
 
 The documentation site lives in `apps/docs`. Run
 `pnpm dev --filter=@markdoc/docs` to build its local dependencies and start Next.js,

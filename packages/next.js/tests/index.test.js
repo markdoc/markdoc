@@ -5,10 +5,10 @@ const babel = require('@babel/core');
 const Module = require('module');
 const React = require('react');
 const enhancedResolve = require('enhanced-resolve');
-const loader = require('../src/loader');
+const loader = require('../dist/loader');
 
 // Mock the runtime module using Jest
-jest.mock('@markdoc/next.js/runtime', () => require('../src/runtime'), {virtual: true});
+jest.mock('@markdoc/next.js/runtime', () => require('../dist/runtime'), {virtual: true});
 
 const source = fs.readFileSync(require.resolve('./fixture.md'), 'utf-8');
 const consoleErrorMock = jest.spyOn(console, 'error').mockImplementation(() => {});
@@ -350,7 +350,7 @@ test('import as frontend component', async () => {
 });
 
 test('Turbopack configuration', () => {
-  const withMarkdoc = require('../src/index.js');
+  const withMarkdoc = require('../dist/index.js');
 
   // Test basic Turbopack configuration
   const config = withMarkdoc()({
@@ -407,13 +407,13 @@ test.each([
   [/\.()\.(markdown|mdx)$/, ['*.markdown', '*.mdx']],
   ['*.markdown', ['*.markdown']],
 ])('Turbopack extension patterns for %s', (extension, expected) => {
-  const withMarkdoc = require('../src/index.js');
+  const withMarkdoc = require('../dist/index.js');
   const config = withMarkdoc({extension})({turbopack: {}});
   expect(Object.keys(config.turbopack.rules)).toEqual(expected);
 });
 
 test('Turbopack handles long pattern sources without a closing group', () => {
-  const withMarkdoc = require('../src/index.js');
+  const withMarkdoc = require('../dist/index.js');
   const extension = /\.md$/;
   Object.defineProperty(extension, 'source', {
     value: '\\.(' + '\\.(('.repeat(25000),

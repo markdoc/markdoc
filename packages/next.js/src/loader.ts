@@ -1,10 +1,11 @@
-const fs = require('fs');
-const path = require('path');
-const Markdoc = require('@markdoc/markdoc');
+import fs = require('fs');
+import path = require('path');
+import Markdoc = require('@markdoc/markdoc');
+import type { LoaderContext } from './types';
 
 const DEFAULT_SCHEMA_PATH = './markdoc';
 
-function getRelativeImportPath(from, to) {
+function getRelativeImportPath(from: string, to: string): string {
   const relative = path.relative(path.dirname(from), to);
   if (!relative) {
     return './';
@@ -17,8 +18,14 @@ function getRelativeImportPath(from, to) {
   return request.startsWith('.') ? request : `./${request}`;
 }
 
-async function gatherPartials(ast, schemaDir, tokenizer, parseOptions) {
-  let partials = {};
+async function gatherPartials(
+  this: LoaderContext,
+  ast: Markdoc.Node,
+  schemaDir: string,
+  tokenizer: Markdoc.Tokenizer,
+  parseOptions: Markdoc.ParserArgs
+): Promise<Record<string, string>> {
+  let partials: Record<string, string> = {};
 
   for (const node of ast.walk()) {
     const file = node.attributes.file;
@@ -31,7 +38,9 @@ async function gatherPartials(ast, schemaDir, tokenizer, parseOptions) {
     ) {
       const filepath = path.join(schemaDir, file);
       // parsing is not done here because then we have to serialize and reload from JSON at runtime
-      const content = await fs.promises.readFile(filepath, {encoding: 'utf8'});
+      const content = await fs.promises.readFile(filepath, {
+        encoding: 'utf8',
+      });
 
       if (content) {
         const tokens = tokenizer.tokenize(content);
@@ -39,7 +48,13 @@ async function gatherPartials(ast, schemaDir, tokenizer, parseOptions) {
         partials = {
           ...partials,
           [file]: content,
-          ...(await gatherPartials.call(this, ast, schemaDir, tokenizer, parseOptions)),
+          ...(await gatherPartials.call(
+            this,
+            ast,
+            schemaDir,
+            tokenizer,
+            parseOptions
+          )),
         };
       }
     }
@@ -49,7 +64,7 @@ async function gatherPartials(ast, schemaDir, tokenizer, parseOptions) {
 }
 
 // Returning a JSX object is what allows fast refresh to work
-async function load(source) {
+async function load(this: LoaderContext, source: string): Promise<string> {
   // https://webpack.js.org/concepts/module-resolution/
   const resolve = this.getResolve({
     // https://webpack.js.org/api/loaders/#thisgetresolve
@@ -61,7 +76,7 @@ async function load(source) {
     dir, // Root directory from Next.js (contains next.config.js)
     mode = 'static',
     schemaPath = DEFAULT_SCHEMA_PATH,
-    options: {slots = false, ...options} = {
+    options: { slots = false, ...options } = {
       allowComments: true,
     },
     nextjsExports = ['metadata', 'revalidate'],
@@ -70,14 +85,15 @@ async function load(source) {
   } = this.getOptions() || {};
 
   const tokenizer = new Markdoc.Tokenizer(options);
-  const parseOptions = {slots};
+  const parseOptions = { slots };
   const schemaDir = path.resolve(dir, schemaPath || DEFAULT_SCHEMA_PATH);
   const tokens = tokenizer.tokenize(source);
   const ast = Markdoc.parse(tokens, parseOptions);
 
   // Determine if this is a page file by checking if it starts with the provided directories
-  const isPage = (appDir && this.resourcePath.startsWith(appDir)) ||
-                 (pagesDir && this.resourcePath.startsWith(pagesDir));
+  const isPage =
+    (appDir && this.resourcePath.startsWith(appDir)) ||
+    (pagesDir && this.resourcePath.startsWith(pagesDir));
 
   // Grabs the path of the file relative to the `/{app,pages}` directory
   // to pass into the app props later.
@@ -100,14 +116,15 @@ async function load(source) {
   );
 
   // IDEA: consider making this an option per-page
-  const dataFetchingFunction = mode === 'server' ? 'getServerSideProps' : 'getStaticProps';
+  const dataFetchingFunction =
+    mode === 'server' ? 'getServerSideProps' : 'getStaticProps';
 
   let schemaCode = 'const schema = {};';
   try {
     const directoryExists = await fs.promises.stat(schemaDir);
 
     // This creates import strings that cause the config to be imported runtime
-    const importAtRuntime = async (variable) => {
+    const importAtRuntime = async (variable: string): Promise<string> => {
       const requests = [variable];
 
       // Turbopack module resolution currently requires explicit relative paths
@@ -125,6 +142,8 @@ async function load(source) {
       for (const request of requests) {
         try {
           const module = await resolve(schemaDir, request);
+          if (module === false)
+            throw new Error(`Unable to resolve '${request}'`);
           const modulePath = getRelativeImportPath(this.resourcePath, module);
           return `import * as ${variable} from '${modulePath}'`;
         } catch (error) {
@@ -132,7 +151,11 @@ async function load(source) {
         }
       }
 
-      console.debug('[Markdoc loader] Failed to resolve', { schemaDir, variable, error: lastError });
+      console.debug('[Markdoc loader] Failed to resolve', {
+        schemaDir,
+        variable,
+        error: lastError,
+      });
       return `const ${variable} = {};`;
     };
 
@@ -252,7 +275,11 @@ ${appDir && isPage ? nextjsExportsCode : ''}
 export const markdoc = {frontmatter};
 export default${appDir && isPage ? ' async' : ''} function MarkdocComponent(props) {
   const markdoc = ${
-    isPage ? (appDir ? 'await getMarkdocData()' : 'props.markdoc') : 'getMarkdocData()'
+    isPage
+      ? appDir
+        ? 'await getMarkdocData()'
+        : 'props.markdoc'
+      : 'getMarkdocData()'
   };
   // Only execute HMR code in development
   return renderers.react(markdoc.content, React, {
@@ -267,13 +294,15 @@ export default${appDir && isPage ? ' async' : ''} function MarkdocComponent(prop
   return result;
 }
 
-module.exports = async function loader(source) {
+async function loader(this: LoaderContext, source: string): Promise<void> {
   const callback = this.async();
   try {
     const result = await load.call(this, source);
     callback(null, result);
   } catch (error) {
     console.error(error);
-    callback(error);
+    callback(error as Error);
   }
-};
+}
+
+export = loader;
