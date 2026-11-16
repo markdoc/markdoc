@@ -1,9 +1,8 @@
-import Node from './node';
-import Function from './function';
-import Variable from './variable';
-import * as base from './base';
-
 import type { AstType } from '../types';
+import * as base from './base';
+import Function from './function';
+import Node from './node';
+import Variable from './variable';
 
 const AstTypes = {
   Function,

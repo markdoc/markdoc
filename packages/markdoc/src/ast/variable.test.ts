@@ -1,6 +1,6 @@
 import Variable from './variable';
 
-describe('variable', function () {
+describe('variable', () => {
   const config = {
     variables: {
       foo: {
@@ -10,19 +10,19 @@ describe('variable', function () {
     },
   };
 
-  it('basic resolution', function () {
+  it('basic resolution', () => {
     const example = new Variable(['foo', 'bar']);
     const output = example.resolve(config);
     expect(output).toEqual('example');
   });
 
-  it('resolution with a number in the path', function () {
+  it('resolution with a number in the path', () => {
     const example = new Variable(['foo', 'baz', 1, 'qux']);
     const output = example.resolve(config);
     expect(output).toEqual('value');
   });
 
-  it('resolution with a function', function () {
+  it('resolution with a function', () => {
     function variables(path) {
       expect(path).toDeepEqual(['foo', 'bar']);
       return 'example';

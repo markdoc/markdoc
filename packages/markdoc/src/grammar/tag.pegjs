@@ -13,7 +13,7 @@ TopLevelValue =
 
 Annotation =
   attributes:TagAttributes _* {
-  	return {type: 'annotation', meta: {attributes}}
+    return {type: 'annotation', meta: {attributes}}
   }
   
 TagOpen =
@@ -23,13 +23,13 @@ TagOpen =
   )?
   attributes:TagAttributes? _*
   close:'/'? {
-  	if (primary) {
+    if (primary) {
       attributes = attributes || [];
       attributes.unshift({type: 'attribute', name: 'primary', value: primary});
     }
 
     const [type, nesting] = close ? ['tag', 0] : ['tag_open', 1];
-  	return {type, nesting, meta: {tag, attributes}};
+    return {type, nesting, meta: {tag, attributes}};
   }
   
 TagClose =
@@ -68,7 +68,7 @@ TagAttribute =
   name:Identifier
   '='
   value:Value {
-  	return {type: 'attribute', name, value};
+    return {type: 'attribute', name, value};
   }
 
 Function =

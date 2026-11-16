@@ -1,8 +1,7 @@
 import Node from './ast/node';
 import transforms from './transforms/index';
-import { OPEN } from './utils';
-
 import type { AttributeValue, NodeType, ParserArgs, Token } from './types';
+import { OPEN } from './utils';
 
 const mappings: Record<string, string> = {
   ordered_list: 'list',
@@ -27,6 +26,7 @@ function annotate(node: Node, attributes: AttributeValue[]) {
         continue;
       }
 
+      // biome-ignore lint/suspicious/noPrototypeBuiltins: Object.hasOwn requires ES2022; Markdoc targets ES2021.
       if (Object.prototype.hasOwnProperty.call(node.attributes, name))
         node.errors.push({
           id: 'duplicate-attribute',
@@ -70,7 +70,7 @@ function handleAttrs(token: Token, type: string) {
     case 'text':
     case 'code':
     case 'comment':
-      return { content: (token.meta || {}).variable || token.content };
+      return { content: token.meta?.variable || token.content };
     case 'fence': {
       // fence tokens always have `info` set (empty string if unused)
       const [language] = token.info!.split(' ', 1);
@@ -83,7 +83,7 @@ function handleAttrs(token: Token, type: string) {
       if (token.attrs) {
         const attrs = Object.fromEntries(token.attrs);
 
-        let align;
+        let align: 'left' | 'center' | 'right' | undefined;
         if (attrs.style) {
           const style = String(attrs.style);
           if (style.includes('left')) {
@@ -112,7 +112,7 @@ function handleToken(
   file?: string,
   handleSlots?: boolean,
   addLocation?: boolean,
-  inlineParent?: Node
+  inlineParent?: Node,
 ) {
   if (token.type === 'frontmatter') {
     nodes[0].attributes.frontmatter = token.content;
@@ -161,7 +161,7 @@ function handleToken(
     typeName as NodeType,
     attrs,
     undefined,
-    tag || undefined
+    tag || undefined,
   );
   const { position = {} } = token;
 

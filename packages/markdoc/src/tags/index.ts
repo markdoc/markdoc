@@ -1,7 +1,7 @@
-import { tagIf, tagElse } from './conditional';
+import { tagElse, tagIf } from './conditional';
 import { partial } from './partial';
-import { table } from './table';
 import { slot } from './slot';
+import { table } from './table';
 
 export default {
   else: tagElse,

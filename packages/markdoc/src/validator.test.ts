@@ -1,12 +1,12 @@
-import Markdoc, { Node, Tag, nodes } from '../index';
+import Markdoc, { Node, nodes, Tag } from '../index';
 import type { Config, ValidationError } from './types';
 
 function validate(string, config) {
   return Markdoc.validate(Markdoc.parse(string), config);
 }
 
-describe('validate', function () {
-  describe('prototype-safe attributes', function () {
+describe('validate', () => {
+  describe('prototype-safe attributes', () => {
     let config: Config;
     let customValidate: jasmine.Spy;
     const unsafe = 'javascript:alert(1)';
@@ -18,7 +18,7 @@ describe('validate', function () {
       },
     };
 
-    beforeEach(function () {
+    beforeEach(() => {
       customValidate = jasmine.createSpy('validate').and.callFake((value) =>
         value === trusted
           ? []
@@ -28,7 +28,7 @@ describe('validate', function () {
                 level: 'critical',
                 message: 'Untrusted URL',
               },
-            ]
+            ],
       );
       config = {
         tags: {
@@ -49,7 +49,7 @@ describe('validate', function () {
       };
     });
 
-    it('validates direct values with the pattern and custom validator', function () {
+    it('validates direct values with the pattern and custom validator', () => {
       const ast = Markdoc.parse(`{% embed src="${unsafe}" /%}`);
       expect(Markdoc.validate(ast, config)).toDeepEqualSubset([
         { error: { id: 'attribute-value-invalid', level: 'critical' } },
@@ -58,18 +58,18 @@ describe('validate', function () {
       expect(customValidate).toHaveBeenCalledWith(
         unsafe,
         jasmine.anything(),
-        'src'
+        'src',
       );
     });
 
-    it('enforces the URL schema when only errors and critical findings block rendering', function () {
+    it('enforces the URL schema when only errors and critical findings block rendering', () => {
       delete config.tags!.embed.attributes!.src.validate;
       const render = (source: string) => {
         const ast = Markdoc.parse(source);
         const findings = Markdoc.validate(ast, config);
         if (
           findings.some(({ error }) =>
-            ['error', 'critical'].includes(error.level)
+            ['error', 'critical'].includes(error.level),
           )
         )
           return null;
@@ -79,11 +79,11 @@ describe('validate', function () {
       expect(render(`{% embed src="${unsafe}" /%}`)).toBeNull();
       expect(render(`{% embed __proto__={src:"${unsafe}"} /%}`)).toBeNull();
       expect(render(`{% embed src="${trusted}" /%}`)).toBe(
-        `<article><iframe src="${trusted}"></iframe></article>`
+        `<article><iframe src="${trusted}"></iframe></article>`,
       );
     });
 
-    it('blocks prototype attribute smuggling before rendering', function () {
+    it('blocks prototype attribute smuggling before rendering', () => {
       const ast = Markdoc.parse(`{% embed __proto__={src:"${unsafe}"} /%}`);
       expect(Markdoc.validate(ast, config)).toDeepEqualSubset([
         { error: { id: 'attribute-name-invalid', level: 'critical' } },
@@ -100,7 +100,7 @@ describe('validate', function () {
       });
     });
 
-    it('still applies type validation to own values', function () {
+    it('still applies type validation to own values', () => {
       const ast = Markdoc.parse('{% embed src=42 /%}');
       expect(Markdoc.validate(ast, config)).toDeepEqualSubset([
         { error: { id: 'attribute-type-invalid', level: 'critical' } },
@@ -109,9 +109,9 @@ describe('validate', function () {
       ]);
     });
 
-    it('validates an unsafe own value despite a smuggling attempt', function () {
+    it('validates an unsafe own value despite a smuggling attempt', () => {
       const ast = Markdoc.parse(
-        `{% embed __proto__={src:"${trusted}"} src="${unsafe}" /%}`
+        `{% embed __proto__={src:"${trusted}"} src="${unsafe}" /%}`,
       );
       expect(Markdoc.validate(ast, config)).toDeepEqualSubset([
         { error: { id: 'attribute-name-invalid', level: 'critical' } },
@@ -121,13 +121,13 @@ describe('validate', function () {
       expect(customValidate).toHaveBeenCalledWith(
         unsafe,
         jasmine.anything(),
-        'src'
+        'src',
       );
     });
 
-    it('validates and renders an own value despite a smuggling attempt', function () {
+    it('validates and renders an own value despite a smuggling attempt', () => {
       const ast = Markdoc.parse(
-        `{% embed __proto__={src:"${unsafe}"} src="${trusted}" /%}`
+        `{% embed __proto__={src:"${unsafe}"} src="${trusted}" /%}`,
       );
       expect(Markdoc.validate(ast, config)).toDeepEqualSubset([
         { error: { id: 'attribute-name-invalid', level: 'critical' } },
@@ -135,14 +135,14 @@ describe('validate', function () {
       expect(customValidate).toHaveBeenCalledWith(
         trusted,
         jasmine.anything(),
-        'src'
+        'src',
       );
       expect(
-        Markdoc.renderers.html(Markdoc.transform(ast.children[0], config))
+        Markdoc.renderers.html(Markdoc.transform(ast.children[0], config)),
       ).toBe(`<iframe src="${trusted}"></iframe>`);
     });
 
-    it('ignores inherited attributes on a programmatically modified node', function () {
+    it('ignores inherited attributes on a programmatically modified node', () => {
       const node = new Node('tag', {}, [], 'embed');
       node.attributes = Object.create({ src: unsafe });
       expect(Markdoc.validate(node, config)).toDeepEqualSubset([
@@ -150,18 +150,18 @@ describe('validate', function () {
       ]);
       expect(node.transformAttributes(config).src).toBeUndefined();
       expect(Markdoc.renderers.html(Markdoc.transform(node, config))).toBe(
-        '<iframe></iframe>'
+        '<iframe></iframe>',
       );
     });
 
-    it('applies defaults instead of inherited values', function () {
+    it('applies defaults instead of inherited values', () => {
       config.tags!.embed.attributes!.src.default = trusted;
       const node = new Node('tag', {}, [], 'embed');
       node.attributes = Object.create({ src: unsafe });
       expect(node.transformAttributes(config).src).toBe(trusted);
     });
 
-    it('rejects undeclared attributes whose names exist on Object.prototype', function () {
+    it('rejects undeclared attributes whose names exist on Object.prototype', () => {
       const ast = Markdoc.parse('{% embed toString="value" /%}');
       expect(Markdoc.validate(ast, config)).toDeepEqualSubset([
         { error: { id: 'attribute-undefined', level: 'error' } },
@@ -169,18 +169,18 @@ describe('validate', function () {
       ]);
     });
 
-    it('resolves variables in prototype-free attribute dictionaries', function () {
+    it('resolves variables in prototype-free attribute dictionaries', () => {
       config.variables = { url: trusted };
       const ast = Markdoc.parse('{% embed src=$url /%}');
       expect(Markdoc.validate(ast.resolve(config), config)).toEqual([]);
       expect(Markdoc.transform(ast.children[0], config)).toDeepEqual(
-        new Tag('iframe', { src: trusted })
+        new Tag('iframe', { src: trusted }),
       );
     });
   });
 
-  describe('function validation', function () {
-    it('ensures that function exists', function () {
+  describe('function validation', () => {
+    it('ensures that function exists', () => {
       const example = '{% foo bar=baz() /%}';
       const output = validate(example, {
         validation: { validateFunctions: true },
@@ -203,7 +203,7 @@ describe('validate', function () {
       ]);
     });
 
-    describe('return type checking', function () {
+    describe('return type checking', () => {
       const example = '{% foo bar=baz() /%}';
       const schema = {
         validation: { validateFunctions: true },
@@ -242,7 +242,7 @@ describe('validate', function () {
         },
       };
 
-      it('correctly handles union types', function () {
+      it('correctly handles union types', () => {
         const example = '{% union-tag-1 foo=withUnion() bar=withUnion() /%}';
         expect(validate(example, schema)).toEqual([]);
 
@@ -258,7 +258,7 @@ describe('validate', function () {
         ]);
       });
 
-      it('correctly handles return types for nested function calls', function () {
+      it('correctly handles return types for nested function calls', () => {
         const example = '{% foo bar=nested(baz(), number()) /%}';
         expect(validate(example, schema)).toEqual([]);
 
@@ -279,11 +279,11 @@ describe('validate', function () {
         ]);
       });
 
-      it('accepts a correct return type', function () {
+      it('accepts a correct return type', () => {
         expect(validate(example, schema)).toEqual([]);
       });
 
-      it('correctly handles no return type', function () {
+      it('correctly handles no return type', () => {
         const modifiedSchema = {
           ...schema,
           functions: { baz: {} },
@@ -292,7 +292,7 @@ describe('validate', function () {
         expect(validate(example, modifiedSchema)).toEqual([]);
       });
 
-      it('identifies an incorrect return type', function () {
+      it('identifies an incorrect return type', () => {
         const modifiedSchema = {
           ...schema,
           functions: { baz: { returns: Number } },
@@ -303,7 +303,7 @@ describe('validate', function () {
       });
     });
 
-    describe('checks parameters', function () {
+    describe('checks parameters', () => {
       const schema = {
         validation: { validateFunctions: true },
         functions: {
@@ -335,13 +335,13 @@ describe('validate', function () {
         },
       };
 
-      it('with a missing optional parameter', function () {
+      it('with a missing optional parameter', () => {
         expect(validate('{% foo bar=qux() /%}', schema)).toEqual([]);
       });
 
-      it('with a missing required parameter', function () {
+      it('with a missing required parameter', () => {
         expect(
-          validate('{% foo bar=requiredParam() /%}', schema)
+          validate('{% foo bar=requiredParam() /%}', schema),
         ).toDeepEqualSubset([
           {
             error: {
@@ -352,20 +352,20 @@ describe('validate', function () {
         ]);
       });
 
-      describe('accepts defined parameters', function () {
-        it('with keyed parameter', function () {
+      describe('accepts defined parameters', () => {
+        it('with keyed parameter', () => {
           expect(
-            validate('{% foo bar=qux(test="example") /%}', schema)
+            validate('{% foo bar=qux(test="example") /%}', schema),
           ).toEqual([]);
         });
       });
 
-      it('ignores parameters when there is no typing', function () {
+      it('ignores parameters when there is no typing', () => {
         expect(validate('{% foo bar=noTyping(foo=1) /%}', schema)).toEqual([]);
       });
 
-      describe('rejects undeclared parameters', function () {
-        it('with a keyed parameter', function () {
+      describe('rejects undeclared parameters', () => {
+        it('with a keyed parameter', () => {
           const output = validate('{% foo bar=baz(foo=1) /%}', schema);
           expect(output).toDeepEqualSubset([
             {
@@ -378,7 +378,7 @@ describe('validate', function () {
           ]);
         });
 
-        it('with a positional parameter', function () {
+        it('with a positional parameter', () => {
           expect(validate('{% foo bar=baz(1) /%}', schema)).toDeepEqualSubset([
             {
               type: 'tag',
@@ -390,7 +390,7 @@ describe('validate', function () {
           ]);
 
           expect(
-            validate('{% foo bar=baz(1, test=2) /%}', schema)
+            validate('{% foo bar=baz(1, test=2) /%}', schema),
           ).toDeepEqualSubset([
             {
               type: 'tag',
@@ -424,7 +424,7 @@ describe('validate', function () {
 bar
 {% /baz %}
       `,
-        config
+        config,
       );
       expect(block).toEqual([]);
     });
@@ -439,7 +439,7 @@ bar
 bar
 {% /foo %}
       `,
-        config
+        config,
       );
       expect(wrong[0]?.error.id).toEqual('tag-placement-invalid');
       expect(wrong[0]?.error.message).toContain('should be inline');
@@ -452,7 +452,7 @@ bar
 bar
 {% /bar %}
 `,
-        config
+        config,
       );
       expect(correct).toEqual([]);
       const wrong = validate(`this is inline {% bar %}bar{% /bar %}`, config);
@@ -722,7 +722,7 @@ bar
     it('simple case', () => {
       const example = `{% foo bar={baz: 3} /%}`;
 
-      function validator(value, config, name) {
+      function validator(value, _config, name) {
         return value.baz < 5
           ? [
               {
@@ -753,7 +753,7 @@ bar
 
       const errs = validate(example, config);
       expect(errs[0].error.message).toEqual(
-        "The value of 'bar.baz' must be less than five"
+        "The value of 'bar.baz' must be less than five",
       );
     });
 
@@ -761,7 +761,7 @@ bar
       const example = `{% foo bar={baz: 3} /%}`;
 
       class CustomType {
-        validate(value, config, name) {
+        validate(value, _config, name) {
           return value.baz < 5
             ? [
                 {
@@ -791,7 +791,7 @@ bar
 
       const errs = validate(example, config);
       expect(errs[0].error.message).toEqual(
-        "The value of 'bar.baz' must be less than five"
+        "The value of 'bar.baz' must be less than five",
       );
     });
   });
@@ -830,7 +830,7 @@ bar
         nodes: {
           heading: {
             ...Markdoc.nodes.heading,
-            validate(node, config) {
+            validate(_node, config) {
               if (config.validation.parents.find((p) => p.tag === 'foo'))
                 return [
                   {
@@ -864,7 +864,7 @@ bar
         tags: {
           foo: {},
           bar: {
-            validate(node, config) {
+            validate(_node, config) {
               const parents = config?.validation?.parents?.map((p) => p.type);
               expect(parents).toDeepEqual([
                 'document',

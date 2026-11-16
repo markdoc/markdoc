@@ -1,13 +1,12 @@
-import Tag from '../../tag';
-import { RenderableTreeNode, RenderableTreeNodes } from '../../types';
-
 import type { ComponentType } from 'react';
+import Tag from '../../tag';
+import type { RenderableTreeNode, RenderableTreeNodes } from '../../types';
 
 type Component = ComponentType<unknown>;
 
 function tagName(
   name: string,
-  components: Record<string, Component> | ((string: string) => Component)
+  components: Record<string, Component> | ((string: string) => Component),
 ): string | Component {
   return typeof name !== 'string'
     ? 'Fragment'
@@ -56,13 +55,13 @@ function render(node: RenderableTreeNodes): string {
 
   return `React.createElement(
     tagName(${JSON.stringify(name)}, components),
-    ${Object.keys(attrs).length == 0 ? 'null' : deepRender(attrs)},
+    ${Object.keys(attrs).length === 0 ? 'null' : deepRender(attrs)},
     ${renderArray(children)})`;
 }
 
 export default function reactStatic(
   node: RenderableTreeNodes,
-  { resolveTagName = tagName }: { resolveTagName?: typeof tagName } = {}
+  { resolveTagName = tagName }: { resolveTagName?: typeof tagName } = {},
 ): string {
   // the resolveTagName function *must* be called tagName
   // throw an error if it does not

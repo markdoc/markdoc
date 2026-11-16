@@ -1,6 +1,6 @@
 import Tokenizer from '..';
 
-describe('MarkdownIt Annotations plugin', function () {
+describe('MarkdownIt Annotations plugin', () => {
   const tokenizer = new Tokenizer();
 
   function parse(example) {
@@ -8,8 +8,8 @@ describe('MarkdownIt Annotations plugin', function () {
     return tokenizer.tokenize(content);
   }
 
-  describe('parsing containers in content', function () {
-    it('with a simple container', function () {
+  describe('parsing containers in content', () => {
+    it('with a simple container', () => {
       const example = parse(`
       {% test %}
       This is a test
@@ -43,7 +43,7 @@ describe('MarkdownIt Annotations plugin', function () {
       ]);
     });
 
-    it('with an ID and class', function () {
+    it('with an ID and class', () => {
       const example = parse(`
       {% test #foo .bar %}
       This is a test
@@ -67,7 +67,7 @@ describe('MarkdownIt Annotations plugin', function () {
       ]);
     });
 
-    it('with a self-closing container', function () {
+    it('with a self-closing container', () => {
       const example = parse(`This is a test\n{% test /%}`);
       expect(example).toDeepEqualSubset([
         { type: 'paragraph_open' },
@@ -82,7 +82,7 @@ describe('MarkdownIt Annotations plugin', function () {
       ]);
     });
 
-    it('with a self-closing container with annotations', function () {
+    it('with a self-closing container with annotations', () => {
       const example = parse(`
       This is a test
       {% test #foo .bar baz=1 /%}
@@ -110,7 +110,7 @@ describe('MarkdownIt Annotations plugin', function () {
       ]);
     });
 
-    describe('multiline', function () {
+    describe('multiline', () => {
       const basicExample = [
         {
           type: 'tag_open',
@@ -134,7 +134,7 @@ describe('MarkdownIt Annotations plugin', function () {
         { type: 'tag_close', nesting: -1, meta: { tag: 'test' } },
       ];
 
-      it('basic', function () {
+      it('basic', () => {
         const example = parse(`
         {% test #foo .bar
           baz=1 %}
@@ -150,7 +150,7 @@ describe('MarkdownIt Annotations plugin', function () {
         expect(example[2].children.length).toEqual(1);
       });
 
-      it('basic with symbols on separate lines', function () {
+      it('basic with symbols on separate lines', () => {
         const example = parse(`
         {%
           test #foo .bar
@@ -168,7 +168,7 @@ describe('MarkdownIt Annotations plugin', function () {
         expect(example[2].children.length).toEqual(1);
       });
 
-      it('inside a blockquote', function () {
+      it('inside a blockquote', () => {
         const example = parse(`
         > {% test #foo .bar
         >   baz=1 %}
@@ -187,7 +187,7 @@ describe('MarkdownIt Annotations plugin', function () {
         expect(example.length).toEqual(7);
       });
 
-      it('followed by content after the blockquote', function () {
+      it('followed by content after the blockquote', () => {
         const example = parse(`
         > {% test #foo .bar
         >   baz=1 %}
@@ -216,7 +216,7 @@ describe('MarkdownIt Annotations plugin', function () {
         expect(example.length).toEqual(10);
       });
 
-      it('inside a list item', function () {
+      it('inside a list item', () => {
         // Not dedented: list continuation depends on the indentation
         const example = tokenizer.tokenize(`- {% test #foo .bar
     baz=1 %}
@@ -236,7 +236,7 @@ describe('MarkdownIt Annotations plugin', function () {
         expect(example.length).toEqual(9);
       });
 
-      it('inside a list item inside a blockquote', function () {
+      it('inside a list item inside a blockquote', () => {
         const example = tokenizer.tokenize(`> - {% test #foo .bar
 >     baz=1 %}
 >   This is a test
@@ -258,7 +258,7 @@ describe('MarkdownIt Annotations plugin', function () {
       });
     });
 
-    it('with a single-line container inside a blockquote', function () {
+    it('with a single-line container inside a blockquote', () => {
       const example = parse(`
       > {% test #foo .bar baz=1 %}
       > This is a test
@@ -295,8 +295,8 @@ describe('MarkdownIt Annotations plugin', function () {
       expect(example.length).toEqual(7);
     });
 
-    describe('inline', function () {
-      it('on a line by itself', function () {
+    describe('inline', () => {
+      it('on a line by itself', () => {
         const example = parse('{% foo %}bar{% /foo %}');
         expect(example).toDeepEqualSubset([
           { type: 'paragraph_open' },
@@ -317,7 +317,7 @@ describe('MarkdownIt Annotations plugin', function () {
         ]);
       });
 
-      it('with a paragraph', function () {
+      it('with a paragraph', () => {
         const example = parse('Example {% foo %}bar{% /foo %} baz');
 
         expect(example).toDeepEqualSubset([
@@ -352,9 +352,9 @@ describe('MarkdownIt Annotations plugin', function () {
         ]);
       });
 
-      it('with two in succession', function () {
+      it('with two in succession', () => {
         const example = parse(
-          'Example {% foo %}bar{% /foo %}{% test %}test{% /test %} baz'
+          'Example {% foo %}bar{% /foo %}{% test %}test{% /test %} baz',
         );
         expect(example).toDeepEqualSubset([
           { type: 'paragraph_open' },
@@ -395,9 +395,9 @@ describe('MarkdownIt Annotations plugin', function () {
         ]);
       });
 
-      it('with markdown inside', function () {
+      it('with markdown inside', () => {
         const example = parse(
-          'Example {% foo %}this is a *test*{% /foo %} baz'
+          'Example {% foo %}this is a *test*{% /foo %} baz',
         );
         expect(example).toDeepEqualSubset([
           { type: 'paragraph_open' },
@@ -429,8 +429,8 @@ describe('MarkdownIt Annotations plugin', function () {
       });
     });
 
-    describe('fence', function () {
-      it('simple with no tags', function () {
+    describe('fence', () => {
+      it('simple with no tags', () => {
         const example = parse('```\nhello\n```');
         expect(example).toDeepEqualSubset([
           {
@@ -445,7 +445,7 @@ describe('MarkdownIt Annotations plugin', function () {
         ]);
       });
 
-      it('simple with one tag', function () {
+      it('simple with one tag', () => {
         const example = parse('```\nhello {% foo %}bar{% /foo %}\n```');
         expect(example).toDeepEqualSubset([
           {
@@ -472,7 +472,7 @@ describe('MarkdownIt Annotations plugin', function () {
         ]);
       });
 
-      it('unclosed tag', function () {
+      it('unclosed tag', () => {
         const example = parse('```\nhello {%\n```');
         // unclosed tags should not result in crashes
         expect(example).toDeepEqualSubset([
@@ -490,8 +490,8 @@ describe('MarkdownIt Annotations plugin', function () {
     });
   });
 
-  describe('parsing inline annotations', function () {
-    it('with a header', function () {
+  describe('parsing inline annotations', () => {
+    it('with a header', () => {
       const example = parse('# This is a test {% #foo .bar .baz %}');
       expect(example).toDeepEqualSubset([
         { type: 'heading_open' },
@@ -516,7 +516,7 @@ describe('MarkdownIt Annotations plugin', function () {
       ]);
     });
 
-    it('with a header and keys', function () {
+    it('with a header and keys', () => {
       const example = parse('# This is a test {% #foo .bar .baz foo=2 %}');
       expect(example).toDeepEqualSubset([
         { type: 'heading_open' },

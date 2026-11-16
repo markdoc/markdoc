@@ -1,17 +1,17 @@
-import { findTagEnd, OPEN, CLOSE, parseTags } from '../../utils';
-import { parse, SyntaxError } from '../../grammar/tag';
-import Variable from '../../ast/variable';
-import Function from '../../ast/function';
-
-import type { AttributeValue, Token } from '../../types';
 import type {
   Delimiter,
   MarkdownIt,
-  StateBlock,
-  StateInline,
-  StateCore,
   Token as MarkdownItToken,
+  StateBlock,
+  StateCore,
+  StateInline,
 } from 'markdown-it';
+import Function from '../../ast/function';
+import Variable from '../../ast/variable';
+import { parse, SyntaxError } from '../../grammar/tag';
+
+import type { AttributeValue, Token } from '../../types';
+import { CLOSE, findTagEnd, OPEN, parseTags } from '../../utils';
 
 type StateWithDelimiters = (StateBlock | StateInline) & {
   delimiters?: Delimiter[];
@@ -28,7 +28,7 @@ type FenceToken = Omit<MarkdownItToken, 'children' | 'meta'> &
 function createToken(
   state: StateWithDelimiters,
   content: string,
-  contentStart?: number
+  contentStart?: number,
 ): Token {
   try {
     const { type, meta, nesting = 0 } = parse(content, { Variable, Function });
@@ -64,8 +64,8 @@ function createToken(
 function block(
   state: StateBlock,
   startLine: number,
-  endLine: number,
-  silent: boolean
+  _endLine: number,
+  silent: boolean,
 ): boolean {
   const start = state.bMarks[startLine] + state.tShift[startLine];
   const finish = state.eMarks[startLine];
@@ -142,7 +142,7 @@ function core(state: StateCore) {
 
     if (
       token?.meta?.attributes?.find(
-        (attr: AttributeValue) => attr.name === 'process' && !attr.value
+        (attr: AttributeValue) => attr.name === 'process' && !attr.value,
       )
     )
       continue;

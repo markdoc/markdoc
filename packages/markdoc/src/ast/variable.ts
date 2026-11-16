@@ -1,4 +1,4 @@
-import type { Config, AstType } from '../types';
+import type { AstType, Config } from '../types';
 
 export default class Variable implements AstType {
   readonly $$mdtype = 'Variable';

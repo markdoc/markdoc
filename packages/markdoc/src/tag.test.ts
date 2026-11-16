@@ -1,6 +1,6 @@
 import Tag from './tag';
 
-describe('Tag.isTag', function () {
+describe('Tag.isTag', () => {
   it('should detect when value is not a tag', () => {
     expect(Tag.isTag(undefined)).toBe(false);
     expect(Tag.isTag(null)).toBe(false);
