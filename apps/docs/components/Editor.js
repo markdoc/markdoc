@@ -33,7 +33,7 @@ export default function Editor({ code, onChange, options, errors, cursor }) {
   React.useEffect(() => {
     if (errors.length) {
       const markers = [];
-      const editor = ref.current?.editor;
+      const editor = ref.current;
 
       if (editor) {
         errors.forEach((error) => {
@@ -69,13 +69,16 @@ export default function Editor({ code, onChange, options, errors, cursor }) {
   return (
     <>
       <CodeMirror
-        ref={ref}
         value={code}
         options={codeMirrorOptions}
         onBeforeChange={onBeforeChange}
+        editorDidMount={(editor) => {
+          ref.current = editor;
+        }}
         editorWillUnmount={() => {
           // react-codemirror2 leaves its DOM behind during Strict Mode remounts.
-          ref.current?.editor?.getWrapperElement().remove();
+          ref.current?.getWrapperElement().remove();
+          ref.current = null;
         }}
         cursor={cursor}
       />
