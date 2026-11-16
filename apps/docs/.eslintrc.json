@@ -1,6 +1,0 @@
-{
-  "extends": ["eslint:recommended", "next"],
-  "rules": {
-    "import/no-anonymous-default-export": "off"
-  }
-}

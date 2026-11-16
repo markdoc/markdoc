@@ -1,6 +1,5 @@
 ---
 title: Common examples
-description:
 ---
 
 # {% $markdoc.frontmatter.title %}

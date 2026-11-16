@@ -1,5 +1,6 @@
-/* global Prism */
-import 'prismjs';
+'use client';
+
+import Prism from '../lib/prism';
 
 import * as React from 'react';
 import copy from 'copy-to-clipboard';

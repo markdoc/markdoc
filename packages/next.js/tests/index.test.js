@@ -3,6 +3,7 @@ const fs = require('fs');
 const path = require('path');
 const babel = require('@babel/core');
 const Module = require('module');
+const os = require('os');
 const React = require('react');
 const enhancedResolve = require('enhanced-resolve');
 const loader = require('../dist/loader');
@@ -122,7 +123,7 @@ function options(config = {}) {
           resolve(context, file, (err, result) => (err ? rej(err) : res(result)))
         ).then(normalizeAbsolutePath);
     },
-    resourcePath: path.join(dir, 'test', 'index.md'),
+    resourcePath: path.join(dir, 'test', config.appDir ? 'page.md' : 'index.md'),
   };
 
   return webpackThis;
@@ -207,11 +208,7 @@ test('app router', async () => {
 
   expect(page).toEqual({
     default: expect.any(Function),
-    markdoc: {
-      frontmatter: {
-        title: 'Custom title',
-      },
-    },
+    metadata: {title: 'Custom title'},
   });
 
   expect(await page.default({})).toEqual(
@@ -219,14 +216,111 @@ test('app router', async () => {
   );
 });
 
+test('app router metadata uses flat title and description without other frontmatter', async () => {
+  const context = options({appDir: true});
+  const output = await callLoader(context, source.replace('---', '---\ndescription: A custom description\nauthor: Someone\ndraft: true'));
+  expect(evaluate(output, context.resourcePath).metadata).toEqual({
+    title: 'Custom title',
+    description: 'A custom description',
+  });
+});
+
 test('app router metadata', async () => {
   const webpackThis = options({appDir: true});
   const output = await callLoader(
     webpackThis,
-    source.replace('---', '---\nmetadata:\n  title: Metadata title')
+    source.replace('---', '---\ndescription: A custom description\nnextjs:\n  metadata:\n    title: Metadata title\n    alternates:\n      canonical: /test\n  revalidate: 3600')
   );
 
-  expect(output).toContain('export const metadata = frontmatter.nextjs?.metadata;');
+  expect(evaluate(output, webpackThis.resourcePath)).toEqual({
+    default: expect.any(Function),
+    metadata: {title: 'Metadata title', description: 'A custom description', alternates: {canonical: '/test'}},
+    revalidate: 3600,
+  });
+  expect(output).toContain('export const revalidate = 3600;');
+  expect(output).not.toContain('export const markdoc');
+  expect(await evaluate(output, webpackThis.resourcePath).default({})).toEqual(
+    React.createElement('article', undefined, React.createElement('h1', undefined, 'Custom title'))
+  );
+});
+
+test.each([
+  ['{}', {title: 'Custom title', description: 'A custom description'}],
+  ['{title: null, description: ""}', {title: null, description: ''}],
+  ['null', null],
+])('respects explicit metadata %s with flat defaults', async (metadata, expected) => {
+  const context = options({appDir: true});
+  const output = await callLoader(context, source.replace('---', `---\ndescription: A custom description\nnextjs:\n  metadata: ${metadata}`));
+  expect(evaluate(output, context.resourcePath).metadata).toEqual(expected);
+});
+
+test.each([
+  '# Hello',
+  '---\nnull\n---\n# Hello',
+  '---\nauthor: Someone\n---\n# Hello',
+])('omits metadata when no metadata fields are supplied: %s', async (source) => {
+  const context = options({appDir: true});
+  const output = await callLoader(context, source);
+  expect(evaluate(output, context.resourcePath)).toEqual({default: expect.any(Function)});
+});
+
+test('can exclude metadata from configured Next.js exports', async () => {
+  const context = options({appDir: true, nextjsExports: ['revalidate']});
+  const output = await callLoader(context, source.replace('---', '---\nnextjs:\n  metadata:\n    title: Metadata title\n  revalidate: 0'));
+  expect(evaluate(output, context.resourcePath)).toEqual({
+    default: expect.any(Function),
+    revalidate: 0,
+  });
+});
+
+test('supports configured static Next.js exports', async () => {
+  const context = options({appDir: true, nextjsExports: ['metadata', 'dynamic', 'runtime']});
+  const output = await callLoader(context, '---\nnextjs:\n  dynamic: force-static\n  runtime: nodejs\n---\n# Hello');
+  expect(evaluate(output, context.resourcePath)).toEqual({
+    default: expect.any(Function),
+    dynamic: 'force-static',
+    runtime: 'nodejs',
+  });
+  expect(output).toContain('export const dynamic = "force-static";');
+  expect(output).not.toContain('export const metadata');
+});
+
+test.each(['app', 'src/app'])('supports native route files in %s under a monorepo', async (directory) => {
+  const context = options({appDir: true});
+  const appDir = path.join(__dirname, 'apps', 'docs', directory);
+  const originalOptions = context.getOptions();
+  context.getOptions = () => ({...originalOptions, appDir});
+  context.resourcePath = path.join(appDir, '(docs)', 'faq', 'page.md');
+  const output = await callLoader(context, source);
+  expect(output).toContain('const filepath = "/(docs)/faq/page.md";');
+  expect(await evaluate(output, context.resourcePath).default({})).toEqual(
+    React.createElement('article', undefined, React.createElement('h1', undefined, 'Custom title'))
+  );
+});
+
+test.each(['test/content.md', '_components/table.md', '../app-content/page.md'])(
+  'keeps colocated content %s as a synchronous component', async (filename) => {
+    const context = options({appDir: true});
+    context.resourcePath = path.join(context.getOptions().appDir, filename);
+    const output = await callLoader(context, source.replace('---', '---\nnextjs:\n  metadata:\n    title: Not a route'));
+    const component = evaluate(output, context.resourcePath);
+    expect(component.metadata).toBeUndefined();
+    expect(component.markdoc.frontmatter.title).toBe('Custom title');
+    expect(component.default({})).toEqual(
+      React.createElement('article', undefined, React.createElement('h1', undefined, 'Custom title'))
+    );
+  }
+);
+
+test('keeps Pages Router data fetching when both routers exist', async () => {
+  const context = options();
+  const originalOptions = context.getOptions();
+  context.getOptions = () => ({...originalOptions, appDir: path.join(__dirname, 'app')});
+  const output = await callLoader(context, source);
+  const page = evaluate(output, context.resourcePath);
+  expect(page.getStaticProps).toEqual(expect.any(Function));
+  expect((await page.getStaticProps({})).props.markdoc.file.path).toBe('/test/index.md');
+  expect(output).not.toContain('export const metadata');
 });
 
 test.each([
@@ -370,6 +464,7 @@ test('Turbopack configuration', () => {
   expect(mdRule.loaders).toHaveLength(1);
   expect(mdRule.loaders[0].loader).toContain('loader');
   expect(mdRule.as).toBe('*.js');
+  expect(JSON.parse(JSON.stringify(mdRule.loaders[0].options))).toEqual(mdRule.loaders[0].options);
 
   // Test that existing turbopack config is preserved
   const configWithExisting = withMarkdoc()({
@@ -399,6 +494,33 @@ test('Turbopack configuration', () => {
 
   expect(configWithCustomExt.turbopack.rules['*.markdown']).toBeDefined();
   expect(configWithCustomExt.turbopack.rules['*.mdx']).toBeDefined();
+  expect(configWithCustomExt.turbopack.rules['*.markdown'].loaders[0].options).not.toHaveProperty('extension');
+});
+
+test.each(['', 'src'])('discovers router directories for Turbopack and Webpack in %s', (prefix) => {
+  const withMarkdoc = require('../dist/index.js');
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'markdoc-next-'));
+  try {
+    const appDir = path.join(dir, prefix, 'app');
+    const pagesDir = path.join(dir, prefix, 'pages');
+    fs.mkdirSync(appDir, {recursive: true});
+    fs.mkdirSync(pagesDir, {recursive: true});
+    const config = withMarkdoc({dir})({turbopack: {}});
+    const expected = {dir, appDir, pagesDir};
+    expect(config.turbopack.rules['*.md'].loaders[0].options).toEqual(expected);
+    const webpack = config.webpack({module: {rules: []}}, {
+      dir,
+      defaultLoaders: {babel: {loader: 'babel-loader'}},
+    });
+    const [appRule, fallbackRule] = webpack.module.rules[0].oneOf;
+    expect(appRule.include).toBe(`${appDir}${path.sep}`);
+    expect(appRule.use).toHaveLength(1);
+    expect(appRule.use[0].options).toEqual(expected);
+    expect(fallbackRule.use[0]).toEqual({loader: 'babel-loader'});
+    expect(fallbackRule.use[1].options).toEqual(expected);
+  } finally {
+    fs.rmSync(dir, {recursive: true, force: true});
+  }
 });
 
 test.each([

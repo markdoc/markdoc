@@ -1,6 +1,5 @@
 ---
 title: Phases of rendering
-description:
 ---
 
 # {% $markdoc.frontmatter.title %}

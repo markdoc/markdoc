@@ -1,6 +1,6 @@
 /**
  * Note: we define a custom `document` type here in order to pass the
- * raw Markdoc source text to AST, to be consumed in _app. This is an
+ * raw Markdoc source text to the interactive document editor. This is an
  * atypical pattern for Markdoc applications.
  */
 import { Tag, nodes } from '@markdoc/markdoc';

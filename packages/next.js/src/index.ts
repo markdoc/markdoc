@@ -1,11 +1,36 @@
+import fs = require('node:fs');
+import path = require('node:path');
 import type { NextConfig } from 'next';
 import type * as Types from './types';
 
 type WebpackHook = NonNullable<NextConfig['webpack']>;
 type TurbopackRule = {
-  loaders: { loader: string; options: Types.MarkdocNextJsOptions }[];
+  loaders: { loader: string; options: Types.LoaderOptions }[];
   as: string;
 };
+
+function getLoaderOptions(
+  pluginOptions: Types.MarkdocNextJsOptions,
+  directory = pluginOptions.dir || process.cwd()
+): Types.LoaderOptions {
+  const dir = path.resolve(directory);
+  const findDirectory = (name: string): string | undefined =>
+    [path.join(dir, name), path.join(dir, 'src', name)].find((directory) =>
+      fs.existsSync(directory)
+    );
+
+  const { extension, ...loaderOptions } = pluginOptions;
+  return {
+    ...Object.fromEntries(
+      Object.entries({
+        appDir: findDirectory('app'),
+        pagesDir: findDirectory('pages'),
+        ...loaderOptions,
+      }).filter(([, value]) => value !== undefined)
+    ),
+    dir,
+  };
+}
 
 function getExtensionPatterns(extension: Types.ExtensionCondition): string[] {
   if (!(extension instanceof RegExp)) return [String(extension)];
@@ -50,9 +75,7 @@ function createTurbopackConfig(
         loaders: [
           {
             loader: require.resolve('./loader'),
-            options: {
-              ...pluginOptions,
-            },
+            options: getLoaderOptions(pluginOptions),
           },
         ],
         as: '*.js',
@@ -80,20 +103,26 @@ function withMarkdoc(pluginOptions: Types.MarkdocNextJsOptions = {}) {
         config: Parameters<WebpackHook>[0],
         options: Parameters<WebpackHook>[1]
       ) {
+        const loaderOptions = getLoaderOptions(pluginOptions, options.dir);
+        const markdocLoader = {
+          loader: require.resolve('./loader'),
+          options: loaderOptions,
+        };
         config.module.rules.push({
           test: extension,
-          use: [
-            // Adding the babel loader enables fast refresh
-            options.defaultLoaders.babel,
-            {
-              loader: require.resolve('./loader'),
-              options: {
-                appDir: options.defaultLoaders.babel.options.appDir,
-                pagesDir: options.defaultLoaders.babel.options.pagesDir,
-                ...pluginOptions,
-                dir: options.dir,
-              },
-            },
+          oneOf: [
+            // The generated module is already JavaScript. Next.js applies its
+            // App Router flight loader; the Pages Router compiler pass below
+            // would incorrectly reject Server Component metadata exports.
+            ...(loaderOptions.appDir
+              ? [
+                  {
+                    include: `${loaderOptions.appDir}${path.sep}`,
+                    use: [markdocLoader],
+                  },
+                ]
+              : []),
+            { use: [options.defaultLoaders.babel, markdocLoader] },
           ],
         });
 

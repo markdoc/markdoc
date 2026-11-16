@@ -3,16 +3,16 @@ const withMarkdoc = require('@markdoc/next.js');
 
 module.exports = withMarkdoc()({
   reactStrictMode: true,
-  experimental: {
-    outputFileTracingRoot: path.join(__dirname, '../..')
-  },
+  outputFileTracingRoot: path.join(__dirname, '../..'),
+  turbopack: { root: path.join(__dirname, '../..') },
   pageExtensions: ['js', 'md', 'mdoc'],
-  i18n: {
-    locales: ['en'],
-    defaultLocale: 'en'
-  },
   redirects() {
     return [
+      {
+        source: '/en/:path*',
+        destination: '/:path*',
+        permanent: true
+      },
       {
         source: '/docs',
         destination: '/docs/getting-started',

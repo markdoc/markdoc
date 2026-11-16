@@ -1,6 +1,5 @@
 ---
 title: Partials
-description:
 ---
 
 # {% $markdoc.frontmatter.title %}

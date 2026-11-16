@@ -1,6 +1,5 @@
 ---
 title: Nodes
-description:
 ---
 
 # {% $markdoc.frontmatter.title %}

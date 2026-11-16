@@ -1,6 +1,5 @@
 ---
 title: What is Markdoc?
-description:
 ---
 
 # {% $markdoc.frontmatter.title %}

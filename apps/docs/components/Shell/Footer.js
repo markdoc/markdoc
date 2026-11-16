@@ -1,3 +1,5 @@
+'use client';
+
 import React from 'react';
 
 import { AppLink as Link } from '../AppLink';

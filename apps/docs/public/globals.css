@@ -107,20 +107,16 @@
 
 
 html,
-body,
-#__next {
+body {
   height: 100%;
   padding: 0;
   margin: 0;
   font-family: var(--sans);
 }
 
-#__next {
-  /* https://www.joshwcomeau.com/css/custom-css-reset/ */
-  isolation: isolate;
-}
-
 body {
+  /* App Router renders directly into body, without the Pages Router #__next wrapper. */
+  isolation: isolate;
   color: var(--text);
   background: var(--light);
   font-family: var(--sans);

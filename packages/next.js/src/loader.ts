@@ -1,9 +1,29 @@
 import fs = require('fs');
 import path = require('path');
 import Markdoc = require('@markdoc/markdoc');
+import yaml = require('js-yaml');
 import type { LoaderContext } from './types';
 
 const DEFAULT_SCHEMA_PATH = './markdoc';
+
+function relativeResource(
+  directory: string | false | undefined,
+  resource: string
+): string | undefined {
+  if (!directory) return;
+  const relative = path.relative(directory, resource);
+  if (
+    path.isAbsolute(relative) ||
+    relative === '..' ||
+    relative.startsWith(`..${path.sep}`)
+  )
+    return;
+  return relative.split(path.sep).join('/');
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return value !== null && typeof value === 'object' && !Array.isArray(value);
+}
 
 function getRelativeImportPath(from: string, to: string): string {
   const relative = path.relative(path.dirname(from), to);
@@ -90,22 +110,20 @@ async function load(this: LoaderContext, source: string): Promise<string> {
   const tokens = tokenizer.tokenize(source);
   const ast = Markdoc.parse(tokens, parseOptions);
 
-  // Determine if this is a page file by checking if it starts with the provided directories
-  const isPage =
-    (appDir && this.resourcePath.startsWith(appDir)) ||
-    (pagesDir && this.resourcePath.startsWith(pagesDir));
-
-  // Grabs the path of the file relative to the `/{app,pages}` directory
-  // to pass into the app props later.
-  // This array access @ index 1 is safe since Next.js guarantees that
-  // all pages will be located under either {app,pages}/ or src/{app,pages}/
-  // https://nextjs.org/docs/app/building-your-application/configuring/src-directory
-  // Normalize to posix separators for consistent output across platforms.
-  // Undefined for non-page resources (e.g., .md imported as components).
-  const rawFilepath = this.resourcePath.split(appDir ? 'app' : 'pages')[1];
-  const filepath = rawFilepath
-    ? rawFilepath.split(path.sep).join(path.posix.sep)
-    : rawFilepath;
+  const appRelative = relativeResource(appDir, this.resourcePath);
+  const pagesRelative = relativeResource(pagesDir, this.resourcePath);
+  // App Router allows colocated content. Only page/layout files are route modules.
+  const isAppRoute =
+    appRelative !== undefined &&
+    /(^|\/)(page|layout)\.[^/]+$/.test(appRelative);
+  const isPagesRoute = pagesRelative !== undefined;
+  const isPage = isAppRoute || isPagesRoute;
+  const relative = isAppRoute
+    ? appRelative
+    : isPagesRoute
+      ? pagesRelative
+      : undefined;
+  const filepath = relative === undefined ? undefined : `/${relative}`;
 
   const partials = await gatherPartials.call(
     this,
@@ -183,8 +201,32 @@ async function load(this: LoaderContext, source: string): Promise<string> {
 
   this.addContextDependency(schemaDir);
 
+  const frontmatter = ast.attributes.frontmatter
+    ? yaml.load(ast.attributes.frontmatter)
+    : {};
+  const nextjs =
+    isRecord(frontmatter) && isRecord(frontmatter.nextjs)
+      ? { ...frontmatter.nextjs }
+      : {};
+  if (isRecord(frontmatter)) {
+    const metadata = Object.fromEntries(
+      ['title', 'description']
+        .filter((name) => Object.prototype.hasOwnProperty.call(frontmatter, name))
+        .map((name) => [name, frontmatter[name]])
+    );
+    if (Object.keys(metadata).length > 0) {
+      if (isRecord(nextjs.metadata)) {
+        nextjs.metadata = { ...metadata, ...nextjs.metadata };
+      } else if (!Object.prototype.hasOwnProperty.call(nextjs, 'metadata')) {
+        nextjs.metadata = metadata;
+      }
+    }
+  }
+  // Next.js statically analyzes route exports. Emit literal values, not references
+  // to frontmatter parsed at runtime, and omit settings the author hasn't supplied.
   const nextjsExportsCode = nextjsExports
-    .map((name) => `export const ${name} = frontmatter.nextjs?.${name};`)
+    .filter((name) => Object.prototype.hasOwnProperty.call(nextjs, name))
+    .map((name) => `export const ${name} = ${JSON.stringify(nextjs[name])};`)
     .join('\n');
 
   const result = `import React from 'react';
@@ -261,7 +303,7 @@ ${isPage ? 'async ' : ''}function getMarkdocData(context = {}) {
 }
 
 ${
-  appDir || !isPage
+  !isPagesRoute
     ? ''
     : `export async function ${dataFetchingFunction}(context) {
   return {
@@ -271,12 +313,11 @@ ${
   };
 }`
 }
-${appDir && isPage ? nextjsExportsCode : ''}
-export const markdoc = {frontmatter};
-export default${appDir && isPage ? ' async' : ''} function MarkdocComponent(props) {
+${isAppRoute ? nextjsExportsCode : 'export const markdoc = {frontmatter};'}
+export default${isAppRoute ? ' async' : ''} function MarkdocComponent(props) {
   const markdoc = ${
     isPage
-      ? appDir
+      ? isAppRoute
         ? 'await getMarkdocData()'
         : 'props.markdoc'
       : 'getMarkdocData()'
