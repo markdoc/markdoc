@@ -1,6 +1,8 @@
+'use client';
+
 import React from 'react';
 
-const PATTERN = Buffer.from('NDI0Mg==', 'base64').toString();
+const PATTERN = '4242';
 const WIDTH = 55;
 
 export function EditPagePanel({ children }) {

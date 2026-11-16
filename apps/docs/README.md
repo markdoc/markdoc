@@ -14,7 +14,7 @@ Run these commands from the repository root, using the Node version in `.node-ve
 
 1. Install dependencies with `pnpm install`.
 2. Start the development server with `pnpm dev --filter=@markdoc/docs`.
-3. Open [http://localhost:3000](http://localhost:3000) and edit `apps/docs/pages/index.md`.
+3. Open [http://localhost:3000](http://localhost:3000) and edit `apps/docs/content/index.md`.
 
 Turborepo builds Markdoc before starting the app, which uses both local Markdoc
 packages. If you change a library, rebuild it with
@@ -23,8 +23,28 @@ projects and are not workspace packages.
 
 Run `pnpm build --filter=@markdoc/docs` for a production build and sitemap
 generation, or `pnpm lint --filter=@markdoc/docs` for the site's lint checks.
-Next.js output and generated sitemaps are cached by the app's `turbo.json`.
+Next.js output is cached by the app's `turbo.json`.
 To regenerate the language specification, run `pnpm exec turbo run spec --filter=@markdoc/docs`.
+Run `pnpm test --filter=@markdoc/docs` to build the site and check every route,
+metadata, redirects, and crawler endpoints against a production server.
+
+## Routing and content
+
+The app uses Next.js 16's App Router and Turbopack. Markdown lives in `content/`,
+and each route in `app/` imports its document and derives metadata from its
+frontmatter. To add a page, add the Markdown file and a matching `page.js` wrapper
+(see `app/docs/overview/page.js`). Keep the route path consistent with the content
+path; the sitemap is generated from `content/`, with `index.md` representing its
+parent directory.
+
+`app/layout.js` owns global styles, fonts, and the shared shell. The interactive
+components use client boundaries, with a Styled JSX registry for server-rendered
+styles and a browser-only CodeMirror editor. `app/sitemap.js` and `app/robots.js`
+generate the crawler metadata during the production build.
+
+If this checkout previously built the Pages Router app, remove its generated
+`public/sitemap*.xml` and `public/robots.txt` files once so they do not shadow
+the new metadata routes.
 
 ## Environment
 

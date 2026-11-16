@@ -3,9 +3,10 @@
   "name": "@markdoc/docs",
   "scripts": {
     "dev": "next dev",
-    "build": "next build && next-sitemap",
+    "build": "next build",
     "start": "next start",
-    "lint": "next lint",
+    "lint": "eslint app components lib markdoc next.config.js",
+    "test": "node --test tests/*.test.mjs",
     "deploy": "vercel",
     "spec": "spec-md spec/index.md > public/spec.html"
   },
@@ -17,17 +18,17 @@
     "codemirror": "^5",
     "copy-to-clipboard": "^3.3.3",
     "js-yaml": "^4.1.1",
-    "next": "14.2.35",
+    "next": "16.4.2",
     "prismjs": "^1.30.0",
-    "react": "18.2.0",
+    "react": "19.3.1",
     "react-codemirror2": "^9.0.1",
-    "react-dom": "18.2.0",
-    "sharp": "^0.34.5"
+    "react-dom": "19.3.1",
+    "sharp": "^0.34.5",
+    "styled-jsx": "^5.1.6"
   },
   "devDependencies": {
-    "eslint": "8.57.1",
-    "eslint-config-next": "14.2.35",
-    "next-sitemap": "^2.5.28",
+    "eslint": "9.39.5",
+    "eslint-config-next": "16.4.2",
     "spec-md": "^3.1.0",
     "vercel": "^50"
   }

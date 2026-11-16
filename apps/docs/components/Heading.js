@@ -1,11 +1,13 @@
+'use client';
+
 import * as React from 'react';
-import { useRouter } from 'next/router';
+import { usePathname } from 'next/navigation';
 
 export function Heading({ id = '', level = 1, children, className }) {
-  const router = useRouter();
+  const pathname = usePathname();
   const Component = `h${level}`;
 
-  const isDocs = router.pathname.startsWith('/docs');
+  const isDocs = pathname.startsWith('/docs');
 
   const link = (
     <Component className={['heading', className].filter(Boolean).join(' ')}>

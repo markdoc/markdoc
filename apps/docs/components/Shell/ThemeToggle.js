@@ -1,3 +1,5 @@
+'use client';
+
 import React from 'react';
 
 const BODY_TRANSITION = `color 400ms ease, background 300ms ease`;
@@ -105,14 +107,19 @@ export function ThemeToggle() {
     }
 
     const darkQuery = window.matchMedia('(prefers-color-scheme: dark)');
-    darkQuery.addListener((e) => setTheme(e.matches ? 'dark' : 'light'));
+    const handleChange = (e) => setTheme(e.matches ? 'dark' : 'light');
+    darkQuery.addEventListener('change', handleChange);
 
+    // Read browser preferences after hydration so the initial markup matches SSR.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setTheme(preferredTheme || (darkQuery.matches ? 'dark' : 'light'));
+    return () => darkQuery.removeEventListener('change', handleChange);
   }, []);
 
   React.useEffect(() => {
     if (theme) {
-      document.body.className = theme;
+      document.body.classList.toggle('dark', theme === 'dark');
+      document.body.classList.toggle('light', theme === 'light');
     }
   }, [theme]);
 

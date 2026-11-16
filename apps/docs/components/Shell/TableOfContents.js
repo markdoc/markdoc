@@ -1,7 +1,21 @@
+'use client';
+
 import React from 'react';
-import Link from 'next/link';
+
+function subscribeHash(callback) {
+  window.addEventListener('hashchange', callback);
+  window.addEventListener('popstate', callback);
+  return () => {
+    window.removeEventListener('hashchange', callback);
+    window.removeEventListener('popstate', callback);
+  };
+}
+
+const getHash = () => window.location.hash;
+const getServerHash = () => '';
 
 export function TableOfContents({ toc }) {
+  const hash = React.useSyncExternalStore(subscribeHash, getHash, getServerHash);
   const items = toc.filter(
     (item) =>
       item.id &&
@@ -14,11 +28,10 @@ export function TableOfContents({ toc }) {
         <ul className="flex column">
           {items.map((item) => {
             const href = `#${item.id}`;
-            const active =
-              typeof window !== 'undefined' && window.location.hash === href;
+            const active = hash === href;
             return (
               <li
-                key={item.title}
+                key={item.id}
                 className={[
                   active ? 'active' : undefined,
                   item.level === 3 ? 'padded' : undefined
@@ -26,7 +39,7 @@ export function TableOfContents({ toc }) {
                   .filter(Boolean)
                   .join(' ')}
               >
-                <Link href={href}>{item.title}</Link>
+                <a href={href}>{item.title}</a>
               </li>
             );
           })}

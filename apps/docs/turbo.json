@@ -6,9 +6,7 @@
       "outputs": [
         ".next/**",
         "!.next/cache/**",
-        "!.next/dev/**",
-        "public/sitemap*.xml",
-        "public/robots.txt"
+        "!.next/dev/**"
       ]
     },
     "dev": {
@@ -16,6 +14,9 @@
     },
     "lint": {
       "dependsOn": ["^build"]
+    },
+    "test": {
+      "dependsOn": ["build"]
     },
     "spec": {
       "outputs": ["public/spec.html"]

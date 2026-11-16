@@ -1,5 +1,8 @@
+'use client';
+
 import React from 'react';
-import { useRouter } from 'next/router';
+import dynamic from 'next/dynamic';
+import { usePathname, useRouter } from 'next/navigation';
 import Markdoc from '@markdoc/markdoc';
 import { getSchema } from '@markdoc/next.js/runtime';
 import { ObjectDisplay } from './ObjectDisplay';
@@ -88,146 +91,8 @@ export function useMarkdocCode(code) {
   return { ast, content, config, errors };
 }
 
-function EditorInternal({ code, onChange, options, errors, cursor }) {
-  const ref = React.useRef();
-  const [key, setKey] = React.useState(0);
-  const [CodeMirror, setCodeMirror] = React.useState(null);
-
-  const codeMirrorOptions = React.useMemo(
-    () => ({
-      ...options,
-      autofocus: Boolean(cursor),
-      styleSelectedText: true,
-      lineNumbers: true,
-      theme: 'none',
-      mode: 'markdoc',
-      lineWrapping: true,
-      screenReaderLabel: 'Markdoc sandbox'
-    }),
-    [options, cursor]
-  );
-
-  const onBeforeChange = React.useCallback(
-    (editor, meta, code) => onChange(code),
-    [onChange]
-  );
-
-  React.useEffect(() => {
-    if (errors.length) {
-      const markers = [];
-      const editor = ref.current?.editor;
-
-      if (editor) {
-        errors.forEach((error) => {
-          try {
-            const from = {
-              line: error.location?.start.line - 1,
-              ch: error.location?.start.character
-            };
-            const to = {
-              line: error.location?.end.line - 1,
-              ch: error.location?.end.character
-            };
-
-            markers.push(
-              editor.markText(from, to, {
-                className: 'syntax-error',
-                attributes: {
-                  'data-title': error.error.message,
-                  'aria-label': error.error.message
-                }
-              })
-            );
-          } catch (error) {
-            console.error(error);
-          }
-        });
-      }
-
-      return () => markers.forEach((mark) => mark.clear());
-    }
-  }, [errors]);
-
-  React.useEffect(() => {
-    const { Controlled } = require('react-codemirror2');
-    require('codemirror/mode/markdown/markdown');
-    require('codemirror/mode/javascript/javascript');
-    require('codemirror/mode/xml/xml');
-    require('codemirror/addon/selection/mark-selection');
-    require('./codemirror/markdoc.js');
-    setCodeMirror(() => Controlled);
-    setKey((k) => k + 1);
-  }, []);
-
-  if (!CodeMirror) {
-    return null;
-  }
-
-  return (
-    <>
-      <CodeMirror
-        ref={ref}
-        key={key}
-        value={code}
-        options={codeMirrorOptions}
-        onBeforeChange={onBeforeChange}
-        editorWillUnmount={() => {
-          // react-codemirror2 leaves its DOM behind during Strict Mode remounts.
-          ref.current?.editor?.getWrapperElement().remove();
-        }}
-        cursor={cursor}
-      />
-      <style jsx>
-        {`
-          :global(.syntax-error) {
-            position: relative;
-            text-decoration: red wavy underline;
-            text-decoration-skip-ink: none;
-          }
-
-          /* Tooltip */
-          :global(.syntax-error::before) {
-            content: attr(data-title);
-            position: absolute;
-            display: none;
-            color: var(--black);
-            background: var(--white);
-            bottom: 20px;
-            padding: 1px 4px;
-            border-radius: 4px;
-            z-index: 999;
-            min-width: 240px;
-          }
-
-          /* Tooltip triangle */
-          :global(.syntax-error::after) {
-            content: '';
-            position: absolute;
-            display: none;
-            bottom: 12px;
-            left: 12px;
-            border-width: 4px;
-            border-style: solid;
-            border-color: var(--white) transparent transparent transparent;
-          }
-
-          :global(.syntax-error:hover::before),
-          :global(.syntax-error:hover::after) {
-            display: inline-block;
-          }
-        `}
-      </style>
-    </>
-  );
-}
-
-export function Editor(props) {
-  const [mounted, setMounted] = React.useState(false);
-  React.useEffect(() => setMounted(true), []);
-
-  // Codemirror doesn't work w/ SSR
-  return mounted ? <EditorInternal {...props} /> : null;
-}
+// CodeMirror requires browser globals and must not run during prerendering.
+export const Editor = dynamic(() => import('./Editor'), { ssr: false });
 
 const DELAY = 50;
 function Cursor({ children }) {
@@ -309,7 +174,10 @@ function Cursor({ children }) {
 
 function encode(s) {
   try {
-    return encodeURIComponent(Buffer.from(s).toString('base64'));
+    const bytes = new TextEncoder().encode(s);
+    return encodeURIComponent(
+      btoa(Array.from(bytes, (byte) => String.fromCharCode(byte)).join(''))
+    );
   } catch (e) {
     return null;
   }
@@ -317,7 +185,10 @@ function encode(s) {
 
 function decode(s) {
   try {
-    return Buffer.from(decodeURIComponent(s), 'base64').toString();
+    const bytes = Uint8Array.from(atob(decodeURIComponent(s)), (character) =>
+      character.charCodeAt(0)
+    );
+    return new TextDecoder().decode(bytes);
   } catch (error) {
     return null;
   }
@@ -325,13 +196,13 @@ function decode(s) {
 
 const initialCursor = { line: 0, ch: 3 };
 export function Sandbox({ height, options }) {
-  const [key, setKey] = React.useState(0);
   const router = useRouter();
+  const pathname = usePathname();
   const [code, setCode] = React.useState(INITIAL_CODE);
   const [mode, setMode] = React.useState('preview');
   const [hasInteracted, setInteracted] = React.useState(false);
 
-  const isInSandbox = router.pathname === '/sandbox';
+  const isInSandbox = pathname === '/sandbox';
 
   const { ast, content, config, errors } = useMarkdocCode(code);
 
@@ -383,8 +254,6 @@ export function Sandbox({ height, options }) {
     }
   }, [code]);
 
-  React.useEffect(() => setKey((k) => k + 1), []);
-
   return (
     <div className="sandbox" onClick={() => setInteracted(true)}>
       <nav>
@@ -397,7 +266,7 @@ export function Sandbox({ height, options }) {
           )}
         </div>
         <div className="btn-group">
-          {router.pathname === '/' ? (
+          {pathname === '/' ? (
             <button onClick={() => router.push('/sandbox')}>
               Explore developer sandbox&nbsp;→
             </button>
@@ -428,7 +297,6 @@ export function Sandbox({ height, options }) {
       <div className="flex container">
         <section className="left">
           <Editor
-            key={key}
             code={code}
             onChange={(...args) => {
               setInteracted(true);

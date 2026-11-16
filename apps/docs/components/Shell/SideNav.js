@@ -1,5 +1,7 @@
+'use client';
+
 import React from 'react';
-import { useRouter } from 'next/router';
+import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 
 const items = [
@@ -52,7 +54,7 @@ const items = [
 ];
 
 export function SideNav() {
-  const router = useRouter();
+  const pathname = usePathname();
 
   return (
     <nav className="sidenav">
@@ -61,7 +63,7 @@ export function SideNav() {
           <h3>{item.title}</h3>
           <ul className="flex column">
             {item.links.map((link) => {
-              const active = router.pathname === link.href;
+              const active = pathname === link.href;
               return (
                 <li key={link.href} className={active ? 'active' : ''}>
                   <Link {...link}>{link.children}</Link>
