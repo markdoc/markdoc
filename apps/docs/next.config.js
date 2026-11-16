@@ -1,7 +1,7 @@
 const path = require('node:path');
 const withMarkdoc = require('@markdoc/next.js');
 
-module.exports = withMarkdoc({ dir: __dirname })({
+module.exports = withMarkdoc()({
   reactStrictMode: true,
   outputFileTracingRoot: path.join(__dirname, '../..'),
   turbopack: { root: path.join(__dirname, '../..') },

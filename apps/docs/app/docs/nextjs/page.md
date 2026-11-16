@@ -1,9 +1,11 @@
 ---
-title: Using Markdoc with Next.js
-description: Learn how to integrate Markdoc into a Next.js project.
+nextjs:
+  metadata:
+    title: Using Markdoc with Next.js
+    description: Learn how to integrate Markdoc into a Next.js project.
 ---
 
-# {% $markdoc.frontmatter.title %}
+# {% $markdoc.frontmatter.nextjs.metadata.title %}
 
 Using the `@markdoc/next.js` package/plugin allows you to create custom `.md` and `.mdoc` pages in your Next.js apps, and automatically render them with Markdoc.
 
@@ -28,26 +30,30 @@ Follow these steps to get started with `@markdoc/next.js`.
    const withMarkdoc = require('@markdoc/next.js');
 
    module.exports = withMarkdoc(/* [options](#options) */)({
-     pageExtensions: ['md', 'mdoc', 'js', 'jsx', 'ts', 'tsx']
+     pageExtensions: ['md', 'mdoc', 'js', 'jsx', 'ts', 'tsx'],
+     turbopack: {}
    });
    ```
 
-3. Create a new `.md` file in within `/pages/`, such as `getting-started.md`
+3. Create `app/docs/getting-started/page.md`, using your existing root layout:
 
    ```
-   pages
-   ├── _app.js
-   ├── docs
-   │   └── getting-started.md
-   └── index.md
+   app
+   ├── layout.js
+   ├── page.md
+   └── docs
+       └── getting-started
+           └── page.md
    ```
 
 4. Add some Markdoc to your file:
 
    ```
    ---
-   title: Get started with Markdoc
-   description: How to get started with Markdoc
+   nextjs:
+     metadata:
+       title: Get started with Markdoc
+       description: How to get started with Markdoc
    ---
 
    # Get started with Markdoc
@@ -55,6 +61,21 @@ Follow these steps to get started with `@markdoc/next.js`.
 
 \
 Or, clone [this starter repo](https://github.com/markdoc/markdoc-starter) and follow the directions in the [README](https://github.com/markdoc/markdoc-starter/blob/main/README.md).
+
+The plugin compiles `page.md` directly into a Server Component. Next.js owns the
+route and applies your layouts normally. Other Markdown files can live alongside
+the page and be imported as components without becoming routes.
+
+### Metadata and route settings
+
+Use `nextjs.metadata` in frontmatter for the standard [Next.js metadata object](https://nextjs.org/docs/app/api-reference/functions/generate-metadata).
+The loader emits a static `metadata` export. Define shared defaults, title
+templates, and social images in `app/layout.js` as usual. You can also set
+`nextjs.revalidate` to emit a static revalidation interval.
+
+The plugin discovers `app/` and `pages/`, including `src/app/` and `src/pages/`,
+from the project directory. For a Pages Router project, keep using files such as
+`pages/docs/getting-started.md`; the data-fetching options below apply to that router.
 
 ## Options
 
@@ -76,11 +97,17 @@ You can pass options to `withMarkdoc` to adjust how the plugin behaves.
 
 - `mode`
 - `'static' | 'server'`
-- Determines whether the generated Markdoc pages use [`getStaticProps`](https://nextjs.org/docs/basic-features/data-fetching/get-static-props) or [`getServerSideProps`](https://nextjs.org/docs/basic-features/data-fetching/get-server-side-props).
+- For the Pages Router, determines whether generated pages use [`getStaticProps`](https://nextjs.org/docs/basic-features/data-fetching/get-static-props) or [`getServerSideProps`](https://nextjs.org/docs/basic-features/data-fetching/get-server-side-props).
+
+---
+
+- `nextjsExports`
+- `string[]`
+- Static App Router exports read from `nextjs` frontmatter. Defaults to `['metadata', 'revalidate']`. Include other static route settings such as `dynamic` or `runtime` when needed.
 
 {% /table %}
 
-For example, this is how you set the `mode` to `static` to pre-render the page at build time using the props returned by `getStaticProps`:
+For the Pages Router, set `mode` to `static` to pre-render using `getStaticProps`:
 
 ```js
 module.exports = withMarkdoc({ mode: 'static' })({

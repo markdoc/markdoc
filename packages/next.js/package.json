@@ -33,6 +33,7 @@
     "@babel/plugin-transform-modules-commonjs": "^7.16.8",
     "@markdoc/markdoc": "workspace:*",
     "@types/jest": "^30.0.0",
+    "@types/js-yaml": "^4.0.9",
     "@types/node": "^24.19.2",
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.0.0",

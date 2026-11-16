@@ -1,9 +1,11 @@
 ---
-title: Variables
-description: Variables let you transform and customize your document at runtime.
+nextjs:
+  metadata:
+    title: Variables
+    description: Variables let you transform and customize your document at runtime.
 ---
 
-# {% $markdoc.frontmatter.title %}
+# {% $markdoc.frontmatter.nextjs.metadata.title %}
 
 Variables let you customize your Markdoc documents at runtime.
 

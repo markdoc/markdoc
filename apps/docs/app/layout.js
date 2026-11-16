@@ -12,8 +12,18 @@ const algolia = process.env.NEXT_PUBLIC_ALGOLIA_APP_ID;
 
 export const metadata = {
   metadataBase: new URL(SITE_URL),
-  title: TITLE,
+  title: { default: TITLE, template: `${TITLE} | %s` },
   description: DESCRIPTION,
+  alternates: { canonical: './' },
+  openGraph: {
+    type: 'website',
+    url: './',
+    images: ['/images/share.png']
+  },
+  twitter: {
+    card: 'summary',
+    images: ['/images/share.png']
+  },
   referrer: 'strict-origin',
   icons: { icon: '/favicon.ico', shortcut: '/favicon.ico' }
 };

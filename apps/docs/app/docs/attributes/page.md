@@ -1,9 +1,11 @@
 ---
-title: Attributes
-description: Attributes are used to pass data to tags in Markdoc.
+nextjs:
+  metadata:
+    title: Attributes
+    description: Attributes are used to pass data to tags in Markdoc.
 ---
 
-# {% $markdoc.frontmatter.title %}
+# {% $markdoc.frontmatter.nextjs.metadata.title %}
 
 
 Attributes let you pass data to Markdoc tags, similar to [HTML attributes](https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes) or [React props](https://reactjs.org/docs/components-and-props.html).

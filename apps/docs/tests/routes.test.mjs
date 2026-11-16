@@ -11,18 +11,19 @@ import yaml from 'js-yaml';
 const require = createRequire(import.meta.url);
 const appDir = fileURLToPath(new URL('..', import.meta.url));
 const site = 'https://markdoc.dev';
+const defaultDescription =
+  'A powerful, flexible, Markdown-based authoring framework';
 const files = (
-  await readdir(path.join(appDir, 'content'), { recursive: true })
-).filter((file) => file.endsWith('.md'));
+  await readdir(path.join(appDir, 'app'), { recursive: true })
+).filter((file) => path.basename(file) === 'page.md');
 const pages = await Promise.all(
   files.map(async (file) => {
-    const source = await readFile(path.join(appDir, 'content', file), 'utf8');
+    const source = await readFile(path.join(appDir, 'app', file), 'utf8');
     return {
       route:
-        `/${file.split(path.sep).join('/')}`
-          .replace(/\.md$/, '')
-          .replace(/\/index$/, '') || '/',
-      frontmatter: yaml.load(source.match(/^---\n([\s\S]*?)\n---/)[1])
+        `/${file.split(path.sep).join('/')}`.replace(/\/page\.md$/, '') || '/',
+      metadata: yaml.load(source.match(/^---\n([\s\S]*?)\n---/)[1]).nextjs
+        .metadata
     };
   })
 );
@@ -91,21 +92,25 @@ function escapeHTML(value) {
     .replaceAll("'", '&#x27;');
 }
 
-for (const { route, frontmatter } of pages) {
+for (const { route, metadata } of pages) {
   test(`${route} renders its document and frontmatter metadata`, async () => {
     const response = await fetch(`${origin}${route}`);
     assert.equal(response.status, 200);
     const html = await response.text();
     assert.ok(html.includes('<main'), 'page shell is server rendered');
     assert.ok(html.includes('<article'), 'document is server rendered');
-    assert.ok(
-      html.includes(`<title>Markdoc | ${escapeHTML(frontmatter.title)}</title>`)
+    const title = escapeHTML(
+      `${route === '/' ? '' : 'Markdoc | '}${metadata.title}`
     );
-    if (frontmatter.description) {
+    const description = escapeHTML(metadata.description || defaultDescription);
+    assert.ok(html.includes(`<title>${title}</title>`));
+    assert.ok(
+      html.includes(`<meta name="description" content="${description}"`)
+    );
+    if (route.startsWith('/docs/')) {
       assert.ok(
-        html.includes(
-          `<meta name="description" content="${escapeHTML(frontmatter.description)}"`
-        )
+        html.slice(html.indexOf('<main')).includes(escapeHTML(metadata.title)),
+        'document title renders from frontmatter'
       );
     }
     assert.ok(
@@ -117,6 +122,22 @@ for (const { route, frontmatter } of pages) {
       html.includes('<style id="__jsx-'),
       'Styled JSX styles are server rendered'
     );
+    assert.ok(html.includes(`<meta property="og:title" content="${title}"`));
+    assert.ok(
+      html.includes(`<meta property="og:description" content="${description}"`)
+    );
+    assert.ok(
+      html.includes(
+        `<meta property="og:url" content="${site}${route === '/' ? '' : route}"`
+      )
+    );
+    assert.ok(
+      html.includes(
+        `<meta property="og:image" content="${site}/images/share.png"`
+      )
+    );
+    assert.ok(html.includes(`<meta name="twitter:title" content="${title}"`));
+    assert.ok(html.includes('<meta name="twitter:card" content="summary"'));
   });
 }
 

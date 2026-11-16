@@ -1,8 +1,10 @@
 ---
-title: Using Markdoc with React
+nextjs:
+  metadata:
+    title: Using Markdoc with React
 ---
 
-# {% $markdoc.frontmatter.title %}
+# {% $markdoc.frontmatter.nextjs.metadata.title %}
 
 Markdoc supports [rendering Markdoc syntax with React](/docs/render#react) out-of-the-box.
 

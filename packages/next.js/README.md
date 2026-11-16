@@ -22,7 +22,7 @@ The first thing you'll need to do is install `@markdoc/next.js` and add it to yo
    const withMarkdoc = require('@markdoc/next.js');
 
    module.exports = withMarkdoc(/* options */)({
-     pageExtensions: ['js', 'md'],
+     pageExtensions: ['js', 'jsx', 'ts', 'tsx', 'md', 'mdoc'],
    });
    ```
 
@@ -31,10 +31,9 @@ The first thing you'll need to do is install `@markdoc/next.js` and add it to yo
    ```js
    // next.config.js
    module.exports = withMarkdoc({
-     dir: process.cwd(), // Required for Turbopack file resolution
      schemaPath: './markdoc', // Wherever your Markdoc schema lives
    })({
-     pageExtensions: ['js', 'md'],
+     pageExtensions: ['js', 'jsx', 'ts', 'tsx', 'md', 'mdoc'],
      turbopack: {}, // Turbopack only runs the loader when a base config exists
    });
    ```
@@ -44,28 +43,57 @@ The first thing you'll need to do is install `@markdoc/next.js` and add it to yo
    `functions.js` in that directory (exporting empty objects is fine) so the loader can resolve
    them during the build.
 
-3. Create a new Markdoc file in `pages/docs` named `getting-started.md`.
+   The plugin discovers `app/` and `pages/` (or their `src/` equivalents) from
+   the project directory. This defaults to the working directory for Turbopack;
+   set `dir` if your Next.js project lives elsewhere.
+
+3. Create `app/docs/getting-started/page.md`, using your existing `app/layout.js`.
 
    ```
-   pages
-   ├── _app.js
-   ├── docs
-   │   └── getting-started.md
-   ├── index.js
+   app
+   ├── layout.js
+   ├── page.md
+   └── docs
+       └── getting-started
+           └── page.md
    ```
 
-4. Add some content to `getting-started.md`:
+4. Add content and metadata to `page.md`:
 
    ```md
    ---
-   title: Get started with Markdoc
-   description: How to get started with Markdoc
+   nextjs:
+     metadata:
+       title: Get started with Markdoc
+       description: How to get started with Markdoc
    ---
 
    # Get started with Markdoc
    ```
 
 See [our docs](https://markdoc.dev/docs/nextjs) for more options.
+
+## App Router
+
+`page.md` files compile as async Server Components. They participate in
+Next.js routing and layouts directly; no JavaScript wrapper is needed. Colocated
+Markdown with other filenames remains an importable synchronous component.
+
+The loader turns `nextjs.metadata` and `nextjs.revalidate` frontmatter into
+literal Next.js exports, so Next.js can statically analyze the route. Put shared
+metadata defaults and title templates in your usual `layout.js`. Other static
+route exports can be enabled with `nextjsExports`, for example:
+
+```js
+withMarkdoc({ nextjsExports: ['metadata', 'revalidate', 'dynamic', 'runtime'] })
+```
+
+Frontmatter remains available inside the document through `$markdoc.frontmatter`.
+Native App Router page/layout modules export only their component and configured
+Next.js exports. Ordinary imported Markdown continues to export `markdoc.frontmatter`.
+
+For the Pages Router, use `pages/docs/getting-started.md`. Existing `getStaticProps`
+and `getServerSideProps` behavior is unchanged, including projects with both routers.
 
 ## Contributing
 

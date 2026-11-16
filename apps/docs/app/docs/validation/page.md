@@ -1,9 +1,11 @@
 ---
-title: Validation
-description: Extend Markdoc to provide custom validation for your documents.
+nextjs:
+  metadata:
+    title: Validation
+    description: Extend Markdoc to provide custom validation for your documents.
 ---
 
-# {% $markdoc.frontmatter.title %}
+# {% $markdoc.frontmatter.nextjs.metadata.title %}
 
 ## Syntax validation
 

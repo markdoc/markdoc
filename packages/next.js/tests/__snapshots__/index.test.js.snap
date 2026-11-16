@@ -81,7 +81,6 @@ export async function getStaticProps(context) {
     },
   };
 }
-
 export const markdoc = {frontmatter};
 export default function MarkdocComponent(props) {
   const markdoc = props.markdoc;
@@ -116,7 +115,7 @@ const tokenizer = new Markdoc.Tokenizer({"allowComments":true});
  * Source will never change at runtime, so parse happens at the file root
  */
 const source = "---\\ntitle: Custom title\\n---\\n\\n# {% $markdoc.frontmatter.title %}\\n\\n{% tag /%}\\n";
-const filepath = "/test/index.md";
+const filepath = "/test/page.md";
 const tokens = tokenizer.tokenize(source);
 const parseOptions = {"slots":false};
 const ast = Markdoc.parse(tokens, parseOptions);
@@ -172,9 +171,7 @@ async function getMarkdocData(context = {}) {
 }
 
 
-export const metadata = frontmatter.nextjs?.metadata;
-export const revalidate = frontmatter.nextjs?.revalidate;
-export const markdoc = {frontmatter};
+
 export default async function MarkdocComponent(props) {
   const markdoc = await getMarkdocData();
   // Only execute HMR code in development
@@ -270,7 +267,6 @@ export async function getStaticProps(context) {
     },
   };
 }
-
 export const markdoc = {frontmatter};
 export default function MarkdocComponent(props) {
   const markdoc = props.markdoc;
@@ -359,7 +355,6 @@ function getMarkdocData(context = {}) {
     })
   );
 }
-
 
 
 export const markdoc = {frontmatter};

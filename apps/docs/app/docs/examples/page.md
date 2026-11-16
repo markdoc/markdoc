@@ -1,9 +1,10 @@
 ---
-title: Common examples
-description:
+nextjs:
+  metadata:
+    title: Common examples
 ---
 
-# {% $markdoc.frontmatter.title %}
+# {% $markdoc.frontmatter.nextjs.metadata.title %}
 
 With Markdoc, it's easy to add functionality you'd commonly associate with documentation sites. The examples below cover loops, syntax highlighting, tabs, and more.
 

@@ -42,6 +42,7 @@ export interface MarkdocNextJsOptions {
   };
   schemaPath?: string;
   dir?: string;
+  /** Static App Router exports read from frontmatter.nextjs. Defaults to metadata and revalidate. */
   nextjsExports?: string[];
 }
 

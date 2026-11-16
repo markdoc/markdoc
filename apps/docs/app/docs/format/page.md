@@ -1,9 +1,11 @@
 ---
-title: Formatting
-description: Use Markdoc.format to prettify documents or generate source content
+nextjs:
+  metadata:
+    title: Formatting
+    description: Use Markdoc.format to prettify documents or generate source content
 ---
 
-# {% $markdoc.frontmatter.title %}
+# {% $markdoc.frontmatter.nextjs.metadata.title %}
 
 Markdoc comes with the ability to take a Markdoc abstract syntax tree (AST) and generate the source content. This is useful for generating Markdoc files from data, or prettifying documents.
 

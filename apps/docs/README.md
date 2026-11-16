@@ -14,7 +14,7 @@ Run these commands from the repository root, using the Node version in `.node-ve
 
 1. Install dependencies with `pnpm install`.
 2. Start the development server with `pnpm dev --filter=@markdoc/docs`.
-3. Open [http://localhost:3000](http://localhost:3000) and edit `apps/docs/content/index.md`.
+3. Open [http://localhost:3000](http://localhost:3000) and edit `apps/docs/app/page.md`.
 
 Turborepo builds Markdoc before starting the app, which uses both local Markdoc
 packages. If you change a library, rebuild it with
@@ -30,12 +30,29 @@ metadata, redirects, and crawler endpoints against a production server.
 
 ## Routing and content
 
-The app uses Next.js 16's App Router and Turbopack. Markdown lives in `content/`,
-and each route in `app/` imports its document and derives metadata from its
-frontmatter. To add a page, add the Markdown file and a matching `page.js` wrapper
-(see `app/docs/overview/page.js`). Keep the route path consistent with the content
-path; the sitemap is generated from `content/`, with `index.md` representing its
-parent directory.
+The app uses Next.js 16's App Router and Turbopack. Each document is a native
+`page.md` file: `app/docs/faq/page.md` serves `/docs/faq`. To add a page, add a
+`page.md` in its route folder. Ordinary Markdown files can be colocated in `app/`
+and imported as components without becoming routes. The sitemap discovers the
+site's static `page.md` routes.
+
+Use `nextjs.metadata` in frontmatter for Next.js metadata:
+
+```md
+---
+nextjs:
+  metadata:
+    title: Frequently asked questions
+    description: Answers to common questions about Markdoc.
+---
+
+# {% $markdoc.frontmatter.nextjs.metadata.title %}
+```
+
+The root layout supplies the title template, canonical URLs, and shared social
+metadata. Next.js inherits those defaults and combines them with each page's
+metadata. The homepage sets its full title because the title template applies
+only to child route segments.
 
 `app/layout.js` owns global styles, fonts, and the shared shell. The interactive
 components use client boundaries, with a Styled JSX registry for server-rendered

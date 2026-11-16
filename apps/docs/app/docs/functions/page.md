@@ -1,9 +1,11 @@
 ---
-title: Functions
-description: Functions let you extend Markdoc to run custom code.
+nextjs:
+  metadata:
+    title: Functions
+    description: Functions let you extend Markdoc to run custom code.
 ---
 
-# {% $markdoc.frontmatter.title %}
+# {% $markdoc.frontmatter.nextjs.metadata.title %}
 
 Functions enable you extend Markdoc with custom utilities, which let you transform your content and [variables](/docs/syntax#variables) at runtime.
 
