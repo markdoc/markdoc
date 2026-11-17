@@ -1,2 +1,4 @@
 /* Use this file to export your markdoc nodes */
-export default {};
+const nodes = {};
+
+export default nodes;

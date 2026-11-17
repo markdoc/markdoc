@@ -1,0 +1,8 @@
+node_modules/
+.pnpm-store/
+.next/
+out/
+.vercel/
+.env*
+!.env.example
+*.log

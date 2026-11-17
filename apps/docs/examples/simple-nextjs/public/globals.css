@@ -6,11 +6,11 @@ body {
   margin: 0;
 }
 
-#__next {
+main {
   display: grid;
   grid-template-columns: 0.1fr 1fr 0.15fr;
   grid-template-rows: 1fr 0.05fr;
-  height: 100vh;
+  min-height: 100vh;
 }
 
 article {
