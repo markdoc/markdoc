@@ -1,20 +1,24 @@
 {
+  "name": "markdoc-simple-nextjs",
   "private": true,
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "eslint ."
   },
   "dependencies": {
-    "@markdoc/markdoc": "latest",
-    "@markdoc/next.js": "latest",
-    "next": "12.1.4",
-    "react": "latest",
-    "react-dom": "latest"
+    "@markdoc/markdoc": "0.5.13",
+    "@markdoc/next.js": "0.7.0",
+    "next": "16.4.6",
+    "react": "19.3.1",
+    "react-dom": "19.3.1"
   },
   "devDependencies": {
-    "eslint": "8.12.0",
-    "eslint-config-next": "12.1.4"
+    "eslint": "9.39.5",
+    "eslint-config-next": "16.4.6"
+  },
+  "engines": {
+    "node": ">=20.19.0"
   }
 }

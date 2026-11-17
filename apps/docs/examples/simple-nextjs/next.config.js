@@ -1,5 +1,6 @@
 const withMarkdoc = require('@markdoc/next.js');
 
 module.exports = withMarkdoc()({
-  pageExtensions: ['js', 'md', 'mdoc']
+  pageExtensions: ['js', 'jsx', 'ts', 'tsx', 'md', 'mdoc'],
+  turbopack: { root: __dirname }
 });

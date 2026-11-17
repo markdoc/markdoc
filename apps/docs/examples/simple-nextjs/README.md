@@ -1,37 +1,64 @@
 # Next.js example
 
-This is a boilerplate for a creating a documentation website using Markdoc and Next.js.
+This is a minimal documentation site using Markdoc and the Next.js App Router.
+It installs the published `@markdoc/markdoc` and `@markdoc/next.js` packages from
+npm and runs independently of the repository's pnpm workspace.
 
 ## Setup
 
-First, clone this repo and install the dependencies required:
+Use Node.js 20.19 or newer. From the Markdoc repository root:
 
 ```bash
-npm install
-# or
-yarn install
-```
-
-Then, run the development server:
-
-```bash
+cd apps/docs/examples/simple-nextjs
+npm ci
 npm run dev
-# or
-yarn dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+You can also copy this directory into its own repository and run the same npm
+commands there. The lockfile pins the example's dependencies; no
+`--legacy-peer-deps` option is needed.
 
-You can start editing the page by modifying `index.md`. The page auto-updates as you edit the file.
+Open [http://localhost:3000](http://localhost:3000) and edit `app/page.md`.
+The page updates as you edit it. To add a route, create a file such as
+`app/docs/getting-started/page.md`.
 
-## Deploy
+## Content and metadata
 
-The quickest way to deploy your own version of this boilerplate is by deploying it with [Vercel](https://vercel.com) by clicking the button below.
+`app/layout.js` supplies the HTML document and shared styles. Each `page.md`
+is a native Next.js route, with metadata generated from its frontmatter:
 
-### Deploy with Vercel
+```md
+---
+title: Get started with Markdoc
+description: How to get started with Markdoc
+---
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/markdoc/markdoc-starter)
+# {% $markdoc.frontmatter.title %}
+```
 
-### Deploy to Netlify
+Customize `markdoc/config.js`, `markdoc/functions.js`, `markdoc/nodes/index.js`,
+and `markdoc/tags/index.js` to extend the schema. All four entry points are
+included so the loader can resolve them with Turbopack. See the
+[Next.js integration guide](https://markdoc.dev/docs/nextjs) for more options.
 
-[![Deploy to Netlify](https://www.netlify.com/img/deploy/button.svg)](https://app.netlify.com/start/deploy?repository=https://github.com/markdoc/markdoc-starter)
+## Production
+
+```bash
+npm run lint
+npm run build
+npm run start
+```
+
+Development and production builds use Turbopack by default. To build with
+Webpack, run `npm run build -- --webpack`.
+
+## Deploy to Vercel
+
+Import `markdoc/markdoc` and set the project's Root Directory to
+`apps/docs/examples/simple-nextjs`. The included `vercel.json` uses `npm ci`
+and `npm run build` for this standalone example. If you copied the example into
+its own repository, use that repository's root instead.
+
+You can also clone just this example through Vercel:
+
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fmarkdoc%2Fmarkdoc%2Ftree%2Fmain%2Fapps%2Fdocs%2Fexamples%2Fsimple-nextjs)
