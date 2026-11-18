@@ -2,6 +2,7 @@ node_modules
 .DS_Store
 dist
 .turbo
+.vitest/
 /packages/markdoc/README.md
 /packages/markdoc/types/
 .vscode/settings.json

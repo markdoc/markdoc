@@ -1,3 +1,4 @@
+import { describe, expect, it } from 'vitest';
 import Function from '../../src/ast/function';
 import Variable from '../../src/ast/variable';
 import { parse, SyntaxError } from '../../src/grammar/tag';

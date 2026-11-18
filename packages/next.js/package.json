@@ -22,7 +22,7 @@
   "scripts": {
     "build": "tsc",
     "type:check": "tsc --noEmit",
-    "test": "jest",
+    "test": "vitest run",
     "test:types": "node tests/types/check.mjs"
   },
   "dependencies": {
@@ -32,18 +32,15 @@
     "@babel/core": "^7.16.12",
     "@babel/plugin-transform-modules-commonjs": "^7.16.8",
     "@markdoc/markdoc": "workspace:*",
-    "@types/jest": "^30.0.0",
     "@types/js-yaml": "^4.0.9",
     "@types/node": "^24.19.2",
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.0.0",
     "enhanced-resolve": "^5.10.0",
-    "jest": "^30.5.1",
-    "jest-util": "^30.5.1",
     "next": "*",
     "react": "*",
-    "ts-jest": "^29.4.12",
-    "typescript": "^6.0.3"
+    "typescript": "^6.0.3",
+    "vitest": "5.0.4"
   },
   "peerDependencies": {
     "@markdoc/markdoc": "*",
@@ -62,20 +59,6 @@
     "url": "https://github.com/markdoc/markdoc/issues"
   },
   "homepage": "https://markdoc.dev/docs/nextjs",
-  "jest": {
-    "testMatch": [
-      "**/tests/**/*.test.js"
-    ],
-    "transform": {
-      "^.+\\.tsx?$": [
-        "ts-jest",
-        {
-          "tsconfig": "tsconfig.test.json"
-        }
-      ],
-      "^.+\\.jsx?$": "babel-jest"
-    }
-  },
   "typesVersions": {
     "*": {
       "index": [

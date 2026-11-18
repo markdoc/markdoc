@@ -1,8 +1,0 @@
-{
-  "spec_dir": "src",
-  "spec_files": ["**/*.test.ts"],
-  "helpers": ["../spec/support/**/*.helper.ts"],
-  "stopSpecOnExpectationFailure": false,
-  "random": true,
-  "jsLoader": "require"
-}

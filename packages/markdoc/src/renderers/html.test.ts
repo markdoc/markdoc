@@ -1,3 +1,4 @@
+import { describe, expect, it } from 'vitest';
 import Tag from '../tag';
 import type { RenderableTreeNode } from '../types';
 import render from './html';

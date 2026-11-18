@@ -1,3 +1,4 @@
+import { describe, expect, it } from 'vitest';
 import { findTagEnd, parseTags } from '../src/utils';
 
 describe('Templating', () => {

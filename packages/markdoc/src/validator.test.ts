@@ -1,3 +1,4 @@
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import Markdoc, { Node, nodes, Tag } from '../index';
 import type { Config, ValidationError } from './types';
 
@@ -8,7 +9,7 @@ function validate(string, config) {
 describe('validate', () => {
   describe('prototype-safe attributes', () => {
     let config: Config;
-    let customValidate: jasmine.Spy;
+    let customValidate: ReturnType<typeof vi.fn>;
     const unsafe = 'javascript:alert(1)';
     const trusted = 'https://trusted.example/embed';
     const React = {
@@ -19,7 +20,7 @@ describe('validate', () => {
     };
 
     beforeEach(() => {
-      customValidate = jasmine.createSpy('validate').and.callFake((value) =>
+      customValidate = vi.fn((value) =>
         value === trusted
           ? []
           : [
@@ -57,7 +58,7 @@ describe('validate', () => {
       ]);
       expect(customValidate).toHaveBeenCalledWith(
         unsafe,
-        jasmine.anything(),
+        expect.anything(),
         'src',
       );
     });
@@ -120,7 +121,7 @@ describe('validate', () => {
       ]);
       expect(customValidate).toHaveBeenCalledWith(
         unsafe,
-        jasmine.anything(),
+        expect.anything(),
         'src',
       );
     });
@@ -134,7 +135,7 @@ describe('validate', () => {
       ]);
       expect(customValidate).toHaveBeenCalledWith(
         trusted,
-        jasmine.anything(),
+        expect.anything(),
         'src',
       );
       expect(

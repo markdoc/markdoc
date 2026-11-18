@@ -1,3 +1,9 @@
+import { createRequire } from 'node:module';
+import { fileURLToPath } from 'node:url';
+import { afterAll, expect, test, vi } from 'vitest';
+
+const require = createRequire(import.meta.url);
+const __dirname = fileURLToPath(new URL('.', import.meta.url));
 const vm = require('vm');
 const fs = require('fs');
 const path = require('path');
@@ -8,12 +14,9 @@ const React = require('react');
 const enhancedResolve = require('enhanced-resolve');
 const loader = require('../dist/loader');
 
-// Mock the runtime module using Jest
-jest.mock('@markdoc/next.js/runtime', () => require('../dist/runtime'), {virtual: true});
-
 const source = fs.readFileSync(require.resolve('./fixture.md'), 'utf-8');
-const consoleErrorMock = jest.spyOn(console, 'error').mockImplementation(() => {});
-const consoleDebugMock = jest.spyOn(console, 'debug').mockImplementation(() => {});
+const consoleErrorMock = vi.spyOn(console, 'error').mockImplementation(() => {});
+const consoleDebugMock = vi.spyOn(console, 'debug').mockImplementation(() => {});
 
 // https://stackoverflow.com/questions/53799385/how-can-i-convert-a-windows-path-to-posix-path-using-node-path
 function normalizeAbsolutePath(s) {
@@ -60,6 +63,9 @@ function evaluate(output, filename = path.join(__dirname, 'pages/test/index.md')
   const baseRequire = require;
 
   const customRequire = (specifier) => {
+    if (specifier === '@markdoc/next.js/runtime') {
+      return require('../dist/runtime');
+    }
     if (specifier.startsWith('.') || specifier.startsWith('/')) {
       return resourceRequire(specifier);
     }

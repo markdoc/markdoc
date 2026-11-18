@@ -1,4 +1,5 @@
 import { diff } from 'jest-diff';
+import { describe, expect, it } from 'vitest';
 
 import Markdoc from '../index';
 import format from './formatter';

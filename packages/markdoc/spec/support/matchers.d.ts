@@ -1,6 +1,8 @@
-declare namespace jasmine {
-  interface Matchers<T> {
-    toDeepEqual(expected: any, expectationFailureOutput?: T): boolean;
-    toDeepEqualSubset(expected: any, expectationFailureOutput?: T): boolean;
+import 'vitest';
+
+declare module 'vitest' {
+  interface Assertion {
+    toDeepEqual(expected: unknown): void;
+    toDeepEqualSubset(expected: unknown): void;
   }
 }
