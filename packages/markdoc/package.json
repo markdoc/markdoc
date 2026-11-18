@@ -15,7 +15,7 @@
   "sideEffects": false,
   "license": "MIT",
   "scripts": {
-    "test": "node --import tsx ./node_modules/jasmine/bin/jasmine.js",
+    "test": "vitest run",
     "test:types": "node spec/types/check.mjs",
     "marktest": "node --import tsx ${INSPECT:+--inspect-brk} spec/marktest/index.ts spec/marktest/tests.yaml",
     "build": "pnpm run build:common && pnpm run build:types",
@@ -42,19 +42,18 @@
     }
   },
   "devDependencies": {
-    "@types/jasmine": "^7.0.0",
     "@types/node": "^24.19.2",
     "@types/react": "^19.3.0",
     "deep-assert": "0.3.0",
     "diff": "^9.0.0",
     "esbuild": "0.28.2",
-    "jasmine": "7.0.0",
     "jest-diff": "^30.5.2",
     "markdown-it": "15.0.1",
     "pegjs": "0.11.0-master.b7b87ea",
     "tsx": "4.23.15",
     "typedoc": "0.28.20",
     "typescript": "^6.0.3",
+    "vitest": "5.0.4",
     "yaml-js": "^0.3.1"
   },
   "repository": {

@@ -1,3 +1,4 @@
+import { describe, expect, it } from 'vitest';
 import Ast from '../ast';
 import functions from './index';
 
@@ -14,7 +15,7 @@ describe('built-in functions', () => {
         variables: { foo: 'bar' },
       });
 
-      expect(output).toBeTrue();
+      expect(output).toBe(true);
     });
 
     it('false match with variable', () => {
@@ -28,7 +29,7 @@ describe('built-in functions', () => {
         variables: { foo: 'baz' },
       });
 
-      expect(output).toBeFalse();
+      expect(output).toBe(false);
     });
   });
 });

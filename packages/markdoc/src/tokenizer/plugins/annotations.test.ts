@@ -1,3 +1,4 @@
+import { describe, expect, it } from 'vitest';
 import Tokenizer from '..';
 
 describe('MarkdownIt Annotations plugin', () => {

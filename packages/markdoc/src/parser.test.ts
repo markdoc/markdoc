@@ -1,3 +1,4 @@
+import { describe, expect, it } from 'vitest';
 // @ts-check
 
 import { any } from 'deep-assert';

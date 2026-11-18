@@ -1,34 +1,23 @@
 import { deepEquals } from 'deep-assert';
+import { expect } from 'vitest';
 
 function deepEqualsWrapper(actual, expected, options = {}) {
   try {
     deepEquals(actual, expected, options);
-    return { pass: true, message: 'Unexpected match' };
+    return { pass: true, message: () => 'Unexpected match' };
   } catch (err) {
-    return { pass: false, message: err.message };
+    return { pass: false, message: () => err.message };
   }
 }
 
-const matchers = {
-  toDeepEqualSubset() {
-    return {
-      compare(actual, expected) {
-        return deepEqualsWrapper(actual, expected, {
-          allowAdditionalProps: true,
-        });
-      },
-    };
+expect.extend({
+  toDeepEqualSubset(actual, expected) {
+    return deepEqualsWrapper(actual, expected, {
+      allowAdditionalProps: true,
+    });
   },
 
-  toDeepEqual() {
-    return {
-      compare(actual, expected) {
-        return deepEqualsWrapper(actual, expected);
-      },
-    };
+  toDeepEqual(actual, expected) {
+    return deepEqualsWrapper(actual, expected);
   },
-};
-
-beforeEach(() => {
-  jasmine.addMatchers(matchers);
 });

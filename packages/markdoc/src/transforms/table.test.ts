@@ -1,3 +1,4 @@
+import { describe, expect, it } from 'vitest';
 import Markdoc from '../../index';
 
 function validate(string: string, config = {}) {

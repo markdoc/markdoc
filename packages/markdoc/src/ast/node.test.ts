@@ -1,3 +1,4 @@
+import { describe, expect, it } from 'vitest';
 import markdoc from '../../index';
 import Tag from '../tag';
 import { getAstValues } from './base';
@@ -332,7 +333,7 @@ describe('transform', () => {
       };
 
       const output = transform(example, { nodes: { foo } }) as Tag;
-      expect(Object.keys(output.attributes).includes('baz')).toBeFalse();
+      expect(Object.keys(output.attributes).includes('baz')).toBe(false);
       expect(output).toDeepEqual(new Tag('foo', { bar: 1 }, []));
     });
 

@@ -1,3 +1,4 @@
+import { describe, expect, it } from 'vitest';
 import Tag from '../../tag';
 import dynamic from './react';
 import renderStatic from './static';
