@@ -26,21 +26,22 @@
     "test:types": "node tests/types/check.mjs"
   },
   "dependencies": {
-    "js-yaml": "^4.1.0"
+    "js-yaml": "^4.3.2"
   },
   "devDependencies": {
-    "@babel/core": "^7.16.12",
-    "@babel/plugin-transform-modules-commonjs": "^7.16.8",
+    "@babel/core": "^7.29.7",
+    "@babel/plugin-transform-modules-commonjs": "^7.29.7",
     "@markdoc/markdoc": "workspace:*",
     "@types/js-yaml": "^4.0.9",
     "@types/node": "^24.19.2",
     "@types/react": "^19.3.0",
-    "@types/react-dom": "^19.0.0",
-    "enhanced-resolve": "^5.10.0",
-    "next": "*",
-    "react": "*",
+    "@types/react-dom": "^19.3.0",
+    "enhanced-resolve": "^5.26.0",
+    "next": "^16.4.2",
+    "react": "^19.3.1",
     "typescript": "^6.0.3",
-    "vitest": "5.0.4"
+    "vite": "8.3.4",
+    "vitest": "5.0.5"
   },
   "peerDependencies": {
     "@markdoc/markdoc": "*",

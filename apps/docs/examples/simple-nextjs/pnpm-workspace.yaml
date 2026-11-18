@@ -2,4 +2,4 @@
 packages:
   - '.'
 
-minimumReleaseAge: 10080 # 7 days, matching the repository policy
+minimumReleaseAge: 44640 # 31 days, matching the repository policy

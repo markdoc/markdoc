@@ -11,25 +11,25 @@
     "spec": "spec-md spec/index.md > public/spec.html"
   },
   "dependencies": {
-    "@docsearch/css": "^3.6.0",
-    "@docsearch/react": "^3.6.0",
+    "@docsearch/css": "^3.9.0",
+    "@docsearch/react": "^3.9.0",
     "@markdoc/markdoc": "workspace:*",
     "@markdoc/next.js": "workspace:*",
-    "codemirror": "^5",
+    "codemirror": "^5.65.21",
     "copy-to-clipboard": "^3.3.3",
-    "js-yaml": "^4.1.1",
+    "js-yaml": "^4.3.2",
     "next": "16.4.2",
     "prismjs": "^1.30.0",
     "react": "19.3.1",
     "react-codemirror2": "^9.0.1",
     "react-dom": "19.3.1",
     "sharp": "^0.34.5",
-    "styled-jsx": "^5.1.6"
+    "styled-jsx": "^5.1.7"
   },
   "devDependencies": {
     "eslint": "9.39.5",
     "eslint-config-next": "16.4.2",
     "spec-md": "^3.1.0",
-    "vercel": "^50"
+    "vercel": "^50.44.0"
   }
 }
