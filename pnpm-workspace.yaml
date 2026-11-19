@@ -2,7 +2,7 @@ packages:
   - 'packages/*'
   - 'apps/*'
 
-minimumReleaseAge: 10080 # 7 days
+minimumReleaseAge: 44640 # 31 days
 
 onlyBuiltDependencies:
   - esbuild
