@@ -8,6 +8,5 @@ import 'prismjs/components/prism-markup.min';
 import 'prismjs/components/prism-toml.min';
 import 'prismjs/components/prism-typescript.min';
 import 'prismjs/components/prism-yaml.min';
-import 'prismjs/plugins/autolinker/prism-autolinker.min';
 
 export default Prism;
