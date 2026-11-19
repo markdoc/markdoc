@@ -43,7 +43,7 @@ export default function render(node: RenderableTreeNodes): string {
 
   let output = `<${name}`;
   for (const [k, v] of Object.entries(attributes ?? {}))
-    if (attributeName.test(k))
+    if (v != null && attributeName.test(k))
       output += ` ${k.toLowerCase()}="${escapeHtml(String(v))}"`;
   output += '>';
 

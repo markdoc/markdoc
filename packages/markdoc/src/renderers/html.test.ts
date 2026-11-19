@@ -78,6 +78,11 @@ describe('HTML renderer', () => {
       expect(render(example)).toEqual('<h1 data-foo="42">test</h1>');
     });
 
+    it('with null and undefined attribute values', () => {
+      const example = tag('p', { a: null, b: undefined, c: false }, ['test']);
+      expect(render(example)).toEqual('<p c="false">test</p>');
+    });
+
     it('with an invalid attribute name', () => {
       const example = tag('p', { 'a>b': 1, 'x y': 2, 'a=b': 3, ok: 4 }, [
         'test',
