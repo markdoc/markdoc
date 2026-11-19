@@ -63,14 +63,10 @@ export default function reactStatic(
   node: RenderableTreeNodes,
   { resolveTagName = tagName }: { resolveTagName?: typeof tagName } = {},
 ): string {
-  // the resolveTagName function *must* be called tagName
-  // throw an error if it does not
-  if (resolveTagName.name !== 'tagName') {
-    throw new Error('resolveTagName must be named tagName');
-  }
+  // Bind the serialized resolver explicitly because bundlers can rename it.
   return `
   (({components = {}} = {}) => {
-    ${resolveTagName}
+    const tagName = (${resolveTagName});
     return ${render(node)};
   })
 `;
