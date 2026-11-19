@@ -54,15 +54,19 @@ export default class Node implements AstType {
   }
 
   resolve(config: Config = {}): Node {
-    return Object.assign(new Node(), this, {
-      children: this.children.map((child) => child.resolve(config)),
-      attributes: resolve(this.attributes, config),
-      slots: Object.fromEntries(
-        Object.entries(this.slots).map(([name, slot]) => [
-          name,
-          slot.resolve(config),
-        ]),
-      ),
+    const node = new Node();
+    const children = this.children.map((child) => child.resolve(config));
+    const attributes = resolve(this.attributes, config);
+    const slots = Object.entries(this.slots);
+
+    return Object.assign(node, this, {
+      children,
+      attributes,
+      slots: slots.length
+        ? Object.fromEntries(
+            slots.map(([name, slot]) => [name, slot.resolve(config)]),
+          )
+        : {},
     });
   }
 
