@@ -26,8 +26,13 @@ export const heading: Schema = {
     level: { type: Number, render: false, required: true },
   },
   transform(node, config) {
+    const level = node.attributes['level'];
+    // The level becomes part of the tag name, so only accept h1-h6. Otherwise
+    // render the children without a wrapping element.
+    if (!(Number.isInteger(level) && level >= 1 && level <= 6))
+      return node.transformChildren(config);
     return new Tag(
-      `h${node.attributes['level']}`,
+      `h${level}`,
       node.transformAttributes(config),
       node.transformChildren(config),
     );
