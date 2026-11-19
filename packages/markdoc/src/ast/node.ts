@@ -43,9 +43,21 @@ export default class Node implements AstType {
   }
 
   *walk(): Generator<Node, void, unknown> {
-    for (const child of [...Object.values(this.slots), ...this.children]) {
+    const stack = [...Object.values(this.slots), ...this.children].reverse();
+    while (stack.length) {
+      const child = stack.pop()!;
       yield child;
-      yield* child.walk();
+
+      const walk = child.walk;
+      if (walk !== defaultWalk) {
+        yield* Reflect.apply(walk, child, []);
+        continue;
+      }
+
+      // Snapshot descendants after yielding their parent, as recursive walk did.
+      const children = [...Object.values(child.slots), ...child.children];
+      for (let index = children.length - 1; index >= 0; index--)
+        stack.push(children[index]);
     }
   }
 
@@ -86,3 +98,6 @@ export default class Node implements AstType {
     return transformer.node(this, config);
   }
 }
+
+// Keep the original method so replacements on the prototype are also delegated.
+const defaultWalk = Node.prototype.walk;

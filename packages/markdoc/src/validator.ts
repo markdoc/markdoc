@@ -308,9 +308,36 @@ export function* walkWithParents(
   node: Node,
   parents: Node[] = [],
 ): Generator<[Node, Node[]]> {
-  yield [node, parents];
-  for (const child of [...Object.values(node.slots), ...node.children])
-    yield* walkWithParents(child, [...parents, node]);
+  const stack: {
+    node: Node;
+    parents: Node[];
+    children: Node[];
+    index: number;
+  }[] = [];
+  let current: [Node, Node[]] = [node, parents];
+
+  while (true) {
+    const [currentNode, currentParents] = current;
+    yield current;
+
+    const children = [
+      ...Object.values(currentNode.slots),
+      ...currentNode.children,
+    ];
+    if (children.length)
+      stack.push({
+        node: currentNode,
+        parents: currentParents,
+        children,
+        index: 0,
+      });
+
+    if (!stack.length) return;
+    const frame = stack[stack.length - 1];
+    // Copy when this child is reached: consumers can mutate yielded parent arrays.
+    current = [frame.children[frame.index++], [...frame.parents, frame.node]];
+    if (frame.index === frame.children.length) stack.pop();
+  }
 }
 
 function hasValidLocation(
