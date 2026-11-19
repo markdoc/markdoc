@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import Markdoc from '../../index';
 import Tag from '../tag';
 import type { RenderableTreeNode } from '../types';
 import render from './html';
@@ -109,5 +110,11 @@ describe('HTML renderer', () => {
       const example = tag('div', undefined, [tag('p>x', undefined, ['test'])]);
       expect(render(example)).toEqual('<div>test</div>');
     });
+  });
+
+  it('rendering a heading with an invalid level annotation', () => {
+    const source = '# Heading {% level="1>x" %}';
+    const html = render(Markdoc.transform(Markdoc.parse(source)));
+    expect(html).toEqual('<article><h1>Heading </h1></article>');
   });
 });
