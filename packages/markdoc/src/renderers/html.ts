@@ -23,6 +23,12 @@ const voidElements = new Set([
   'wbr',
 ]);
 
+// Names are written into the markup verbatim, so reject anything that would
+// end the tag or attribute early. Based on the HTML tokenizer's tag name and
+// attribute name states: https://html.spec.whatwg.org/#tokenization
+const tagName = /^[a-zA-Z][^\s/>\0]*$/;
+const attributeName = /^[^\s"'>/=\0]+$/;
+
 export default function render(node: RenderableTreeNodes): string {
   if (typeof node === 'string' || typeof node === 'number')
     return escapeHtml(String(node));
@@ -33,11 +39,12 @@ export default function render(node: RenderableTreeNodes): string {
 
   const { name, attributes, children = [] } = node;
 
-  if (!name) return render(children);
+  if (!name || !tagName.test(name)) return render(children);
 
   let output = `<${name}`;
   for (const [k, v] of Object.entries(attributes ?? {}))
-    output += ` ${k.toLowerCase()}="${escapeHtml(String(v))}"`;
+    if (attributeName.test(k))
+      output += ` ${k.toLowerCase()}="${escapeHtml(String(v))}"`;
   output += '>';
 
   if (voidElements.has(name)) return output;
