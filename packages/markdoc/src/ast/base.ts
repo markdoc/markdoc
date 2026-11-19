@@ -50,12 +50,17 @@ export function resolve(value: any, config: Config = {}): any {
   if (prototype !== Object.prototype && prototype !== null) return value;
 
   const output: Record<string, Scalar> = Object.create(prototype);
-  for (const [k, v] of Object.entries(value))
-    Object.defineProperty(output, k, {
-      value: resolve(v, config),
-      enumerable: true,
-      configurable: true,
-      writable: true,
-    });
+  for (const [k, v] of Object.entries(value)) {
+    const resolved = resolve(v, config);
+    // Define inherited keys explicitly to bypass setters and read-only properties.
+    if (prototype === null || !(k in output)) output[k] = resolved;
+    else
+      Object.defineProperty(output, k, {
+        value: resolved,
+        enumerable: true,
+        configurable: true,
+        writable: true,
+      });
+  }
   return output;
 }
