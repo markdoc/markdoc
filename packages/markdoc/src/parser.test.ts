@@ -457,6 +457,39 @@ describe('Markdown parser', () => {
       });
     });
 
+    it('with whitespace around the language', () => {
+      for (const info of [' ruby', '\truby', '  ruby  ', ' ruby extra']) {
+        const example = convert(`
+      ${fence}${info}
+      puts "foo"
+      ${fence}
+      `);
+
+        expect(example).toDeepEqualSubset({
+          type: 'document',
+          children: [
+            {
+              type: 'fence',
+              attributes: { language: 'ruby', content: 'puts "foo"\n' },
+            },
+          ],
+        });
+      }
+    });
+
+    it('with whitespace before an annotation and no language', () => {
+      const example = convert(`
+      ${fence} {% #foo %}
+      test
+      ${fence}
+      `);
+
+      expect(example.children[0].attributes).toEqual({
+        id: 'foo',
+        content: 'test\n',
+      });
+    });
+
     it('with an annotation', () => {
       const example = convert(`
       ${fence}ruby {% #foo .bar %}
