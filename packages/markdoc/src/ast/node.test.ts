@@ -7,6 +7,65 @@ import Node from './node';
 import Variable from './variable';
 
 describe('Node object', () => {
+  it('resolves into independent children, slots, and nested attributes', () => {
+    const node = new Node('tag', {
+      nested: { values: [new Variable(['value'])] },
+    });
+    node.children.push(new Node('text', { content: new Variable(['value']) }));
+    node.slots.title = new Node('text', {
+      content: new FunctionNode('identity', { 0: new Variable(['value']) }),
+    });
+    const config = {
+      variables: { value: 'resolved' },
+      functions: { identity: { transform: (parameters) => parameters[0] } },
+    };
+    const resolved = node.resolve(config);
+
+    expect(resolved).not.toBe(node);
+    expect(Object.getPrototypeOf(resolved)).toBe(Node.prototype);
+    expect(Object.keys(resolved)).toEqual(Object.keys(node));
+    expect(resolved.attributes.nested).toEqual({ values: ['resolved'] });
+    expect(resolved.children[0].attributes.content).toBe('resolved');
+    expect(resolved.slots.title.attributes.content).toBe('resolved');
+    expect(resolved.children).not.toBe(node.children);
+    expect(resolved.children[0]).not.toBe(node.children[0]);
+    expect(resolved.slots).not.toBe(node.slots);
+    expect(resolved.slots.title).not.toBe(node.slots.title);
+    expect(resolved.attributes).not.toBe(node.attributes);
+    expect(resolved.attributes.nested).not.toBe(node.attributes.nested);
+    expect(resolved.attributes.nested.values).not.toBe(
+      node.attributes.nested.values,
+    );
+
+    resolved.children[0].attributes.content = 'changed';
+    resolved.slots.title.attributes.content = 'changed';
+    resolved.attributes.nested.values.push('changed');
+    const again = node.resolve(config);
+    expect(again.children[0].attributes.content).toBe('resolved');
+    expect(again.slots.title.attributes.content).toBe('resolved');
+    expect(again.attributes.nested.values).toEqual(['resolved']);
+  });
+
+  it('restores missing defaults and preserves metadata while resolving', () => {
+    const node = new Node('text', { content: 'example' });
+    const initialKeys = Object.keys(node);
+    Reflect.deleteProperty(node, 'inline');
+    Reflect.deleteProperty(node, 'errors');
+    Reflect.deleteProperty(node, 'annotations');
+    node.lines = [1, 2];
+
+    const resolved = node.resolve();
+    const another = node.resolve();
+    expect(Object.keys(resolved)).toEqual(initialKeys);
+    expect(resolved.inline).toBe(false);
+    expect(resolved.errors).toEqual([]);
+    expect(resolved.annotations).toEqual([]);
+    expect(resolved.errors).not.toBe(another.errors);
+    expect(resolved.annotations).not.toBe(another.annotations);
+    expect(resolved.lines).toBe(node.lines);
+    expect(resolved.slots).not.toBe(node.slots);
+  });
+
   it('copies only own attributes into a prototype-free dictionary', () => {
     const attributes = Object.assign(Object.create({ inherited: 'value' }), {
       own: 'value',
@@ -169,6 +228,19 @@ describe('transform', () => {
 
       const output = transform(example);
       expect(output).toDeepEqual(new Tag('h1', {}, ['This is a heading']));
+    });
+
+    it('a heading node with an invalid level', () => {
+      const levels = ['1>x', '2', 0, 7, 1.5];
+      for (const level of levels) {
+        const example = new Node('heading', { level }, [
+          new Node('inline', {}, [
+            new Node('text', { content: 'This is a heading' }),
+          ]),
+        ]);
+
+        expect(transform(example)).toDeepEqual(['This is a heading']);
+      }
     });
 
     describe('fenced code blocks', () => {
