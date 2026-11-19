@@ -1,5 +1,11 @@
 # @markdoc/markdoc
 
+## 0.5.14
+
+### Patch Changes
+
+- cfe43ee: Harden heading level handling and HTML tag and attribute name serialization in the HTML renderer. The HTML renderer also omits `null` and `undefined` attribute values.
+
 ## 0.5.13
 
 ### Patch Changes
