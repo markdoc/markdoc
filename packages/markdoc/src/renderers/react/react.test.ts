@@ -140,6 +140,26 @@ describe('React dynamic renderer', () => {
 });
 
 describe('React static renderer', () => {
+  it.each([
+    [
+      'a renamed function',
+      function renamedResolver(_name, components) {
+        return components.Foo;
+      },
+    ],
+    ['an arrow function', (_name, components) => components.Foo],
+  ])('rendering with %s as the tag resolver', (_label, resolveTagName) => {
+    const example = new Tag('Custom', undefined, ['test']);
+    const code = renderStatic(example, { resolveTagName });
+    const output = eval(code)({ components: { Foo: 'bar' } });
+
+    expect(output).toDeepEqual({
+      name: 'bar',
+      attributes: null,
+      children: ['test'],
+    });
+  });
+
   it('rendering a null node', () => {
     const example = { name: 'h1', children: ['test', null] };
     const code = renderStatic(example);
