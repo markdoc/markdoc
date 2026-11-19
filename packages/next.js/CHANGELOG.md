@@ -1,5 +1,13 @@
 # @markdoc/next.js
 
+## 0.7.1
+
+### Patch Changes
+
+- f51c920: Update the minimum js-yaml dependency to 4.3.2.
+- Updated dependencies [89aa830]
+  - @markdoc/markdoc@0.5.15
+
 ## 0.7.0
 
 ### Minor Changes
