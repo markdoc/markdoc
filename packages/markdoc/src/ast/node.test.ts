@@ -171,6 +171,19 @@ describe('transform', () => {
       expect(output).toDeepEqual(new Tag('h1', {}, ['This is a heading']));
     });
 
+    it('a heading node with an invalid level', () => {
+      const levels = ['1>x', '2', 0, 7, 1.5];
+      for (const level of levels) {
+        const example = new Node('heading', { level }, [
+          new Node('inline', {}, [
+            new Node('text', { content: 'This is a heading' }),
+          ]),
+        ]);
+
+        expect(transform(example)).toDeepEqual(['This is a heading']);
+      }
+    });
+
     describe('fenced code blocks', () => {
       it('fenced code block with language', () => {
         const example = new Node('fence', {
