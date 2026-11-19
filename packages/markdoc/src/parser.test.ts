@@ -656,6 +656,27 @@ describe('Markdown parser', () => {
           ],
         });
       });
+
+      it('with a valid level', () => {
+        const example = convert(`# Sample Heading {% level=2 %}`);
+        const heading = example.children[0];
+        expect(heading.attributes.level).toEqual(2);
+        expect(heading.errors).toDeepEqualSubset([
+          { id: 'duplicate-attribute', level: 'warning' },
+        ]);
+      });
+
+      it('with an invalid level', () => {
+        const levels = ['"1>x"', '"2"', '0', '7'];
+        for (const level of levels) {
+          const example = convert(`# Sample Heading {% level=${level} %}`);
+          const heading = example.children[0];
+          expect(heading.attributes.level).toEqual(1);
+          expect(heading.errors).toDeepEqualSubset([
+            { id: 'attribute-value-invalid', level: 'error' },
+          ]);
+        }
+      });
     });
   });
 

@@ -26,6 +26,19 @@ function annotate(node: Node, attributes: AttributeValue[]) {
         continue;
       }
 
+      if (
+        node.type === 'heading' &&
+        name === 'level' &&
+        !(Number.isInteger(value) && value >= 1 && value <= 6)
+      ) {
+        node.errors.push({
+          id: 'attribute-value-invalid',
+          level: 'error',
+          message: `Invalid heading level: '${value}'`,
+        });
+        continue;
+      }
+
       // biome-ignore lint/suspicious/noPrototypeBuiltins: Object.hasOwn requires ES2022; Markdoc targets ES2021.
       if (Object.prototype.hasOwnProperty.call(node.attributes, name))
         node.errors.push({
