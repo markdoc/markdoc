@@ -7,7 +7,6 @@
     "start": "next start",
     "lint": "eslint app components lib markdoc next.config.js",
     "test": "node --test tests/*.test.mjs",
-    "deploy": "vercel",
     "spec": "spec-md spec/index.md > public/spec.html"
   },
   "dependencies": {
@@ -23,13 +22,12 @@
     "react": "19.3.1",
     "react-codemirror2": "^9.0.1",
     "react-dom": "19.3.1",
-    "sharp": "^0.34.5",
+    "sharp": "^0.35.5",
     "styled-jsx": "^5.1.7"
   },
   "devDependencies": {
     "eslint": "9.39.5",
     "eslint-config-next": "16.4.2",
-    "spec-md": "^3.1.0",
-    "vercel": "^50.44.0"
+    "spec-md": "^3.1.0"
   }
 }
