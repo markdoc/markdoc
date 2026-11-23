@@ -13,6 +13,12 @@ function tag(
 }
 
 describe('HTML renderer', () => {
+  it('rendering an image with a plain text alt', () => {
+    const doc = Markdoc.parse('![foo *bar* a&amp;b](/u)');
+    const html = render(Markdoc.transform(doc));
+    expect(html).toContain('alt="foo bar a&amp;b"');
+  });
+
   it('rendering a tag', () => {
     const example = render(tag('h1', undefined, ['test'])).trim();
     expect(example).toEqual('<h1>test</h1>');
