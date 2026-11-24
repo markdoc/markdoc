@@ -67,7 +67,7 @@ export const fence: Schema = {
       ? node.transformChildren(config)
       : [node.attributes.content];
 
-    return new Tag('pre', attributes, children);
+    return new Tag(this.render ?? 'pre', attributes, children);
   },
 };
 
@@ -225,7 +225,9 @@ export const code: Schema = {
   },
   transform(node, config) {
     const attributes = node.transformAttributes(config);
-    return new Tag('code', attributes, [node.attributes.content]);
+    return new Tag(this.render ?? 'code', attributes, [
+      node.attributes.content,
+    ]);
   },
 };
 
