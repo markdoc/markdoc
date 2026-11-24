@@ -183,3 +183,52 @@ test('sitemap and robots cover every content route and the specification', async
     /Sitemap: https:\/\/markdoc.dev\/sitemap.xml/
   );
 });
+
+test('skill discovery serves the plugin skills and all supporting files', async () => {
+  const response = await fetch(`${origin}/.well-known/skills/index.json`);
+  assert.equal(response.status, 200);
+  assert.match(response.headers.get('content-type'), /application\/json/);
+  const { skills } = await response.json();
+  assert.deepEqual(skills.map(({ name }) => name).sort(), [
+    'create-markdoc-tag',
+    'setup-markdoc',
+    'write-markdoc'
+  ]);
+
+  for (const skill of skills) {
+    const directory = path.resolve(
+      appDir, '../../plugins/markdoc/skills', skill.name
+    );
+    const source = await readFile(path.join(directory, 'SKILL.md'), 'utf8');
+    const metadata = yaml.load(source.match(/^---\n([\s\S]*?)\n---/)[1]);
+    assert.equal(skill.description, metadata.description);
+    assert.ok(skill.files.includes('SKILL.md'));
+    assert.ok(skill.files.includes('agents/openai.yaml'));
+    assert.ok(skill.files.some((file) => file.startsWith('references/')));
+
+    for (const file of skill.files) {
+      const result = await fetch(
+        `${origin}/.well-known/skills/${skill.name}/${file}`
+      );
+      assert.equal(result.status, 200, `${skill.name}/${file}`);
+      assert.deepEqual(
+        Buffer.from(await result.arrayBuffer()),
+        await readFile(path.join(directory, file))
+      );
+      if (file.endsWith('.md')) {
+        assert.match(result.headers.get('content-type'), /text\/markdown/);
+      }
+    }
+  }
+});
+
+test('skill routes reject unknown skills and unlisted files', async () => {
+  for (const file of [
+    'unknown/SKILL.md',
+    'setup-markdoc/package.json',
+    'setup-markdoc/%2e%2e%2f%2e%2e%2fplugin.json'
+  ]) {
+    const response = await fetch(`${origin}/.well-known/skills/${file}`);
+    assert.equal(response.status, 404, file);
+  }
+});

@@ -50,7 +50,13 @@ Check out [our docs](https://markdoc.dev/docs) for more guidance on how to use M
 
 The [Markdoc agent plugin](https://github.com/markdoc/markdoc/tree/main/plugins/markdoc)
 provides `setup-markdoc`, `write-markdoc`, and `create-markdoc-tag` skills for
-Codex and Claude Code. See its README for installation.
+Codex and Claude Code. Install them through [skills.sh](https://skills.sh/docs/cli):
+
+```sh
+pnpm dlx skills add https://markdoc.dev
+```
+
+See the plugin README for marketplace installation and local testing.
 
 ### TypeScript
 

@@ -14,14 +14,31 @@ examples, with no runtime dependencies, hooks, or connected services.
 
 ## Install
 
-### Codex
+### skills.sh
+
+From your application's directory, use the [skills CLI](https://skills.sh/docs/cli)
+to install the skills for Codex and Claude Code:
+
+```sh
+pnpm dlx skills add https://markdoc.dev --agent codex claude-code
+```
+
+With npm, run `npx skills add https://markdoc.dev`. Choose the
+skills and agents when prompted, or use `--skill write-markdoc` to select one.
+Installation is project-local by default; add `--global` to use it across projects.
+You can also use `markdoc/markdoc` as the source to install from GitHub.
+
+This installs standalone skills. The marketplace commands below install them
+together as the `markdoc` plugin.
+
+### Codex plugin
 
 ```sh
 codex plugin marketplace add markdoc/markdoc
 codex plugin add markdoc@markdoc-plugins
 ```
 
-### Claude Code
+### Claude Code plugin
 
 ```sh
 claude plugin marketplace add markdoc/markdoc
@@ -38,13 +55,30 @@ choosing an implementation.
 
 ## Local development
 
-From the Markdoc repository root, add the local marketplace using `.` in place
-of `markdoc/markdoc` in the commands above. Claude Code also supports loading the
-plugin for a single session:
+Check the local plugin in Claude Code without installing it, from the repository
+root:
 
 ```sh
+claude --plugin-dir ./plugins/markdoc plugin list
 claude --plugin-dir ./plugins/markdoc
 ```
+
+The list should show `markdoc@inline` as loaded. In the session, open `/plugin`
+to inspect its three skills, or invoke `/markdoc:write-markdoc`. Use
+`/reload-plugins` after editing skill files.
+
+For Codex, register the local marketplace from the repository root:
+
+```sh
+codex plugin marketplace add .
+codex plugin add markdoc@markdoc-plugins
+codex plugin list --marketplace markdoc-plugins
+```
+
+Start a fresh Codex session in a consuming application and check that all three
+skills appear in the skill picker. Select one and confirm it can read its
+supporting reference. To test a pushed branch, use
+`codex plugin marketplace add markdoc/markdoc --ref BRANCH` instead of `.`.
 
 Validate Claude Code's plugin and marketplace manifests from the repository root:
 
@@ -52,6 +86,18 @@ Validate Claude Code's plugin and marketplace manifests from the repository root
 claude plugin validate ./plugins/markdoc
 claude plugin validate .
 ```
+
+For skills.sh, list the local skills without installing them:
+
+```sh
+pnpm dlx skills add ./plugins/markdoc --list
+```
+
+To test a pushed branch, use
+`https://github.com/markdoc/markdoc/tree/BRANCH` as the source. To test website
+discovery before deployment, start the docs site and run
+`pnpm dlx skills add http://localhost:3000 --list`. Each should list
+`setup-markdoc`, `write-markdoc`, and `create-markdoc-tag`.
 
 The plugin version is separate from the npm package versions. Keep `plugin.json`
 and `.claude-plugin/plugin.json` versions in sync when releasing plugin changes.
