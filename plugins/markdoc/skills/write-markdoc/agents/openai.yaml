@@ -1,0 +1,3 @@
+interface:
+  display_name: "Write Markdoc"
+  short_description: "Write and edit Markdoc documents"

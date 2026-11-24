@@ -1,0 +1,3 @@
+interface:
+  display_name: "Set up Markdoc"
+  short_description: "Add Markdoc to an application"

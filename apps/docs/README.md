@@ -28,6 +28,18 @@ To regenerate the language specification, run `pnpm exec turbo run spec --filter
 Run `pnpm test --filter=@markdoc/docs` to build the site and check every route,
 metadata, redirects, and crawler endpoints against a production server.
 
+## Agent skills
+
+The site publishes the skills from `plugins/markdoc/skills` at
+`/.well-known/skills/index.json`, with their instructions and metadata under
+`/.well-known/skills/<name>/`. The routes are generated during the production
+build, and skill source changes invalidate the docs build cache.
+
+Consumers can install them with `pnpm dlx skills add https://markdoc.dev` or
+`npx skills add https://markdoc.dev`. See the
+[plugin README](../../plugins/markdoc/README.md) for client installation and local
+testing. Edit the plugin source files to update both distribution paths.
+
 ## Routing and content
 
 The app uses Next.js 16's App Router and Turbopack. Each document is a native

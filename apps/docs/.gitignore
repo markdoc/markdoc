@@ -1,6 +1,8 @@
 node_modules
 .DS_Store
 .next
+next-env.d.ts
+*.tsbuildinfo
 *.log
 yarn.lock
 out/

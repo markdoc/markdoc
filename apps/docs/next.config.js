@@ -5,7 +5,7 @@ module.exports = withMarkdoc()({
   reactStrictMode: true,
   outputFileTracingRoot: path.join(__dirname, '../..'),
   turbopack: { root: path.join(__dirname, '../..') },
-  pageExtensions: ['js', 'md', 'mdoc'],
+  pageExtensions: ['js', 'ts', 'tsx', 'md', 'mdoc'],
   redirects() {
     return [
       {

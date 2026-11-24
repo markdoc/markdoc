@@ -1,0 +1,14 @@
+{
+  "name": "markdoc-plugins",
+  "description": "Build documentation with Markdoc.",
+  "owner": {
+    "name": "Markdoc"
+  },
+  "plugins": [
+    {
+      "name": "markdoc",
+      "source": "./plugins/markdoc",
+      "description": "Build documentation with Markdoc."
+    }
+  ]
+}
