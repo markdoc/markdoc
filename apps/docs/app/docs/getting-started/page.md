@@ -5,7 +5,7 @@ description: How to get started with Markdoc
 
 # {% $markdoc.frontmatter.title %}
 
-Follow the instructions below to install Markdoc in your app. Or check out our [integration guide](/docs/nextjs) to help you build a documentation site. 
+Follow the instructions below to install Markdoc in your app. Or check out our [integration guide](/docs/examples/nextjs) to help you build a documentation site. 
 
 ## Install Markdoc
 

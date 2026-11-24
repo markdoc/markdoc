@@ -15,4 +15,4 @@ The `title` and `description` in frontmatter automatically become the page's Nex
 
 ## Get started from scratch
 
-Read the [Next.js integration guide](https://markdoc.dev/docs/nextjs), explore the [Markdoc documentation](https://markdoc.dev/docs/getting-started), or copy this [example directory](https://github.com/markdoc/markdoc/tree/main/apps/docs/examples/simple-nextjs) into your own project.
+Read the [Next.js integration guide](https://markdoc.dev/docs/examples/nextjs), explore the [Markdoc documentation](https://markdoc.dev/docs/getting-started), or copy this [example directory](https://github.com/markdoc/markdoc/tree/main/apps/docs/examples/simple-nextjs) into your own project.
