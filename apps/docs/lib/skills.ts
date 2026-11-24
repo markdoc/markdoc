@@ -4,7 +4,13 @@ import yaml from 'js-yaml';
 
 const skillsRoot = path.resolve(process.cwd(), '../../plugins/markdoc/skills');
 
-export async function getSkills() {
+type Skill = {
+  name: string;
+  description: string;
+  files: string[];
+};
+
+export async function getSkills(): Promise<Skill[]> {
   const entries = await readdir(skillsRoot, { withFileTypes: true });
   const names = entries
     .filter((entry) => entry.isDirectory())
@@ -19,7 +25,14 @@ export async function getSkills() {
         /^---\r?\n([\s\S]*?)\r?\n---(?:\r?\n|$)/,
       );
       const metadata = frontmatter && yaml.load(frontmatter[1]);
-      if (metadata?.name !== name || typeof metadata.description !== 'string') {
+      if (
+        !metadata ||
+        typeof metadata !== 'object' ||
+        !('name' in metadata) ||
+        metadata.name !== name ||
+        !('description' in metadata) ||
+        typeof metadata.description !== 'string'
+      ) {
         throw new Error(`Invalid skill metadata: ${name}`);
       }
 
@@ -44,7 +57,7 @@ export async function getSkills() {
   );
 }
 
-export async function readSkillFile(segments) {
+export async function readSkillFile(segments: string[]) {
   const [name, ...parts] = segments;
   const file = parts.join('/');
   const skill = (await getSkills()).find((skill) => skill.name === name);

@@ -9,14 +9,17 @@ export async function generateStaticParams() {
   );
 }
 
-export async function GET(_request, { params }) {
+export async function GET(
+  _request: Request,
+  { params }: { params: Promise<{ file: string[] }> },
+) {
   const { file } = await params;
   const content = await readSkillFile(file);
   if (content === null) return new Response(null, { status: 404 });
 
-  return new Response(content, {
+  return new Response(new Uint8Array(content), {
     headers: {
-      'Content-Type': file.at(-1).endsWith('.md')
+      'Content-Type': file.at(-1)?.endsWith('.md')
         ? 'text/markdown; charset=utf-8'
         : 'text/plain; charset=utf-8',
     },
