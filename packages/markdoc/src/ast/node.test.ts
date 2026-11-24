@@ -254,6 +254,28 @@ describe('transform', () => {
           new Tag('pre', { 'data-language': 'ruby' }, ['test']),
         );
       });
+
+      it('fenced code block with a custom render', () => {
+        const example = new Node('fence', {
+          language: 'ruby',
+          content: 'test',
+          process: false,
+        });
+        const output = transform(example, {
+          nodes: { fence: { ...markdoc.nodes.fence, render: 'Code' } },
+        });
+        expect(output).toDeepEqual(
+          new Tag('Code', { 'data-language': 'ruby' }, ['test']),
+        );
+      });
+    });
+
+    it('an inline code node with a custom render', () => {
+      const example = new Node('code', { content: 'test' });
+      const output = transform(example, {
+        nodes: { code: { ...markdoc.nodes.code, render: 'InlineCode' } },
+      });
+      expect(output).toDeepEqual(new Tag('InlineCode', {}, ['test']));
     });
   });
 
