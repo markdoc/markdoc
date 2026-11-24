@@ -21,40 +21,33 @@ description: From personal blogs to massive documentation sites, Markdoc is a co
 
 {% section .value-props %}
 
-{% table %}
+{% valuePropositions %}
 
----
+{% valueProposition icon="key" %}
 
-- {% ascii "key" /%}
+### Open source {% .jumbo %}
 
-  {% item %}
+Maintain full control over your code and content. Markdoc is open-source and fully extensible.
 
-  ### Open source {% .jumbo %}
+{% /valueProposition %}
 
-  Maintain full control over your code and content. Markdoc is open-source and fully extensible.
-  {% /item %}
+{% valueProposition icon="pencil" %}
 
-- {% ascii "pencil" /%}
+### Developer & writer friendly {% .jumbo %}
 
-  {% item %}
+Markdoc delivers a powerful, flexible, developer experience (DX) with an equally capable authoring experience (AX).
 
-  ### Developer & writer friendly {% .jumbo %}
+{% /valueProposition %}
 
-  Markdoc delivers a powerful, flexible, developer experience (DX) with an equally capable authoring experience (AX).
+{% valueProposition icon="card" %}
 
-  {% /item %}
+### Adopt anywhere {% .jumbo %}
 
-- {% ascii "card" /%}
+Use Markdoc to create interactive documentation experiences, static content sites, authoring tooling, and more.
 
-  {% item %}
+{% /valueProposition %}
 
-  ### Adopt anywhere {% .jumbo %}
-
-  Use Markdoc to create interactive documentation experiences, static content sites, authoring tooling, and more.
-
-  {% /item %}
-
-{% /table %}
+{% /valuePropositions %}
 
 {% /section %}
 
@@ -70,7 +63,7 @@ description: From personal blogs to massive documentation sites, Markdoc is a co
 
 [Explore documentation](/docs/getting-started) {% .primary %}
 
-[Live edit]() {% .primary %} {% .live-edit %}
+[Live edit](/sandbox) {% .primary %} {% .live-edit %}
 
 {% /item %}
 

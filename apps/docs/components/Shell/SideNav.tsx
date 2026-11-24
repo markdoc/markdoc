@@ -39,6 +39,7 @@ const items = [
     links: [
       { href: '/docs/examples', children: 'Common examples' },
       { href: '/docs/examples/html', children: 'Using with HTML' },
+      { href: '/docs/examples/markdown', children: 'Using with Markdown' },
       { href: '/docs/examples/nextjs', children: 'Using with Next.js' },
       { href: '/docs/examples/react', children: 'Using with React' }
     ]

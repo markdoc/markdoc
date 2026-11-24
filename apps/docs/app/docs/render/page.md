@@ -93,7 +93,7 @@ You can see a more advanced renderable tree in the [developer playground](/sandb
 
 ## Render
 
-Render takes in a renderable tree and converts it into rendered output. For `html`, that means creating an HTML document as a string. For `react`, it means creating a [React element](https://reactjs.org/docs/render-elements.html).
+Render takes in a renderable tree and converts it into rendered output. For `html`, that means creating an HTML document as a string. For `react`, it means creating a [React element](https://reactjs.org/docs/render-elements.html). For `md`, it means creating a Markdown string.
 
 You can create your own renderer by creating a function that takes in a renderable tree as a parameter and returns your desired output.
 
@@ -236,6 +236,101 @@ app.get('/docs/getting-started', (req, res) => {
 {% /item %}
 
 {% /sideBySide %}
+
+### Markdown
+
+```ts
+renderers.md(RenderableTreeNode | RenderableTreeNode[], ?MarkdownRenderOptions) => string
+```
+
+Markdoc can render the same renderable tree as Markdown ([CommonMark](https://commonmark.org/) with [GFM](https://github.github.com/gfm/) tables and strikethrough). This is useful for serving your content to LLMs and other plain-text consumers alongside your HTML or React pages. If you use Next.js, `@markdoc/next.js` can [serve every page as Markdown](/docs/examples/nextjs#serving-markdown) for you.
+
+\
+To render Markdown, first create a renderable tree by calling `transform`:
+
+{% example %}
+
+```js
+const doc = `
+# Getting started
+
+Run this command to install the **Markdoc** library:
+
+{% callout %}
+Requires Node.js 20 or later.
+{% /callout %}
+`;
+
+const ast = Markdoc.parse(doc);
+const content = Markdoc.transform(ast, config);
+```
+
+{% /example %}
+
+\
+Then, call `Markdoc.renderers.md` with your renderable tree.
+
+{% sideBySide %}
+
+```js
+const markdown = Markdoc.renderers.md(content);
+```
+
+{% item %}
+
+```md
+# Getting started
+
+Run this command to install the **Markdoc** library:
+
+Requires Node.js 20 or later.
+```
+
+{% /item %}
+
+{% /sideBySide %}
+
+Because the renderer takes the output of `transform`, variables, conditionals, and partials are already resolved. Information removed during transformation, such as frontmatter, annotations, and the original whitespace or Markdown markers, is not reconstructed. A string passed to the renderer is treated as literal text, not as Markdoc source, and literal text is escaped so that it keeps its meaning.
+
+#### Custom handlers
+
+Standard Markdoc nodes render without configuration. Any other element, including your custom components, renders only its children, which is why the callout above became a plain paragraph.
+
+To convert an element differently, add a handler keyed by its rendered name: the `render` value in your schema (`Callout`), not the tag name in your source (`callout`). A handler returns Markdown AST nodes built with `Markdoc.Ast.Node`. Use `'children'` to render only the children, or `'none'` to omit the element and everything inside it.
+
+{% sideBySide %}
+
+```js
+const markdown = Markdoc.renderers.md(content, {
+  handlers: {
+    Callout: (tag, { renderChildren }) =>
+      new Markdoc.Ast.Node('blockquote', {}, renderChildren(tag.children)),
+    Layout: 'children',
+    CopyButton: 'none'
+  }
+});
+```
+
+{% item %}
+
+```md
+# Getting started
+
+Run this command to install the **Markdoc** library:
+
+> Requires Node.js 20 or later.
+```
+
+{% /item %}
+
+{% /sideBySide %}
+
+Handlers can also override standard elements, such as `table` or `pre`. They can't return Markdoc tags or unresolved variables.
+
+#### Limitations
+
+- Tables render as compact GFM pipe tables with a single header row. Headerless tables get an empty header, and ragged rows are padded. Cell spans, nested tables, and block content inside cells (such as paragraphs, lists, and code blocks) can't be represented, so their text is kept in row order on a single line. Add a `table` handler if you need richer output.
+- The Markdown renderer doesn't sanitize HTML or validate URLs. Link and image destinations are kept as supplied, including relative URLs, so make them absolute first if your output will be read outside your site.
 
 ### Create your own
 
