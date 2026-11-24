@@ -42,7 +42,7 @@ description: How to get started with Markdoc
 Customize `markdoc/config.js`, `markdoc/functions.js`, `markdoc/nodes/index.js`,
 and `markdoc/tags/index.js` to extend the schema. All four entry points are
 included so the loader can resolve them with Turbopack. See the
-[Next.js integration guide](https://markdoc.dev/docs/nextjs) for more options.
+[Next.js integration guide](https://markdoc.dev/docs/examples/nextjs) for more options.
 `js-yaml` is a direct dependency because the generated Markdoc pages import it
 to read frontmatter.
 

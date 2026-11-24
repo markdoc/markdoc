@@ -246,4 +246,4 @@ Try creating your own for [Vue](https://vuejs.org/), [Svelte](https://svelte.dev
 
 - [Validate your content](/docs/validation)
 - [Check out common examples](/docs/examples)
-- [Build a documentation site quickly](/docs/nextjs)
+- [Build a documentation site quickly](/docs/examples/nextjs)

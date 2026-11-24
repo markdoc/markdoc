@@ -69,7 +69,7 @@ The first thing you'll need to do is install `@markdoc/next.js` and add it to yo
    # Get started with Markdoc
    ```
 
-See [our docs](https://markdoc.dev/docs/nextjs) for more options.
+See [our docs](https://markdoc.dev/docs/examples/nextjs) for more options.
 
 ## App Router
 

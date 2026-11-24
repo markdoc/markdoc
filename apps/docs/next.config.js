@@ -17,6 +17,11 @@ module.exports = withMarkdoc()({
         source: '/docs',
         destination: '/docs/getting-started',
         permanent: false
+      },
+      {
+        source: '/docs/nextjs',
+        destination: '/docs/examples/nextjs',
+        permanent: true
       }
     ];
   },

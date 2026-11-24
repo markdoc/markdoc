@@ -59,7 +59,7 @@
   "bugs": {
     "url": "https://github.com/markdoc/markdoc/issues"
   },
-  "homepage": "https://markdoc.dev/docs/nextjs",
+  "homepage": "https://markdoc.dev/docs/examples/nextjs",
   "typesVersions": {
     "*": {
       "index": [
