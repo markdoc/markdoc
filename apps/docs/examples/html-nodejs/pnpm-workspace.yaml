@@ -1,0 +1,5 @@
+# Keep this example independent of the containing monorepo when run in place.
+packages:
+  - '.'
+
+minimumReleaseAge: 44640 # 31 days, matching the repository policy

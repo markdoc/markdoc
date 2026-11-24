@@ -19,7 +19,7 @@ pnpm dev
 You can also copy this directory into its own repository and run the same pnpm
 commands there. Its `pnpm-workspace.yaml` keeps installs local to this example,
 and `pnpm-lock.yaml` pins its dependencies. New dependency resolutions use the
-same seven-day release-age policy as the main repository.
+same 31-day release-age policy as the main repository.
 
 Open [http://localhost:3000](http://localhost:3000) and edit `app/page.md`.
 The page updates as you edit it. To add a route, create a file such as

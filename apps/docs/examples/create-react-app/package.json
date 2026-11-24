@@ -1,10 +1,13 @@
 {
+  "name": "markdoc-create-react-app",
   "private": true,
+  "packageManager": "pnpm@10.34.7",
   "dependencies": {
     "@markdoc/markdoc": "latest",
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
+    "express": "^4.22.3",
     "glob": "^8.1.0",
     "js-yaml": "^4.3.2",
     "react": "^18.3.1",
@@ -15,7 +18,7 @@
   "scripts": {
     "start:client": "react-scripts start",
     "start:server": "node server.js",
-    "start": "concurrently \"yarn start:client\" \"yarn start:server\"",
+    "start": "concurrently \"pnpm start:client\" \"pnpm start:server\"",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"

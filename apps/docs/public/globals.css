@@ -819,7 +819,7 @@ main {
   padding: 25px;
 }
 
-/* Make "npm install" code block thinner */
+/* Make the install command's code block thinner */
 .page--landing .code:first-of-type pre[class*='language-'] {
   padding: 20px 25px;
 }

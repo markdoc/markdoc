@@ -158,11 +158,11 @@ Follow these steps to build a Markdoc app with [`create-react-app`](https://crea
 
 6. Start up the client and server
    ```shell
-   npm run start:client
+   pnpm start:client
    ```
    and
    ```shell
-   npm run start:server
+   pnpm start:server
    ```
 
 \

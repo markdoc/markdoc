@@ -1,5 +1,7 @@
 {
+  "name": "markdoc-html-nodejs",
   "private": true,
+  "packageManager": "pnpm@10.34.7",
   "dependencies": {
     "@markdoc/markdoc": "latest",
     "express": "^4.22.3",

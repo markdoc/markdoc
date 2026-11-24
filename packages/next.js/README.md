@@ -10,7 +10,7 @@ The first thing you'll need to do is install `@markdoc/next.js` and add it to yo
 
 1. From your project, run this command to install `@markdoc/next.js`:
    ```sh
-   npm install @markdoc/next.js @markdoc/markdoc
+   pnpm add @markdoc/next.js @markdoc/markdoc
    ```
 2. Open `next.config.js` and add the following code:
 

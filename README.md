@@ -106,7 +106,7 @@ Run these commands from the repository root:
 Add release notes with `pnpm changeset`. See the [Changesets guide](.changeset/README.md)
 for versioning and the release process.
 
-Run `pnpm run check` for all CI checks. Turborepo builds workspace dependencies
+Run `pnpm run check` for the workspace checks. Turborepo builds workspace dependencies
 first and caches build outputs in each package's `dist` directory.
 
 To work on Markdoc alone, use `pnpm --filter @markdoc/markdoc test` or
@@ -124,6 +124,10 @@ to build both packages and check the integration's runtime and published types.
 Run `pnpm dev --filter=@markdoc/docs` to develop the documentation site using the
 local packages. See the [app README](apps/docs/README.md) for environment and
 deployment setup.
+
+The projects in `apps/docs/examples/` have independent pnpm workspaces and
+lockfiles. From an example's directory, run `pnpm install --frozen-lockfile`,
+then follow its README to start the app. CI builds each example separately.
 
 ## Code of conduct
 

@@ -1,5 +1,7 @@
 {
+  "name": "markdoc-react-nodejs",
   "private": true,
+  "packageManager": "pnpm@10.34.7",
   "type": "module",
   "scripts": {
     "start:client": "vite",
