@@ -202,9 +202,7 @@ test('skill discovery serves the plugin skills and all supporting files', async 
     const source = await readFile(path.join(directory, 'SKILL.md'), 'utf8');
     const metadata = yaml.load(source.match(/^---\n([\s\S]*?)\n---/)[1]);
     assert.equal(skill.description, metadata.description);
-    assert.ok(skill.files.includes('SKILL.md'));
-    assert.ok(skill.files.includes('agents/openai.yaml'));
-    assert.ok(skill.files.some((file) => file.startsWith('references/')));
+    assert.deepEqual([...skill.files].sort(), ['SKILL.md', 'agents/openai.yaml']);
 
     for (const file of skill.files) {
       const result = await fetch(
@@ -226,6 +224,7 @@ test('skill routes reject unknown skills and unlisted files', async () => {
   for (const file of [
     'unknown/SKILL.md',
     'setup-markdoc/package.json',
+    'setup-markdoc/references/rendering.md',
     'setup-markdoc/%2e%2e%2f%2e%2e%2fplugin.json'
   ]) {
     const response = await fetch(`${origin}/.well-known/skills/${file}`);

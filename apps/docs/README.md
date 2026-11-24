@@ -31,7 +31,7 @@ metadata, redirects, and crawler endpoints against a production server.
 ## Agent skills
 
 The site publishes the skills from `plugins/markdoc/skills` at
-`/.well-known/skills/index.json`, with their source and reference files under
+`/.well-known/skills/index.json`, with their instructions and metadata under
 `/.well-known/skills/<name>/`. The routes are generated during the production
 build, and skill source changes invalidate the docs build cache.
 

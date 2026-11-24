@@ -9,8 +9,9 @@ Three skills for building with Markdoc in Codex and Claude Code:
 - [create-markdoc-tag](skills/create-markdoc-tag/SKILL.md): define a custom tag,
   its schema, and its rendered element or component.
 
-Both clients load the same skill files. The plugin contains instructions and
-examples, with no runtime dependencies, hooks, or connected services.
+Both clients load the same skill files. Each skill provides a task workflow and
+fetches relevant documentation from markdoc.dev for APIs and examples. The
+plugin has no runtime dependencies, hooks, or connected services.
 
 ## Install
 
@@ -77,7 +78,7 @@ codex plugin list --marketplace markdoc-plugins
 
 Start a fresh Codex session in a consuming application and check that all three
 skills appear in the skill picker. Select one and confirm it can read its
-supporting reference. To test a pushed branch, use
+linked documentation. To test a pushed branch, use
 `codex plugin marketplace add markdoc/markdoc --ref BRANCH` instead of `.`.
 
 Validate Claude Code's plugin and marketplace manifests from the repository root:
@@ -101,7 +102,7 @@ discovery before deployment, start the docs site and run
 
 The plugin version is separate from the npm package versions. Keep `plugin.json`
 and `.claude-plugin/plugin.json` versions in sync when releasing plugin changes.
-Check examples against released Markdoc packages before documenting new APIs.
+Keep documentation links current and check guidance against released Markdoc packages.
 
 Manifest references: [Codex](https://developers.openai.com/plugins/build/plugins)
 and [Claude Code](https://code.claude.com/docs/en/plugins-reference).
