@@ -45,7 +45,13 @@ try {
   assert.equal(fallbackRule.use[0], babel);
   const loader = fallbackRule.use[1];
   assert.equal(appRule.use[0], loader);
-  assert.deepEqual(loader.options, { dir, appDir, pagesDir, mode: 'server' });
+  assert.deepEqual(loader.options, {
+    dir,
+    appDir,
+    pagesDir,
+    mode: 'server',
+    extensions: ['md', 'mdoc'],
+  });
   assert(fs.existsSync(loader.loader));
   assert.equal(require(loader.loader), require('@markdoc/next.js/loader'));
 
@@ -53,7 +59,12 @@ try {
   assert.equal(turbopack.rules['*.md'].as, '*.js');
   const turboLoader = turbopack.rules['*.md'].loaders[0];
   assert(fs.existsSync(turboLoader.loader));
-  assert.deepEqual(turboLoader.options, { dir, appDir, pagesDir });
+  assert.deepEqual(turboLoader.options, {
+    dir,
+    appDir,
+    pagesDir,
+    extensions: ['md', 'mdoc'],
+  });
 } finally {
   fs.rmSync(dir, { recursive: true, force: true });
 }

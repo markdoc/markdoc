@@ -2,6 +2,7 @@ import fs = require('fs');
 import path = require('path');
 import Markdoc = require('@markdoc/markdoc');
 import yaml = require('js-yaml');
+import { findPages, MARKDOWN_ROUTE_DIR } from './markdown';
 import type { LoaderContext } from './types';
 
 const DEFAULT_SCHEMA_PATH = './markdoc';
@@ -36,6 +37,82 @@ function getRelativeImportPath(from: string, to: string): string {
   // and are not treated as path delimiters by bundlers.
   const request = relative.split(path.sep).join(path.posix.sep);
   return request.startsWith('.') ? request : `./${request}`;
+}
+
+const UNSAFE_CHARACTERS: Record<string, string> = {
+  '<': '\\u003C',
+  '>': '\\u003E',
+  '\b': '\\b',
+  '\f': '\\f',
+  '\n': '\\n',
+  '\r': '\\r',
+  '\t': '\\t',
+  '\0': '\\0',
+  '\u2028': '\\u2028',
+  '\u2029': '\\u2029',
+};
+
+// File names become code in generated modules. JSON.stringify leaves `<`, `>`, and
+// line separators unescaped, which can end a script or a string in older parsers.
+function toStringLiteral(value: string): string {
+  return JSON.stringify(value).replace(
+    /[<>\b\f\n\r\t\0\u2028\u2029]/g,
+    (character) => UNSAFE_CHARACTERS[character]
+  );
+}
+
+function hasSchemaEntry(schemaDir: string, name: string): boolean {
+  try {
+    return fs
+      .readdirSync(schemaDir)
+      .some((entry) => entry === name || entry.startsWith(`${name}.`));
+  } catch {
+    return false;
+  }
+}
+
+function markdownRoute(
+  resourcePath: string,
+  appDir: string,
+  extensions: string[]
+): string {
+  const pages = Object.entries(findPages(appDir, extensions))
+    .map(
+      ([url, file]) =>
+        `  ${toStringLiteral(url)}: () => import(${toStringLiteral(
+          getRelativeImportPath(resourcePath, path.join(appDir, file))
+        )}),`
+    )
+    .join('\n');
+
+  return `const pages = {
+${pages}
+};
+
+export const dynamicParams = true;
+
+export function generateStaticParams() {
+  return Object.keys(pages).map((url) => ({
+    path: url === '/' ? [] : url.slice(1).split('/'),
+  }));
+}
+
+export async function GET(request, {params}) {
+  const {path = []} = await params;
+  const url = '/' + path.join('/');
+  if (!Object.prototype.hasOwnProperty.call(pages, url)) {
+    return new Response('Not Found', {status: 404});
+  }
+  const page = await pages[url]();
+  return new Response(await page.getMarkdown(), {
+    headers: {
+      'Content-Type': 'text/markdown; charset=utf-8',
+      Vary: 'Accept',
+      Link: '<' + url + '>; rel="canonical"',
+    },
+  });
+}
+`;
 }
 
 async function gatherPartials(
@@ -102,7 +179,21 @@ async function load(this: LoaderContext, source: string): Promise<string> {
     nextjsExports = ['metadata', 'revalidate'],
     appDir = false,
     pagesDir,
+    extensions = ['md', 'mdoc'],
   } = this.getOptions() || {};
+
+  const appRelative = relativeResource(appDir, this.resourcePath);
+  if (
+    appDir &&
+    appRelative !== undefined &&
+    extensions.some(
+      (extension) => appRelative === `${MARKDOWN_ROUTE_DIR}/route.${extension}`
+    )
+  ) {
+    // New pages must appear in the route without restarting the dev server.
+    this.addContextDependency(appDir);
+    return markdownRoute(this.resourcePath, appDir, extensions);
+  }
 
   const tokenizer = new Markdoc.Tokenizer(options);
   const parseOptions = { slots };
@@ -110,7 +201,6 @@ async function load(this: LoaderContext, source: string): Promise<string> {
   const tokens = tokenizer.tokenize(source);
   const ast = Markdoc.parse(tokens, parseOptions);
 
-  const appRelative = relativeResource(appDir, this.resourcePath);
   const pagesRelative = relativeResource(pagesDir, this.resourcePath);
   // App Router allows colocated content. Only page/layout files are route modules.
   const isAppRoute =
@@ -138,6 +228,17 @@ async function load(this: LoaderContext, source: string): Promise<string> {
     mode === 'server' ? 'getServerSideProps' : 'getStaticProps';
 
   let schemaCode = 'const schema = {};';
+  // Only App Router pages are served as Markdown.
+  const markdownCode = isAppRoute
+    ? `
+const markdownSchema = getMarkdownSchema(schema, markdownHandlers);
+
+export async function getMarkdown() {
+  const markdoc = await getMarkdocData({}, markdownSchema);
+  return renderers.md(markdoc.content, {handlers: markdownHandlers});
+}
+`
+    : '';
   try {
     const directoryExists = await fs.promises.stat(schemaDir);
 
@@ -183,6 +284,12 @@ async function load(this: LoaderContext, source: string): Promise<string> {
         ${await importAtRuntime('tags')}
         ${await importAtRuntime('nodes')}
         ${await importAtRuntime('functions')}
+        ${
+          hasSchemaEntry(schemaDir, 'markdown')
+            ? `${await importAtRuntime('markdown')}
+        markdownHandlers = defaultObject(markdown);`
+            : ''
+        }
         const schema = {
           tags: defaultObject(tags),
           nodes: defaultObject(nodes),
@@ -234,11 +341,12 @@ import yaml from 'js-yaml';
 // renderers is imported separately so Markdoc isn't sent to the client
 import Markdoc, {renderers} from '@markdoc/markdoc'
 
-import {getSchema, defaultObject} from '@markdoc/next.js/runtime';
+import {getSchema, getMarkdownSchema, defaultObject} from '@markdoc/next.js/runtime';
 /**
  * Schema is imported like this so end-user's code is compiled using build-in babel/webpack configs.
  * This enables typescript/ESnext support
  */
+let markdownHandlers = {};
 ${schemaCode}
 
 const tokenizer = new Markdoc.Tokenizer(${options ? JSON.stringify(options) : ''});
@@ -262,7 +370,7 @@ const frontmatter = ast.attributes.frontmatter
 
 const {components, ...rest} = getSchema(schema)
 
-${isPage ? 'async ' : ''}function getMarkdocData(context = {}) {
+${isPage ? 'async ' : ''}function getMarkdocData(context = {}, config = rest) {
   const partials = ${JSON.stringify(partials)};
 
   // Ensure Node.transformChildren is available
@@ -272,9 +380,9 @@ ${isPage ? 'async ' : ''}function getMarkdocData(context = {}) {
   });
 
   const cfg = {
-    ...rest,
+    ...config,
     variables: {
-      ...(rest ? rest.variables : {}),
+      ...(config ? config.variables : {}),
       // user can't override this namespace
       markdoc: {frontmatter},
       // Allows users to eject from Markdoc rendering and pass in dynamic variables via getServerSideProps
@@ -313,7 +421,7 @@ ${
   };
 }`
 }
-${isAppRoute ? nextjsExportsCode : 'export const markdoc = {frontmatter};'}
+${isAppRoute ? nextjsExportsCode : 'export const markdoc = {frontmatter};'}${markdownCode}
 export default${isAppRoute ? ' async' : ''} function MarkdocComponent(props) {
   const markdoc = ${
     isPage
