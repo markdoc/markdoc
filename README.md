@@ -46,6 +46,12 @@ return Markdoc.renderers.react(content, React);
 
 Check out [our docs](https://markdoc.dev/docs) for more guidance on how to use Markdoc.
 
+### Agent skills
+
+The [Markdoc agent plugin](https://github.com/markdoc/markdoc/tree/main/plugins/markdoc)
+provides `setup-markdoc`, `write-markdoc`, and `create-markdoc-tag` skills for
+Codex and Claude Code. See its README for installation.
+
 ### TypeScript
 
 The public renderer types require `@types/react`, even when using only the

@@ -1,0 +1,20 @@
+{
+  "name": "markdoc-plugins",
+  "interface": {
+    "displayName": "Markdoc"
+  },
+  "plugins": [
+    {
+      "name": "markdoc",
+      "source": {
+        "source": "local",
+        "path": "./plugins/markdoc"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity"
+    }
+  ]
+}

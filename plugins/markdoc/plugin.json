@@ -1,0 +1,24 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "markdoc",
+  "version": "0.1.0",
+  "description": "Build documentation with Markdoc.",
+  "author": {
+    "name": "Markdoc"
+  },
+  "homepage": "https://markdoc.dev",
+  "repository": "https://github.com/markdoc/markdoc",
+  "license": "MIT",
+  "keywords": ["markdoc", "documentation"],
+  "extensions": {
+    "com.openai": {
+      "interface": {
+        "displayName": "Markdoc",
+        "shortDescription": "Build documentation with Markdoc",
+        "developerName": "Markdoc",
+        "category": "Productivity",
+        "websiteURL": "https://markdoc.dev"
+      }
+    }
+  }
+}

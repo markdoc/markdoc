@@ -1,0 +1,3 @@
+interface:
+  display_name: "Create a Markdoc tag"
+  short_description: "Build custom Markdoc tags and components"
