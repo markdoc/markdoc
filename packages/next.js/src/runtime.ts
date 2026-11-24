@@ -12,12 +12,11 @@ type Renderers<T> =
       : never
     : never;
 
-// IDEA: explore better displayName functions
+// Pascal case, keeping the capitals of camelCase names such as `sideBySide`
 function displayName(name: string): string {
-  // Pascal case
   return name
     .match(/[a-z]+/gi)!
-    .map((word) => word.charAt(0).toUpperCase() + word.substr(1).toLowerCase())
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
     .join('');
 }
 
