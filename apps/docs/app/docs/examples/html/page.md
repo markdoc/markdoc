@@ -167,9 +167,9 @@ This guide assumes that you have an `Express` app installed. If you're starting 
 
 6. Start the demo app.
    ```shell
-   npm run build
+   pnpm build
    ```
    and
    ```shell
-   npm run start
+   pnpm start
    ```

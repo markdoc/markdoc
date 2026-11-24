@@ -75,7 +75,7 @@ description: From personal blogs to massive documentation sites, Markdoc is a co
 {% /item %}
 
 ```shell
-npm install @markdoc/markdoc
+pnpm add @markdoc/markdoc
 ```
 
 ```js

@@ -19,7 +19,7 @@ tests, and internal tooling changes do not need a package release. See the
 [Changesets guide](../.changeset/README.md) for bump selection, inspecting pending
 changes, and preparing a version update.
 
-Run these commands from the repository root. `pnpm run check` runs all CI checks
+Run these commands from the repository root. `pnpm run check` runs the workspace checks
 through Turborepo, including the build needed by the published-type tests.
 
 Markdoc's source, tests, and build configuration live in `packages/markdoc`.
@@ -38,6 +38,9 @@ The documentation site lives in `apps/docs`. Run
 or `pnpm build --filter=@markdoc/docs` for a production build including sitemaps.
 The app stays private and does not need npm changesets. Its `examples/` directory
 contains standalone reference projects, outside the workspace package globs.
+Each example has its own pnpm workspace and lockfile. Run
+`pnpm install --frozen-lockfile` and `pnpm build` from the example's directory.
+CI builds each example separately.
 
 Add reusable packages under `packages/` and applications under `apps/`. Each
 workspace owns its dependencies and scripts; use `workspace:*` for dependencies

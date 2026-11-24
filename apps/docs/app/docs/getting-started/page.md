@@ -12,13 +12,7 @@ Follow the instructions below to install Markdoc in your app. Or check out our [
 Install the Markdoc library:
 
 ```shell
-npm install @markdoc/markdoc
-```
-
-or
-
-```shell
-yarn add @markdoc/markdoc
+pnpm add @markdoc/markdoc
 ```
 
 ## Import Markdoc

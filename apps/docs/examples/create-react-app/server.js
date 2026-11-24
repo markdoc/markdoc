@@ -3,7 +3,7 @@ const app = express();
 const path = require('path');
 
 const Markdoc = require('@markdoc/markdoc');
-const callout = require('./schema/callout.markdoc');
+const callout = require('./schema/Callout.markdoc');
 const heading = require('./schema/heading.markdoc');
 const { createContentManifest } = require('./createContentManifest');
 
