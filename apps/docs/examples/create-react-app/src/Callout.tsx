@@ -1,4 +1,4 @@
-import React from 'react';
+import type { ReactNode } from 'react';
 
 const TYPE_MAP = {
   note: {
@@ -15,7 +15,13 @@ const TYPE_MAP = {
   }
 };
 
-export function Callout({ children, type, title }) {
+type CalloutProps = {
+  children?: ReactNode;
+  type: keyof typeof TYPE_MAP;
+  title?: string;
+};
+
+export function Callout({ children, type, title }: CalloutProps) {
   return (
     <div
       className="callout"

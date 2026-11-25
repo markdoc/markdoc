@@ -1,14 +1,14 @@
-const express = require('express');
-const app = express();
-const path = require('path');
+import express from 'express';
+import path from 'node:path';
+import Markdoc from '@markdoc/markdoc';
+import callout from './schema/Callout.markdoc';
+import heading from './schema/heading.markdoc';
+import { createContentManifest } from './createContentManifest';
 
-const Markdoc = require('@markdoc/markdoc');
-const callout = require('./schema/Callout.markdoc');
-const heading = require('./schema/heading.markdoc');
-const { createContentManifest } = require('./createContentManifest');
+const app = express();
 
 const PORT = 4242;
-const CONTENT_DIR = path.join(__dirname, 'content');
+const CONTENT_DIR = path.join(__dirname, '../content');
 
 // The content manifest maps routes to Markdoc documents.
 const contentManifest = createContentManifest(CONTENT_DIR);
@@ -21,7 +21,8 @@ app.get('/markdoc-api', (req, res) => {
     }
   };
 
-  const document = contentManifest[req.query.path];
+  const route = typeof req.query.path === 'string' ? req.query.path : '';
+  const document = contentManifest[route];
 
   if (!document) {
     return res.sendStatus(404);

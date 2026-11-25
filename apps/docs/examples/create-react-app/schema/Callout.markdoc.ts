@@ -1,4 +1,6 @@
-module.exports = {
+import type { Schema } from '@markdoc/markdoc';
+
+export default {
   render: 'Callout',
   children: ['paragraph', 'tag', 'list'],
   attributes: {
@@ -11,4 +13,4 @@ module.exports = {
       type: String
     }
   }
-};
+} satisfies Schema;
