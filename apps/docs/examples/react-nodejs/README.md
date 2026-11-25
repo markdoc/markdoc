@@ -2,7 +2,7 @@
 
 This example includes two applications:
 
-- A client app created with [Vite](https://vite.dev/)'s `react` template
+- A client app created with [Vite](https://vite.dev/)'s React template, using TypeScript
 - A basic Node backend that provides a simple API
 
 Use the Node.js version in `.node-version` and the pnpm version pinned in
@@ -22,3 +22,7 @@ repository's 31-day minimum release age.
 To build the production version, run `pnpm build` to bundle the static files
 into `static/`, then start the Node server with `pnpm start:server` and open
 `http://localhost:4242/`. Express serves the built `static/index.html` and assets.
+
+Application code and Markdoc schemas use TypeScript. `pnpm type:check` checks
+both the frontend and backend, and `pnpm build` runs it before bundling.
+Node 24 runs `server.ts` directly using built-in type stripping.

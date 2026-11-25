@@ -1,10 +1,10 @@
 import express from 'express';
-import { join, dirname } from 'path';
-import { fileURLToPath } from 'url';
+import { join, dirname } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import Markdoc from '@markdoc/markdoc';
-import callout from './schema/Callout.markdoc.js';
-import heading from './schema/heading.markdoc.js';
-import { createContentManifest } from './createContentManifest.js';
+import callout from './schema/Callout.markdoc.ts';
+import heading from './schema/heading.markdoc.ts';
+import { createContentManifest } from './createContentManifest.ts';
 
 const app = express();
 
@@ -28,7 +28,8 @@ app.get('/markdoc-api', (req, res) => {
     }
   };
 
-  const document = contentManifest[req.query.path];
+  const route = typeof req.query.path === 'string' ? req.query.path : '';
+  const document = contentManifest[route];
 
   if (!document) {
     return res.sendStatus(404);

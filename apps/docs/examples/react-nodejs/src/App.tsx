@@ -1,9 +1,9 @@
 import React from 'react';
-import Markdoc from '@markdoc/markdoc';
+import Markdoc, { type RenderableTreeNodes } from '@markdoc/markdoc';
 import { Callout } from './Callout';
 
 function App() {
-  const [content, setContent] = React.useState(null);
+  const [content, setContent] = React.useState<RenderableTreeNodes | null>(null);
 
   React.useEffect(() => {
     (async () => {
