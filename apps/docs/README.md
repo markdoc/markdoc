@@ -26,7 +26,13 @@ generation, or `pnpm lint --filter=@markdoc/docs` for the site's lint checks.
 Next.js output is cached by the app's `turbo.json`.
 To regenerate the language specification, run `pnpm exec turbo run spec --filter=@markdoc/docs`.
 Run `pnpm test --filter=@markdoc/docs` to build the site and check every route,
-metadata, redirects, and crawler endpoints against a production server.
+metadata, redirects, and crawler endpoints against a production server, plus
+the CodeMirror mode using its DOM-free Node runner.
+
+Application components, schemas, route handlers, and configuration use TypeScript.
+Run `pnpm --filter @markdoc/docs type:check` for a standalone strict type check;
+production builds and the workspace checks also check types. Documents remain
+Markdoc files.
 
 ## Agent skills
 
@@ -65,9 +71,9 @@ template, canonical URLs, and shared social metadata. Next.js inherits those
 defaults and combines them with each page's metadata. The homepage sets its full
 title because the title template applies only to child route segments.
 
-`app/layout.js` owns global styles, fonts, and the shared shell. The interactive
+`app/layout.tsx` owns global styles, fonts, and the shared shell. The interactive
 components use client boundaries, with a Styled JSX registry for server-rendered
-styles and a browser-only CodeMirror editor. `app/sitemap.js` and `app/robots.js`
+styles and a browser-only CodeMirror editor. `app/sitemap.ts` and `app/robots.ts`
 generate the crawler metadata during the production build.
 
 If this checkout previously built the Pages Router app, remove its generated

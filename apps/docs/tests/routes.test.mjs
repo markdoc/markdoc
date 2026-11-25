@@ -97,6 +97,8 @@ for (const { route, metadata } of pages) {
     assert.equal(response.status, 200);
     const html = await response.text();
     assert.ok(html.includes('<main'), 'page shell is server rendered');
+    assert.match(html, /<svg[^>]*aria-label="Markdoc"/);
+    assert.match(html, /<svg[^>]*aria-label="Built by Stripe"/);
     assert.ok(html.includes('<article'), 'document is server rendered');
     const title = escapeHTML(
       `${route === '/' ? '' : 'Markdoc | '}${metadata.title}`
