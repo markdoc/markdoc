@@ -6,3 +6,5 @@ out/
 .env*
 !.env.example
 *.log
+next-env.d.ts
+*.tsbuildinfo

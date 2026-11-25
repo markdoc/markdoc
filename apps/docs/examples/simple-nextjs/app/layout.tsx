@@ -1,6 +1,7 @@
+import type { ReactNode } from 'react';
 import '../public/globals.css';
 
-export default function RootLayout({ children }) {
+export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en">
       <body>

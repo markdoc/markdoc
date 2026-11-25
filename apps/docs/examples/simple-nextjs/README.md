@@ -27,7 +27,7 @@ The page updates as you edit it. To add a route, create a file such as
 
 ## Content and metadata
 
-`app/layout.js` supplies the HTML document and shared styles. Each `page.md`
+`app/layout.tsx` supplies the HTML document and shared styles. Each `page.md`
 is a native Next.js route, with metadata generated from its frontmatter:
 
 ```md
@@ -39,8 +39,8 @@ description: How to get started with Markdoc
 # {% $markdoc.frontmatter.title %}
 ```
 
-Customize `markdoc/config.js`, `markdoc/functions.js`, `markdoc/nodes/index.js`,
-and `markdoc/tags/index.js` to extend the schema. All four entry points are
+Customize `markdoc/config.ts`, `markdoc/functions.ts`, `markdoc/nodes/index.ts`,
+and `markdoc/tags/index.ts` to extend the schema. All four entry points are
 included so the loader can resolve them with Turbopack. See the
 [Next.js integration guide](https://markdoc.dev/docs/examples/nextjs) for more options.
 `js-yaml` is a direct dependency because the generated Markdoc pages import it
@@ -53,7 +53,8 @@ pnpm check
 pnpm start
 ```
 
-`pnpm check` runs Biome and the production build. You can also run `pnpm lint`,
+`pnpm check` runs Biome and the production build, including strict TypeScript checks.
+Run `pnpm type:check` to check types without building. You can also run `pnpm lint`,
 `pnpm lint:fix`, and `pnpm format` individually. The standalone Biome config uses
 the repository's formatting and lint rules.
 
