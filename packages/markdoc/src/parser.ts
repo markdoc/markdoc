@@ -53,6 +53,27 @@ function annotate(node: Node, attributes: AttributeValue[]) {
   }
 }
 
+// Plain text of inline tokens, e.g. for an image's alt attribute.
+// `token.content` of an image is the raw Markdown of its description.
+function inlineText(tokens?: Token[] | null): string {
+  let text = '';
+  for (const token of tokens ?? []) {
+    switch (token.type) {
+      case 'text':
+      case 'code_inline':
+        text += token.content;
+        break;
+      case 'softbreak':
+      case 'hardbreak':
+        text += '\n';
+        break;
+      default:
+        text += inlineText(token.children);
+    }
+  }
+  return text;
+}
+
 function handleAttrs(token: Token, type: string) {
   switch (type) {
     case 'heading':
@@ -73,9 +94,10 @@ function handleAttrs(token: Token, type: string) {
     }
     case 'image': {
       const attrs = Object.fromEntries(token.attrs ?? []);
+      const alt = inlineText(token.children);
       return attrs.title
-        ? { alt: token.content, src: attrs.src, title: attrs.title }
-        : { alt: token.content, src: attrs.src };
+        ? { alt, src: attrs.src, title: attrs.title }
+        : { alt, src: attrs.src };
     }
     case 'em':
     case 'strong':
