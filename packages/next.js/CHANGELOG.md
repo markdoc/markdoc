@@ -1,5 +1,23 @@
 # @markdoc/next.js
 
+## 0.8.0
+
+### Minor Changes
+
+- a443d4c: Keep the capitals of camelCase tag and node names when naming their components, so `sideBySide` renders as `SideBySide` instead of `Sidebyside`. Names that differ only in case, such as `sideBySide` and `sidebyside`, no longer share a component. If your code matches rendered tag names, for example in a custom renderer or by inspecting `markdoc.content`, update camelCase names to the new form.
+
+### Patch Changes
+
+- f51c920: Update the minimum js-yaml dependency to 4.3.2.
+- Updated dependencies [89aa830]
+- Updated dependencies [24ddafb]
+- Updated dependencies [b5cc112]
+- Updated dependencies [635fb76]
+- Updated dependencies [0c1fe30]
+- Updated dependencies [8a27c52]
+- Updated dependencies [9a9826c]
+  - @markdoc/markdoc@0.6.0
+
 ## 0.7.0
 
 ### Minor Changes
