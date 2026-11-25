@@ -1,3 +1,5 @@
+import type { Schema } from '@markdoc/markdoc';
+
 export default {
   render: 'Callout',
   children: ['paragraph', 'tag', 'list'],
@@ -11,4 +13,4 @@ export default {
       type: String
     }
   }
-};
+} satisfies Schema;

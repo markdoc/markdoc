@@ -1,7 +1,10 @@
-import markdoc from '@markdoc/markdoc';
+import markdoc, { type RenderableTreeNode, type Schema } from '@markdoc/markdoc';
 const { nodes } = markdoc;
 
-function generateID(children, attributes) {
+function generateID(
+  children: RenderableTreeNode[],
+  attributes: Record<string, unknown>
+) {
   if (attributes.id && typeof attributes.id === 'string') {
     return attributes.id;
   }
@@ -16,8 +19,9 @@ function generateID(children, attributes) {
 export default {
   ...nodes.heading,
   transform(node, config) {
-    const base = nodes.heading.transform(node, config);
+    const base = nodes.heading.transform!(node, config);
+    if (!markdoc.Tag.isTag(base)) return base;
     base.attributes.id = generateID(base.children, base.attributes);
     return base;
   }
-};
+} satisfies Schema;
