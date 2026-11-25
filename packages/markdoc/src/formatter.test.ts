@@ -186,6 +186,33 @@ paragraph 2
     stable(source);
   });
 
+  it('escapes only the first run of heading marks', () => {
+    const examples = {
+      'a ## b': 'a \\## b',
+      'C# and C# again': 'C\\# and C# again',
+      '##x ## y': '##x \\## y',
+      'Issue #': 'Issue #',
+    };
+
+    for (const [content, expected] of Object.entries(examples)) {
+      const ast = new Markdoc.Ast.Node('paragraph', {}, [
+        new Markdoc.Ast.Node('text', { content }),
+      ]);
+      expect(Markdoc.format(ast).trim()).toEqual(expected);
+    }
+  });
+
+  it('escapes long runs of heading marks in linear time', () => {
+    const content = '#'.repeat(100_000) + 'x';
+    const ast = new Markdoc.Ast.Node('paragraph', {}, [
+      new Markdoc.Ast.Node('text', { content }),
+    ]);
+
+    const start = performance.now();
+    expect(Markdoc.format(ast).trim()).toEqual(content);
+    expect(performance.now() - start).toBeLessThan(500);
+  });
+
   it('emphasis marks', () => {
     const examples = [
       '*foo* bar baz',
