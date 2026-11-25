@@ -1,24 +1,26 @@
-const express = require('express');
-const app = express();
-const path = require('path');
-const fs = require('fs');
+import express from 'express';
+import path from 'node:path';
+import { readFileSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
+import Markdoc from '@markdoc/markdoc';
+import callout from './schema/Callout.markdoc.js';
+import heading from './schema/heading.markdoc.js';
+import { createContentManifest } from './createContentManifest.js';
 
-const Markdoc = require('@markdoc/markdoc');
-const callout = require('./schema/Callout.markdoc');
-const heading = require('./schema/heading.markdoc');
-const { createContentManifest } = require('./createContentManifest');
+const app = express();
+// This module runs from .build/ after TypeScript compilation.
+const root = fileURLToPath(new URL('..', import.meta.url));
 
 const PORT = 4242;
-const CONTENT_DIR = path.join(__dirname, 'content');
-const TEMPLATE = fs.readFileSync('./public/template.html', 'utf-8');
-
+const CONTENT_DIR = path.join(root, 'content');
+const TEMPLATE = readFileSync(path.join(root, 'public/template.html'), 'utf-8');
 
 // The content manifest maps routes to Markdoc documents.
 const contentManifest = createContentManifest(CONTENT_DIR);
 // Loads the built JS
-app.use(express.static('dist'));
+app.use(express.static(path.join(root, 'dist')));
 
-app.get('*', (req, res) => {
+app.get<{ 0: string }>('*', (req, res) => {
   // Here we can dynamically fetch variables, like user preferences or feature flags
   const variables = {
     flags: {

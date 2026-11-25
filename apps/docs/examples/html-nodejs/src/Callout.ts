@@ -1,6 +1,7 @@
 import {html, css, LitElement} from 'lit';
 
 export class MarkdocCallout extends LitElement {
+  declare type: string;
   static styles = css`
   .note { background-color: #8792a2; }
   .caution { background-color: #d97917; }

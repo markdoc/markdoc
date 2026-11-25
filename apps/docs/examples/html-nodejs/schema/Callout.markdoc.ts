@@ -1,4 +1,6 @@
-module.exports = {
+import type { Schema } from '@markdoc/markdoc';
+
+export default {
   render: 'markdoc-callout',
   children: ['paragraph'],
   attributes: {
@@ -11,4 +13,4 @@ module.exports = {
       type: String
     }
   }
-};
+} satisfies Schema;

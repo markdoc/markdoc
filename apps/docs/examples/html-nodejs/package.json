@@ -10,11 +10,18 @@
     "lit": "^2.8.0"
   },
   "scripts": {
-    "start": "node server.js",
-    "build": "webpack"
+    "start": "node .build/server.js",
+    "build": "tsc && webpack --config .build/webpack.config.js",
+    "type:check": "tsc --noEmit"
   },
   "devDependencies": {
+    "@types/express": "4.17.25",
+    "@types/glob": "8.1.0",
+    "@types/js-yaml": "4.0.9",
+    "@types/node": "24.19.2",
+    "typescript": "6.0.3",
     "webpack": "^5.112.0",
     "webpack-cli": "^4.10.0"
-  }
+  },
+  "type": "module"
 }
