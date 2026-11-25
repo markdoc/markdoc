@@ -1,6 +1,12 @@
 import fs = require('node:fs');
 import path = require('node:path');
 import type { NextConfig } from 'next';
+import {
+  hasMarkdownRoute,
+  markdownHeaders,
+  mergeRewrites,
+  type Rewrites,
+} from './markdown';
 import type * as Types from './types';
 
 type WebpackHook = NonNullable<NextConfig['webpack']>;
@@ -29,7 +35,15 @@ function getLoaderOptions(
       }).filter(([, value]) => value !== undefined)
     ),
     dir,
+    extensions: getExtensions(extension || /\.(md|mdoc)$/),
   };
+}
+
+function getExtensions(extension: Types.ExtensionCondition): string[] {
+  const extensions = getExtensionPatterns(extension)
+    .filter((pattern) => pattern.startsWith('*.'))
+    .map((pattern) => pattern.slice(2));
+  return extensions.length > 0 ? extensions : ['md', 'mdoc'];
 }
 
 function getExtensionPatterns(extension: Types.ExtensionCondition): string[] {
@@ -97,8 +111,28 @@ function createTurbopackConfig(
 function withMarkdoc(pluginOptions: Types.MarkdocNextJsOptions = {}) {
   return (nextConfig: NextConfig = {}): NextConfig => {
     const extension = pluginOptions.extension || /\.(md|mdoc)$/;
+    const { appDir, extensions = [] } = getLoaderOptions(pluginOptions);
+    // Pages are served as Markdown once the app adds the Markdown route file.
+    const markdown = hasMarkdownRoute(appDir || undefined, extensions);
 
     return Object.assign({}, nextConfig, {
+      ...(markdown && {
+        async rewrites() {
+          const rewrites =
+            typeof nextConfig.rewrites === 'function'
+              ? await nextConfig.rewrites()
+              : undefined;
+          return mergeRewrites(rewrites as Rewrites | undefined);
+        },
+        async headers() {
+          const headers =
+            typeof nextConfig.headers === 'function'
+              ? await nextConfig.headers()
+              : [];
+          return [...headers, ...markdownHeaders()];
+        },
+      }),
+
       webpack(
         config: Parameters<WebpackHook>[0],
         options: Parameters<WebpackHook>[1]

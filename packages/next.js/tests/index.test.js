@@ -98,6 +98,7 @@ function evaluate(output, filename = path.join(__dirname, 'pages/test/index.md')
     module,
     require: customRequire,
     console,
+    Response,
   });
 
   return module.exports;
@@ -214,6 +215,7 @@ test('app router', async () => {
 
   expect(page).toEqual({
     default: expect.any(Function),
+    getMarkdown: expect.any(Function),
     metadata: {title: 'Custom title'},
   });
 
@@ -240,6 +242,7 @@ test('app router metadata', async () => {
 
   expect(evaluate(output, webpackThis.resourcePath)).toEqual({
     default: expect.any(Function),
+    getMarkdown: expect.any(Function),
     metadata: {title: 'Metadata title', description: 'A custom description', alternates: {canonical: '/test'}},
     revalidate: 3600,
   });
@@ -267,7 +270,10 @@ test.each([
 ])('omits metadata when no metadata fields are supplied: %s', async (source) => {
   const context = options({appDir: true});
   const output = await callLoader(context, source);
-  expect(evaluate(output, context.resourcePath)).toEqual({default: expect.any(Function)});
+  expect(evaluate(output, context.resourcePath)).toEqual({
+    default: expect.any(Function),
+    getMarkdown: expect.any(Function),
+  });
 });
 
 test('can exclude metadata from configured Next.js exports', async () => {
@@ -275,6 +281,7 @@ test('can exclude metadata from configured Next.js exports', async () => {
   const output = await callLoader(context, source.replace('---', '---\nnextjs:\n  metadata:\n    title: Metadata title\n  revalidate: 0'));
   expect(evaluate(output, context.resourcePath)).toEqual({
     default: expect.any(Function),
+    getMarkdown: expect.any(Function),
     revalidate: 0,
   });
 });
@@ -284,6 +291,7 @@ test('supports configured static Next.js exports', async () => {
   const output = await callLoader(context, '---\nnextjs:\n  dynamic: force-static\n  runtime: nodejs\n---\n# Hello');
   expect(evaluate(output, context.resourcePath)).toEqual({
     default: expect.any(Function),
+    getMarkdown: expect.any(Function),
     dynamic: 'force-static',
     runtime: 'nodejs',
   });
@@ -409,6 +417,128 @@ test('falls back to relative schema imports when bare specifiers fail', async ()
   expect(importMatch?.[1].startsWith('.')).toBe(true);
 });
 
+const markdownSource = `# Hello **world**
+
+{% callout %}
+Read {% badge %}this{% /badge %}.
+{% /callout %}
+
+\`\`\`js
+const x = 1;
+\`\`\`
+`;
+
+test('app router pages render standard nodes as Markdown', async () => {
+  const context = options({appDir: true, schemaPath: './schemas/markdown'});
+  const output = await callLoader(context, markdownSource);
+  const page = evaluate(output, context.resourcePath);
+
+  // Component nodes fall back to Markdoc's nodes; components without handlers render children
+  expect(await page.getMarkdown()).toEqual(
+    '# Hello **world**\n\nRead `this`.\n\n```js\nconst x = 1;\n```\n'
+  );
+});
+
+test('app router pages use Markdown handlers from the schema', async () => {
+  const context = options({appDir: true, schemaPath: './schemas/markdownHandlers'});
+  const output = await callLoader(context, markdownSource);
+  const page = evaluate(output, context.resourcePath);
+
+  expect(await page.getMarkdown()).toEqual(
+    '## Hello **world**\n\n> Read `this`.\n\n```js\nconst x = 1;\n```\n'
+  );
+});
+
+test('Pages Router pages are not served as Markdown', async () => {
+  const output = await callLoader(options(), source);
+  expect(output).not.toContain('export async function getMarkdown');
+});
+
+function markdownRouteContext(files) {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'markdoc-route-'));
+  const appDir = path.join(dir, 'app');
+  for (const file of files) {
+    fs.mkdirSync(path.join(appDir, path.dirname(file)), {recursive: true});
+    fs.writeFileSync(path.join(appDir, file), '');
+  }
+  const context = options({appDir: true});
+  const originalOptions = context.getOptions();
+  const contextDependencies = [];
+  context.getOptions = () => ({...originalOptions, dir, appDir});
+  context.addContextDependency = (directory) => contextDependencies.push(directory);
+  context.resourcePath = path.join(appDir, 'markdoc', '[[...path]]', 'route.md');
+  return {context, dir, appDir, contextDependencies};
+}
+
+test('route.md compiles to a route serving every page as Markdown', async () => {
+  const {context, dir, appDir, contextDependencies} = markdownRouteContext([
+    'markdoc/[[...path]]/route.md',
+    'page.md',
+    'docs/getting-started/page.md',
+    'docs/faq/page.mdoc',
+    '(marketing)/pricing/page.md',
+    'docs/page.js',
+    'docs/notes.md',
+    '_drafts/page.md',
+    'blog/[slug]/page.md',
+    '@modal/login/page.md',
+    'feed/(.)photo/page.md',
+  ]);
+  try {
+    const output = await callLoader(context, '');
+    expect(contextDependencies).toEqual([appDir]);
+    expect(output).toContain(
+      '"/docs/getting-started": () => import("../../docs/getting-started/page.md"),'
+    );
+
+    const route = evaluate(output, context.resourcePath);
+    // Pages added during development must resolve without restarting
+    expect(route.dynamicParams).toBe(true);
+    expect(route.generateStaticParams()).toEqual([
+      {path: ['pricing']},
+      {path: ['docs', 'faq']},
+      {path: ['docs', 'getting-started']},
+      {path: []},
+    ]);
+
+    const missing = await route.GET(new Request('http://localhost/markdoc/nope'), {
+      params: Promise.resolve({path: ['nope']}),
+    });
+    expect(missing.status).toBe(404);
+  } finally {
+    fs.rmSync(dir, {recursive: true, force: true});
+  }
+});
+
+// Windows forbids < and > in file names, so these page paths cannot exist there
+test.skipIf(process.platform === 'win32')('route.md escapes page paths that would end a script or a string', async () => {
+  const {context, dir} = markdownRouteContext(['<script>/page.md', 'line\u2028break/page.md']);
+  try {
+    const output = await callLoader(context, '');
+    expect(output.slice(0, output.indexOf('};'))).not.toMatch(/<|[^=]>|\u2028/);
+    expect(output).toContain('"/\\u003Cscript\\u003E": () => import("../../\\u003Cscript\\u003E/page.md"),');
+
+    const route = evaluate(output, context.resourcePath);
+    expect(route.generateStaticParams()).toEqual([
+      {path: ['<script>']},
+      {path: ['line\u2028break']},
+    ]);
+  } finally {
+    fs.rmSync(dir, {recursive: true, force: true});
+  }
+});
+
+test('Markdown route files outside markdoc/[[...path]] compile as Markdoc', async () => {
+  const {context, dir, appDir} = markdownRouteContext(['docs/page.md']);
+  try {
+    context.resourcePath = path.join(appDir, 'docs', 'route.md');
+    const output = await callLoader(context, '# Hi');
+    expect(output).not.toContain('generateStaticParams');
+  } finally {
+    fs.rmSync(dir, {recursive: true, force: true});
+  }
+});
+
 test('HMR', async () => {
   const output = await callLoader(
     {
@@ -512,7 +642,7 @@ test.each(['', 'src'])('discovers router directories for Turbopack and Webpack i
     fs.mkdirSync(appDir, {recursive: true});
     fs.mkdirSync(pagesDir, {recursive: true});
     const config = withMarkdoc({dir})({turbopack: {}});
-    const expected = {dir, appDir, pagesDir};
+    const expected = {dir, appDir, pagesDir, extensions: ['md', 'mdoc']};
     expect(config.turbopack.rules['*.md'].loaders[0].options).toEqual(expected);
     const webpack = config.webpack({module: {rules: []}}, {
       dir,

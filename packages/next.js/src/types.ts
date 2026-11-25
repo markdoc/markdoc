@@ -53,6 +53,8 @@ export interface LoaderOptions extends MarkdocNextJsOptions {
   dir: string;
   appDir?: string | false;
   pagesDir?: string;
+  // File extensions handled by the loader, without the leading dot.
+  extensions?: string[];
 }
 
 // The subset of the loader API used by both Webpack and Turbopack.

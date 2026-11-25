@@ -307,6 +307,54 @@ export default function App({ Component, pageProps }) {
 }
 ```
 
+## Serving Markdown
+
+App Router pages can also be served as Markdown, which is useful for LLMs and coding agents that read your docs. To turn it on, add an empty route file to your app:
+
+```
+app
+├── layout.js
+├── markdoc
+│   └── [[...path]]
+│       └── route.md
+└── docs
+    └── getting-started
+        └── page.md
+```
+
+The plugin compiles `route.md` into a route handler for all of your pages, so the file stays empty. Restart your dev server after adding it, and every page is also available:
+
+- at its `.md` URL, such as `/docs/getting-started.md`. The home page is `/.md` or `/index.md`.
+- at its usual URL, such as `/docs/getting-started`, when the request's `Accept` header prefers Markdown: `text/markdown` is listed before any `text/html`, or `text/plain` is listed first. Browsers keep getting HTML.
+
+Markdown is prerendered when you build, using the [Markdown renderer](/docs/render#markdown). Pages you add during development are served right away. Responses use `Content-Type: text/markdown`, include a `Link` header pointing to the page's canonical URL, and send `Vary: Accept` so caches don't serve Markdown to browsers.
+
+{% callout type="note" %}
+Next.js replaces the `Vary` header on prerendered HTML pages, so a shared cache can serve HTML to a client that asks for Markdown with `Accept`. The `.md` URLs always return Markdown.
+{% /callout %}
+
+### Components in Markdown
+
+Nodes that you render with your own components, such as a custom `heading` or `fence`, use Markdoc's standard nodes in Markdown. Headings, code blocks, and links stay standard Markdown without extra configuration. Any other component renders only its children.
+
+To convert a component differently, create `markdown.js` in your schema directory and default-export [Markdown handlers](/docs/render#custom-handlers). Handlers are keyed by the PascalCase name of the tag or node, the same names you use to override components:
+
+```js
+// markdoc/markdown.js
+import { Ast } from '@markdoc/markdoc';
+
+export default {
+  Callout: (tag, { renderChildren }) =>
+    new Ast.Node('blockquote', {}, renderChildren(tag.children)),
+  Tabs: 'children',
+  Playground: 'none'
+};
+```
+
+A handler registered for a node's component replaces the standard node.
+
+Each App Router page also exports an async `getMarkdown()` function that returns the page as Markdown, if you'd rather serve it yourself. Pages Router pages and pages with dynamic segments, such as `app/blog/[slug]/page.md`, aren't served as Markdown.
+
 ## Comments
 
 You can add comments to your Next.js content by passing `allowComments` to the Markdoc tokenizer:

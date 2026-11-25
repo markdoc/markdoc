@@ -1,3 +1,4 @@
+import { nodes } from '@markdoc/markdoc';
 import type { Config, NodeType, Schema } from '@markdoc/markdoc';
 
 export type SchemaConfig<R> = Omit<Config, 'tags' | 'nodes'> & {
@@ -70,6 +71,56 @@ export function getSchema(schema: SchemaConfig<unknown>) {
       ...tagComponents,
       ...nodeComponents,
     },
+  };
+}
+
+function markdownRecord<R>(
+  config: Record<string, Schema<Config, R>> | undefined,
+  fallback: (name: string) => Schema | undefined
+) {
+  const output: Record<string, Schema> = {};
+
+  if (config) {
+    Object.entries(config).forEach(([name, registration]) => {
+      // Element names such as 'code' are standard elements to the Markdown renderer
+      if (typeof registration.render === 'string' || !registration.render) {
+        output[name] = registration as Schema;
+        return;
+      }
+
+      output[name] = fallback(name) || {
+        ...registration,
+        render: displayName(name),
+      };
+    });
+  }
+
+  return output;
+}
+
+/**
+ * Returns the schema used to render Markdown. Nodes rendered by components use
+ * Markdoc's standard node, so headings, code blocks and links stay standard Markdown,
+ * unless a Markdown handler is registered for the component.
+ */
+export function getMarkdownSchema(
+  schema: SchemaConfig<unknown>,
+  handlers: Record<string, unknown> = {}
+): Omit<SchemaConfig<unknown>, 'tags' | 'nodes'> & {
+  tags: Record<string, Schema>;
+  nodes: Record<string, Schema>;
+} {
+  const handled = (name: string) =>
+    Object.prototype.hasOwnProperty.call(handlers, displayName(name));
+
+  return {
+    ...schema,
+    tags: markdownRecord(schema.tags, () => undefined),
+    nodes: markdownRecord(schema.nodes, (name) =>
+      !handled(name) && Object.prototype.hasOwnProperty.call(nodes, name)
+        ? (nodes as Record<string, Schema>)[name]
+        : undefined
+    ),
   };
 }
 

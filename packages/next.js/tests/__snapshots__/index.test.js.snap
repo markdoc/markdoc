@@ -6,11 +6,12 @@ import yaml from 'js-yaml';
 // renderers is imported separately so Markdoc isn't sent to the client
 import Markdoc, {renderers} from '@markdoc/markdoc'
 
-import {getSchema, defaultObject} from '@markdoc/next.js/runtime';
+import {getSchema, getMarkdownSchema, defaultObject} from '@markdoc/next.js/runtime';
 /**
  * Schema is imported like this so end-user's code is compiled using build-in babel/webpack configs.
  * This enables typescript/ESnext support
  */
+let markdownHandlers = {};
 const schema = {};
 
 const tokenizer = new Markdoc.Tokenizer({"allowComments":true});
@@ -34,7 +35,7 @@ const frontmatter = ast.attributes.frontmatter
 
 const {components, ...rest} = getSchema(schema)
 
-async function getMarkdocData(context = {}) {
+async function getMarkdocData(context = {}, config = rest) {
   const partials = {};
 
   // Ensure Node.transformChildren is available
@@ -44,9 +45,9 @@ async function getMarkdocData(context = {}) {
   });
 
   const cfg = {
-    ...rest,
+    ...config,
     variables: {
-      ...(rest ? rest.variables : {}),
+      ...(config ? config.variables : {}),
       // user can't override this namespace
       markdoc: {frontmatter},
       // Allows users to eject from Markdoc rendering and pass in dynamic variables via getServerSideProps
@@ -102,11 +103,12 @@ import yaml from 'js-yaml';
 // renderers is imported separately so Markdoc isn't sent to the client
 import Markdoc, {renderers} from '@markdoc/markdoc'
 
-import {getSchema, defaultObject} from '@markdoc/next.js/runtime';
+import {getSchema, getMarkdownSchema, defaultObject} from '@markdoc/next.js/runtime';
 /**
  * Schema is imported like this so end-user's code is compiled using build-in babel/webpack configs.
  * This enables typescript/ESnext support
  */
+let markdownHandlers = {};
 const schema = {};
 
 const tokenizer = new Markdoc.Tokenizer({"allowComments":true});
@@ -130,7 +132,7 @@ const frontmatter = ast.attributes.frontmatter
 
 const {components, ...rest} = getSchema(schema)
 
-async function getMarkdocData(context = {}) {
+async function getMarkdocData(context = {}, config = rest) {
   const partials = {};
 
   // Ensure Node.transformChildren is available
@@ -140,9 +142,9 @@ async function getMarkdocData(context = {}) {
   });
 
   const cfg = {
-    ...rest,
+    ...config,
     variables: {
-      ...(rest ? rest.variables : {}),
+      ...(config ? config.variables : {}),
       // user can't override this namespace
       markdoc: {frontmatter},
       // Allows users to eject from Markdoc rendering and pass in dynamic variables via getServerSideProps
@@ -172,6 +174,13 @@ async function getMarkdocData(context = {}) {
 
 
 export const metadata = {"title":"Custom title"};
+const markdownSchema = getMarkdownSchema(schema, markdownHandlers);
+
+export async function getMarkdown() {
+  const markdoc = await getMarkdocData({}, markdownSchema);
+  return renderers.md(markdoc.content, {handlers: markdownHandlers});
+}
+
 export default async function MarkdocComponent(props) {
   const markdoc = await getMarkdocData();
   // Only execute HMR code in development
@@ -192,11 +201,12 @@ import yaml from 'js-yaml';
 // renderers is imported separately so Markdoc isn't sent to the client
 import Markdoc, {renderers} from '@markdoc/markdoc'
 
-import {getSchema, defaultObject} from '@markdoc/next.js/runtime';
+import {getSchema, getMarkdownSchema, defaultObject} from '@markdoc/next.js/runtime';
 /**
  * Schema is imported like this so end-user's code is compiled using build-in babel/webpack configs.
  * This enables typescript/ESnext support
  */
+let markdownHandlers = {};
 const schema = {};
 
 const tokenizer = new Markdoc.Tokenizer({"allowComments":true});
@@ -220,7 +230,7 @@ const frontmatter = ast.attributes.frontmatter
 
 const {components, ...rest} = getSchema(schema)
 
-async function getMarkdocData(context = {}) {
+async function getMarkdocData(context = {}, config = rest) {
   const partials = {};
 
   // Ensure Node.transformChildren is available
@@ -230,9 +240,9 @@ async function getMarkdocData(context = {}) {
   });
 
   const cfg = {
-    ...rest,
+    ...config,
     variables: {
-      ...(rest ? rest.variables : {}),
+      ...(config ? config.variables : {}),
       // user can't override this namespace
       markdoc: {frontmatter},
       // Allows users to eject from Markdoc rendering and pass in dynamic variables via getServerSideProps
@@ -288,11 +298,12 @@ import yaml from 'js-yaml';
 // renderers is imported separately so Markdoc isn't sent to the client
 import Markdoc, {renderers} from '@markdoc/markdoc'
 
-import {getSchema, defaultObject} from '@markdoc/next.js/runtime';
+import {getSchema, getMarkdownSchema, defaultObject} from '@markdoc/next.js/runtime';
 /**
  * Schema is imported like this so end-user's code is compiled using build-in babel/webpack configs.
  * This enables typescript/ESnext support
  */
+let markdownHandlers = {};
 const schema = {};
 
 const tokenizer = new Markdoc.Tokenizer({"allowComments":true});
@@ -316,7 +327,7 @@ const frontmatter = ast.attributes.frontmatter
 
 const {components, ...rest} = getSchema(schema)
 
-function getMarkdocData(context = {}) {
+function getMarkdocData(context = {}, config = rest) {
   const partials = {};
 
   // Ensure Node.transformChildren is available
@@ -326,9 +337,9 @@ function getMarkdocData(context = {}) {
   });
 
   const cfg = {
-    ...rest,
+    ...config,
     variables: {
-      ...(rest ? rest.variables : {}),
+      ...(config ? config.variables : {}),
       // user can't override this namespace
       markdoc: {frontmatter},
       // Allows users to eject from Markdoc rendering and pass in dynamic variables via getServerSideProps

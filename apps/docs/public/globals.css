@@ -744,7 +744,7 @@ main {
 
 .page--landing .get-started p,
 .page--landing blockquote p,
-.page--landing table td p {
+.page--landing .value-proposition p {
   font-size: var(--font-size-4);
   line-height: var(--line-height-4);
   font-weight: 400;
@@ -843,49 +843,7 @@ main {
   display: none;
 }
 
-.page--landing table {
-  margin: 0;
-  table-layout: fixed;
-}
-
-.page--landing table tr {
-  display: flex;
-  gap: 56px;
-}
-
-.page--landing table td {
-  display: flex;
-  flex-direction: column;
-  padding: 0;
-  flex: 1 0 0;
-  border-width: 0px;
-  gap: 4px;
-}
-
-.page--landing table h3 {
-  font-size: 28px;
-  line-height: 38px;
-  margin: 0;
-  letter-spacing: 0;
-}
-
 @media screen and (max-width: 1000px) {
-  .page--landing table tr {
-    flex-direction: column;
-    gap: 52px;
-  }
-
-  .page--landing table td {
-    flex-direction: row;
-    align-items: flex-start;
-    gap: 36px;
-  }
-
-  .page--landing table h3 {
-    font-size: 24px;
-    line-height: 33px;
-  }
-
   .page--landing .hero {
     padding: 3rem 0 5.3rem;
   }
@@ -914,17 +872,6 @@ main {
 @media screen and (max-width: 600px) {
   .page--landing .section hr {
     margin: 3rem 0;
-  }
-
-  .page--landing table tr {
-    flex-direction: column;
-    gap: 30px;
-  }
-
-  .page--landing table td {
-    /* https://stackoverflow.com/questions/23556364/how-to-convert-columns-to-rows-using-css */
-    display: block;
-    gap: 8px;
   }
 
   .page--landing .hero {

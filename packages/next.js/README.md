@@ -1,7 +1,5 @@
 # `@markdoc/next.js`
 
-> **Note**: this plugin will be treated as a beta version until `v1.0.0` is released.
-
 Using the `@markdoc/next.js` plugin allows you to create custom `.md` and `.mdoc` pages in your Next.js apps, and automatically render them with [`markdoc`](https://github.com/markdoc/markdoc).
 
 ## Setup
@@ -109,11 +107,61 @@ Excluding `metadata` from `nextjsExports` disables its export, including inferre
 metadata. Pages without metadata fields omit the export and inherit layout defaults.
 
 Frontmatter remains available inside the document through `$markdoc.frontmatter`.
-Native App Router page/layout modules export only their component and configured
-Next.js exports. Ordinary imported Markdown continues to export `markdoc.frontmatter`.
+Native App Router page/layout modules export only their component, configured
+Next.js exports, and `getMarkdown` (see [Serving Markdown](#serving-markdown)).
+Ordinary imported Markdown continues to export `markdoc.frontmatter`.
 
 For the Pages Router, use `pages/docs/getting-started.md`. Existing `getStaticProps`
 and `getServerSideProps` behavior is unchanged, including projects with both routers.
+
+## Serving Markdown
+
+App Router pages can also be served as Markdown, for example to LLMs and coding
+agents. Add an empty route file:
+
+```
+app
+└── markdoc
+    └── [[...path]]
+        └── route.md
+```
+
+The plugin compiles this file into a route handler for every `page.md`. Once the
+file exists, restart the dev server and each page is also available:
+
+- at its `.md` URL, such as `/docs/getting-started.md` (`/.md` or `/index.md` for `/`).
+- at its usual URL when the `Accept` header prefers Markdown: `text/markdown` is
+  listed before any `text/html`, or `text/plain` is listed first. Browsers keep
+  getting HTML.
+
+Markdown is prerendered at build time with
+[`Markdoc.renderers.md`](https://markdoc.dev/docs/render#markdown), and pages added
+during development are served without a restart. Responses use
+`Content-Type: text/markdown`, a `Link` header pointing to the page's canonical URL,
+and `Vary: Accept`. Next.js replaces `Vary` on prerendered HTML pages, so a shared
+cache can serve HTML to a client that negotiates with `Accept`; `.md` URLs always
+return Markdown.
+
+Nodes you render with your own components, such as `heading` or `fence`, use
+Markdoc's standard nodes in Markdown, so headings, code blocks, and links stay
+standard Markdown. Other components render their children. To convert a component
+differently, default-export handlers from `markdown.js` in your schema directory,
+keyed like your components (the PascalCase name of the tag or node):
+
+```js
+// markdoc/markdown.js
+import { Ast } from '@markdoc/markdoc';
+
+export default {
+  Callout: (tag, { renderChildren }) =>
+    new Ast.Node('blockquote', {}, renderChildren(tag.children)),
+  Tabs: 'children',
+  Playground: 'none',
+};
+```
+
+A handler registered for a node's component replaces the standard node. Pages
+Router pages and pages with dynamic segments are not served as Markdown.
 
 ## Contributing
 
