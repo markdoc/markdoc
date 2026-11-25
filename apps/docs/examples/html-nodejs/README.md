@@ -10,10 +10,15 @@ To get started:
 
 1. Download the project.
 2. Use the Node.js version in `.node-version` and the pnpm version pinned in `package.json`.
-3. Run `pnpm install --frozen-lockfile` and `pnpm build` from this directory to build the components.
+3. Run `pnpm install --frozen-lockfile` and `pnpm build` from this directory to type-check and compile the server and bundle the components.
 4. Run `pnpm start` to start the server.
 5. View the sample Markdoc page at `http://localhost:4242`.
 
 This example has its own pnpm workspace and lockfile, so it can run in place or
 be copied into a separate repository. New dependency resolutions use the
 repository's 31-day minimum release age.
+
+The server, schemas, and web components are written in TypeScript.
+`pnpm build` compiles them into `.build/`, then webpack bundles the browser
+components into `dist/main.js`. `pnpm start` runs the compiled server.
+Use `pnpm type:check` to check types without emitting files.
