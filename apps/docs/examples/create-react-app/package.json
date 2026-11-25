@@ -17,11 +17,13 @@
   },
   "scripts": {
     "start:client": "react-scripts start",
-    "start:server": "node server.js",
+    "start:server": "pnpm build:server && node .server/server.js",
     "start": "concurrently \"pnpm start:client\" \"pnpm start:server\"",
-    "build": "react-scripts build",
+    "build": "pnpm build:server && react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "build:server": "tsc -p tsconfig.server.json",
+    "type:check": "tsc --noEmit && tsc -p tsconfig.server.json --noEmit"
   },
   "eslintConfig": {
     "extends": [
@@ -43,6 +45,13 @@
     ]
   },
   "devDependencies": {
-    "concurrently": "^7.6.0"
+    "@types/express": "4.17.25",
+    "@types/glob": "8.1.0",
+    "@types/js-yaml": "4.0.9",
+    "@types/node": "18.19.70",
+    "@types/react": "18.3.12",
+    "@types/react-dom": "18.3.1",
+    "concurrently": "^7.6.0",
+    "typescript": "4.9.5"
   }
 }

@@ -1,0 +1,18 @@
+{
+  "compilerOptions": {
+    "target": "ES2020",
+    "module": "CommonJS",
+    "moduleResolution": "node",
+    "strict": true,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "noEmitOnError": true,
+    "rootDir": ".",
+    "outDir": ".server"
+  },
+  "include": [
+    "schema",
+    "server.ts",
+    "createContentManifest.ts"
+  ]
+}
