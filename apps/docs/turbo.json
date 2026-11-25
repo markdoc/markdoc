@@ -22,6 +22,9 @@
     "test": {
       "dependsOn": ["build"]
     },
+    "type:check": {
+      "dependsOn": ["build"]
+    },
     "spec": {
       "outputs": ["public/spec.html"]
     }

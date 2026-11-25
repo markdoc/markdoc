@@ -5,9 +5,10 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint app components lib markdoc next.config.js",
+    "lint": "eslint app components lib markdoc next.config.ts",
     "test": "node --test tests/*.test.mjs",
-    "spec": "spec-md spec/index.md > public/spec.html"
+    "spec": "spec-md spec/index.md > public/spec.html",
+    "type:check": "next typegen && tsc --noEmit"
   },
   "dependencies": {
     "@docsearch/css": "^3.9.0",
@@ -26,12 +27,15 @@
     "styled-jsx": "^5.1.7"
   },
   "devDependencies": {
+    "@types/codemirror": "^5.60.18",
     "@types/js-yaml": "^4.0.9",
     "@types/node": "^24.19.2",
+    "@types/prismjs": "^1.26.6",
     "@types/react": "^19.3.0",
     "eslint": "9.39.5",
     "eslint-config-next": "16.4.2",
     "spec-md": "^3.1.0",
     "typescript": "^6.0.3"
-  }
+  },
+  "type": "module"
 }
