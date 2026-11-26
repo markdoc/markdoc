@@ -36,6 +36,16 @@ Markdoc files.
 
 ## Agent skills
 
+`/llms.txt` provides usage guidance and links to the rendered Markdown guides
+and agent skills. Maintain this curated index in `public/llms.txt` when adding
+important guides. The HTML pages link to it with `rel="describedby"`; the route
+tests verify that its documentation links return Markdown. The index is served
+as `text/markdown`. Markdown output uses absolute `.md` URLs for links to guides,
+while the sandbox, specification, and static assets keep their existing URLs.
+Responses advertise the skill index with `Link: </.well-known/skills/index.json>;
+rel="service-meta"`. The headers and sitemap share the page list in `lib/pages.ts`
+so Markdown responses retain their canonical links.
+
 The site publishes the skills from `plugins/markdoc/skills` at
 `/.well-known/skills/index.json`, with their instructions and metadata under
 `/.well-known/skills/<name>/`. The routes are generated during the production
