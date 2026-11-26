@@ -1,0 +1,12 @@
+{
+  "$schema": "https://turborepo.dev/schema.json",
+  "extends": ["//"],
+  "tasks": {
+    "test": {
+      "passThroughEnv": ["TMPDIR", "GOTMPDIR", "GOCACHE", "GOFLAGS", "GOPATH"]
+    },
+    "lint": {
+      "passThroughEnv": ["TMPDIR", "GOTMPDIR", "GOCACHE", "GOFLAGS", "GOPATH"]
+    }
+  }
+}

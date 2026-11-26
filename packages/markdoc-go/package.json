@@ -1,0 +1,13 @@
+{
+  "name": "@markdoc/markdoc-go",
+  "private": true,
+  "description": "The Go implementation of Markdoc, markdoc.dev/markdoc",
+  "license": "MIT",
+  "scripts": {
+    "test": "node scripts/gen-fixtures.mjs && go test ./...",
+    "lint": "gofmt -l . | (! grep .) && go vet ./... && biome check --error-on-warnings scripts"
+  },
+  "devDependencies": {
+    "@markdoc/markdoc": "workspace:*"
+  }
+}

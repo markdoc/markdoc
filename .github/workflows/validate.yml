@@ -19,6 +19,10 @@ jobs:
         with:
           node-version-file: '.node-version'
           cache: 'pnpm'
+      - uses: actions/setup-go@v6
+        with:
+          go-version-file: packages/markdoc-go/go.mod
+          cache-dependency-path: packages/markdoc-go/go.sum
       - uses: actions/cache@v6
         with:
           path: .turbo/cache
