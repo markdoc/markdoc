@@ -97,6 +97,10 @@ for (const { route, metadata } of pages) {
     assert.equal(response.status, 200);
     const html = await response.text();
     assert.ok(html.includes('<main'), 'page shell is server rendered');
+    assert.ok(
+      html.includes(`<link rel="describedby" href="${site}/llms.txt"`),
+      'HTML pages advertise the agent documentation index'
+    );
     assert.match(html, /<svg[^>]*aria-label="Markdoc"/);
     assert.match(html, /<svg[^>]*aria-label="Built by Stripe"/);
     assert.ok(html.includes('<article'), 'document is server rendered');
@@ -141,6 +145,77 @@ for (const { route, metadata } of pages) {
     assert.ok(html.includes('<meta name="twitter:card" content="summary"'));
   });
 }
+
+test('llms.txt serves the curated Markdown index for text and browser clients', async () => {
+  const source = await readFile(path.join(appDir, 'public/llms.txt'), 'utf8');
+  assert.match(source, /^# Markdoc Documentation\n\n> .+/);
+  assert.equal([...source.matchAll(/^# /gm)].length, 1);
+  assert.match(source, /^## Docs$/m);
+
+  // The llms.txt format reserves H2 sections for lists of linked resources.
+  const sections = source.split(/^## .+$/m).slice(1);
+  assert.ok(sections.length > 0);
+  for (const section of sections) {
+    for (const line of section.trim().split('\n')) {
+      assert.match(line, /^- \[[^\]]+\]\(https:\/\/[^)]+\)(?:: .+)?$/);
+    }
+  }
+
+  for (const accept of ['text/plain', 'text/markdown', 'text/html']) {
+    const response = await fetch(`${origin}/llms.txt`, {
+      headers: { Accept: accept },
+      redirect: 'manual'
+    });
+    assert.equal(response.status, 200, accept);
+    assert.match(response.headers.get('content-type'), /^text\/plain\b/);
+    assert.equal(await response.text(), source);
+  }
+
+  const head = await fetch(`${origin}/llms.txt`, { method: 'HEAD' });
+  assert.equal(head.status, 200);
+  assert.match(head.headers.get('content-type'), /^text\/plain\b/);
+  assert.equal(await head.text(), '');
+});
+
+test('llms.txt links to rendered Markdown guides and the published skills', async () => {
+  const index = await fetch(`${origin}/llms.txt`);
+  const links = [...(await index.text()).matchAll(/\]\((https:\/\/[^)]+)\)/g)]
+    .map((match) => new URL(match[1]))
+    .filter((url) => url.origin === site);
+  assert.ok(links.some((url) => url.pathname.startsWith('/docs/')));
+  assert.ok(links.some((url) => url.pathname.endsWith('/SKILL.md')));
+
+  for (const url of links) {
+    const response = await fetch(`${origin}${url.pathname}`, {
+      headers: { Accept: 'text/markdown' },
+      redirect: 'manual'
+    });
+    assert.equal(response.status, 200, url.href);
+    const content = await response.text();
+    assert.ok(content.trim().length > 0, url.href);
+    assert.match(
+      response.headers.get('content-type'),
+      url.pathname.endsWith('.json') ? /^application\/json\b/ : /^text\/markdown\b/,
+      url.href
+    );
+
+    if (url.pathname.startsWith('/docs/')) {
+      assert.ok(url.pathname.endsWith('.md'), url.href);
+      const route = url.pathname.slice(0, -3);
+      assert.ok(pages.some((page) => page.route === route), url.href);
+      const negotiated = await fetch(`${origin}${route}`, {
+        headers: { Accept: 'text/markdown' }
+      });
+      assert.equal(negotiated.status, 200, route);
+      assert.match(negotiated.headers.get('content-type'), /^text\/markdown\b/);
+      assert.ok(
+        negotiated.headers.get('vary')?.toLowerCase().split(/\s*,\s*/).includes('accept'),
+        route
+      );
+      assert.equal(await negotiated.text(), content, route);
+    }
+  }
+});
 
 test('legacy docs and English URLs redirect to their existing destinations', async () => {
   for (const [from, to, status] of [

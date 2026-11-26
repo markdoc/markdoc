@@ -1,0 +1,51 @@
+# Markdoc Documentation
+
+> Markdoc is a Markdown-based authoring framework created by Stripe. It extends Markdown with declarative tags, variables, functions, and validation.
+
+Use Markdoc for documentation and content sites that need reusable components, conditional content, or schema validation. Before changing an integration, check the installed package versions and the project's existing schemas. Keep application logic in schemas and components, and use Markdoc syntax in documents.
+
+The documentation links below return Markdown directly. You can also request `Accept: text/markdown` at a documentation page's regular URL.
+
+## Docs
+
+- [What is Markdoc?](https://markdoc.dev/docs/overview.md): Understand the document format, rendering framework, and design choices.
+- [Get started](https://markdoc.dev/docs/getting-started.md): Install Markdoc and render your first document.
+
+## Core concepts
+
+- [Syntax and schema](https://markdoc.dev/docs/syntax.md): Write documents using Markdown, tags, attributes, and annotations.
+- [Nodes](https://markdoc.dev/docs/nodes.md): Customize how built-in Markdown elements are transformed and rendered.
+- [Tags](https://markdoc.dev/docs/tags.md): Define reusable content components with typed attributes.
+- [Attributes](https://markdoc.dev/docs/attributes.md): Pass data to tags and configure attribute types, defaults, and validation.
+- [Variables](https://markdoc.dev/docs/variables.md): Supply application data to documents at runtime.
+- [Functions](https://markdoc.dev/docs/functions.md): Use built-in functions or define custom functions for document expressions.
+- [Rendering](https://markdoc.dev/docs/render.md): Parse, transform, and render documents as HTML, React elements, or Markdown.
+- [Config objects](https://markdoc.dev/docs/config.md): Configure nodes, tags, variables, functions, and partials.
+- [Validation](https://markdoc.dev/docs/validation.md): Check documents against a schema and report errors to authors.
+
+## Integration guides
+
+- [Common examples](https://markdoc.dev/docs/examples.md): Add syntax highlighting, tabs, tables of contents, and other documentation features.
+- [HTML and Web Components](https://markdoc.dev/docs/examples/html.md): Render Markdoc as HTML and use Web Components for interactive content.
+- [Markdown output](https://markdoc.dev/docs/examples/markdown.md): Serve Markdown for agents with custom component handlers and audience-specific content.
+- [Next.js](https://markdoc.dev/docs/examples/nextjs.md): Integrate Markdoc pages with the App Router or Pages Router.
+- [React](https://markdoc.dev/docs/examples/react.md): Render documents with React and map custom tags to components.
+
+## Advanced concepts
+
+- [Frontmatter](https://markdoc.dev/docs/frontmatter.md): Read document metadata and use it in content.
+- [Partials](https://markdoc.dev/docs/partials.md): Share content across multiple pages.
+- [Formatting](https://markdoc.dev/docs/format.md): Generate or format Markdoc source from an abstract syntax tree.
+
+## Agent skills
+
+- [Set up Markdoc](https://markdoc.dev/.well-known/skills/setup-markdoc/SKILL.md): Inspect a project, install Markdoc, and connect parsing, validation, transformation, and rendering.
+- [Write Markdoc](https://markdoc.dev/.well-known/skills/write-markdoc/SKILL.md): Author or edit content using the project's existing schemas and conventions.
+- [Create a Markdoc tag](https://markdoc.dev/.well-known/skills/create-markdoc-tag/SKILL.md): Define a schema, renderer, and usage example for a custom tag.
+- [Skill discovery](https://markdoc.dev/.well-known/skills/index.json): Discover skill names and supporting files. Install with `pnpm dlx skills add https://markdoc.dev`.
+
+## Optional
+
+- [FAQ](https://markdoc.dev/docs/faq.md): Understand design choices and differences from other authoring tools.
+- [Source and contributions](https://github.com/markdoc/markdoc): Inspect implementation, releases, examples, and contribution instructions.
+- [Issues](https://github.com/markdoc/markdoc/issues): Search known problems or report a reproducible bug.
