@@ -7,10 +7,12 @@ import path from 'node:path';
 import { after, before, test } from 'node:test';
 import { fileURLToPath } from 'node:url';
 import yaml from 'js-yaml';
+import Markdoc from '@markdoc/markdoc';
 
 const require = createRequire(import.meta.url);
 const appDir = fileURLToPath(new URL('..', import.meta.url));
 const site = 'https://markdoc.dev';
+const skillDiscovery = '</.well-known/skills/index.json>; rel="service-meta"';
 const defaultDescription =
   'A powerful, flexible, Markdown-based authoring framework';
 const files = (
@@ -95,10 +97,11 @@ for (const { route, metadata } of pages) {
   test(`${route} renders its document and frontmatter metadata`, async () => {
     const response = await fetch(`${origin}${route}`);
     assert.equal(response.status, 200);
+    assert.ok(response.headers.get('link')?.includes(skillDiscovery));
     const html = await response.text();
     assert.ok(html.includes('<main'), 'page shell is server rendered');
     assert.ok(
-      html.includes(`<link rel="describedby" href="${site}/llms.txt"`),
+      html.includes(`<link rel="describedby" href="${site}/llms.txt" type="text/markdown"`),
       'HTML pages advertise the agent documentation index'
     );
     assert.match(html, /<svg[^>]*aria-label="Markdoc"/);
@@ -167,13 +170,15 @@ test('llms.txt serves the curated Markdown index for text and browser clients', 
       redirect: 'manual'
     });
     assert.equal(response.status, 200, accept);
-    assert.match(response.headers.get('content-type'), /^text\/plain\b/);
+    assert.match(response.headers.get('content-type'), /^text\/markdown\b/);
+    assert.ok(response.headers.get('link')?.includes(skillDiscovery));
     assert.equal(await response.text(), source);
   }
 
   const head = await fetch(`${origin}/llms.txt`, { method: 'HEAD' });
   assert.equal(head.status, 200);
-  assert.match(head.headers.get('content-type'), /^text\/plain\b/);
+  assert.match(head.headers.get('content-type'), /^text\/markdown\b/);
+  assert.ok(head.headers.get('link')?.includes(skillDiscovery));
   assert.equal(await head.text(), '');
 });
 
@@ -191,6 +196,7 @@ test('llms.txt links to rendered Markdown guides and the published skills', asyn
       redirect: 'manual'
     });
     assert.equal(response.status, 200, url.href);
+    assert.ok(response.headers.get('link')?.includes(skillDiscovery), url.href);
     const content = await response.text();
     assert.ok(content.trim().length > 0, url.href);
     assert.match(
@@ -208,6 +214,11 @@ test('llms.txt links to rendered Markdown guides and the published skills', asyn
       });
       assert.equal(negotiated.status, 200, route);
       assert.match(negotiated.headers.get('content-type'), /^text\/markdown\b/);
+      for (const result of [response, negotiated]) {
+        const links = result.headers.get('link');
+        assert.ok(links?.includes(skillDiscovery), route);
+        assert.ok(links.includes(`<${route}>; rel="canonical"`), route);
+      }
       assert.ok(
         negotiated.headers.get('vary')?.toLowerCase().split(/\s*,\s*/).includes('accept'),
         route
@@ -215,6 +226,62 @@ test('llms.txt links to rendered Markdown guides and the published skills', asyn
       assert.equal(await negotiated.text(), content, route);
     }
   }
+});
+
+test('links between Markdown guides stay in Markdown without an Accept header', async () => {
+  const targets = new Set();
+  for (const { route } of pages.filter(({ route }) => route.startsWith('/docs/'))) {
+    const response = await fetch(`${origin}${route}.md`);
+    assert.equal(response.status, 200, route);
+    const ast = Markdoc.parse(await response.text());
+    for (const node of ast.walk()) {
+      if (node.type !== 'link') continue;
+      const { href } = node.attributes;
+      if (href.startsWith('#')) continue;
+      const url = new URL(href, `${site}${route}.md`);
+      if (url.origin !== site || !url.pathname.startsWith('/docs/')) continue;
+      assert.ok(href.startsWith(`${site}/docs/`), href);
+      assert.ok(url.pathname.endsWith('.md'), href);
+      assert.ok(pages.some((page) => `${page.route}.md` === url.pathname), href);
+      targets.add(url.pathname + url.search);
+    }
+  }
+  assert.ok(targets.size > 0);
+  for (const target of targets) {
+    const response = await fetch(`${origin}${target}`, { redirect: 'manual' });
+    assert.equal(response.status, 200, target);
+    assert.match(response.headers.get('content-type'), /^text\/markdown\b/);
+  }
+
+  const guide = await fetch(`${origin}/docs/getting-started.md`);
+  assert.ok((await guide.text()).includes('/* [config](/docs/config) */'),
+    'URLs inside code examples are preserved');
+  const html = await fetch(`${origin}/docs/getting-started`, {
+    headers: { Accept: 'text/html' }
+  });
+  assert.ok((await html.text()).includes('href="/docs/syntax"'),
+    'HTML navigation keeps its existing URLs');
+});
+
+test('homepage and direct Markdown routes retain canonical and skill discovery links', async () => {
+  for (const [path, canonical] of [
+    ['/index.md', '/'],
+    ['/.md', '/'],
+    ['/markdoc', '/'],
+    ['/markdoc/docs/syntax', '/docs/syntax']
+  ]) {
+    const response = await fetch(`${origin}${path}`);
+    assert.equal(response.status, 200, path);
+    assert.match(response.headers.get('content-type'), /^text\/markdown\b/);
+    const links = response.headers.get('link');
+    assert.ok(links?.includes(skillDiscovery), path);
+    assert.ok(links.includes(`<${canonical}>; rel="canonical"`), path);
+  }
+
+  const homepage = await fetch(origin, { headers: { Accept: 'text/markdown' } });
+  assert.match(homepage.headers.get('content-type'), /^text\/markdown\b/);
+  assert.ok(homepage.headers.get('link')?.includes(skillDiscovery));
+  assert.ok(homepage.headers.get('link')?.includes('</>; rel="canonical"'));
 });
 
 test('legacy docs and English URLs redirect to their existing destinations', async () => {

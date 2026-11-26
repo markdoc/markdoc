@@ -34,7 +34,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en">
       <head>
-        <link rel="describedby" href={`${SITE_URL}/llms.txt`} type="text/plain" />
+        <link rel="describedby" href={`${SITE_URL}/llms.txt`} type="text/markdown" />
         <link
           rel="preload"
           as="font"
