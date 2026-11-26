@@ -1,0 +1,240 @@
+[
+ {
+  "source": "",
+  "options": {}
+ },
+ {
+  "source": "\n\n\t\n   \n  \n\n",
+  "options": {}
+ },
+ {
+  "source": "---\n\n\ntitle: What is Markdoc?\n\n---\n\n# {% $markdoc.frontmatter.title %} {% #overview %}\n\nMarkdoc is a **Markdown**-based `syntax` and _toolchain_ for creating ~~custom~~ documentation sites. Stripe created Markdoc to power [our public docs](http://stripe.com/docs).\n\n> Blockquote {% .special %}\n\n---\n\n[Link](/href   \"title\")\n    ![Alt](/image   \"title\")\n\n{% callout #id   .class  .class2   a=\"check\" b={\"e\":{\"with space\": 5}} c=8 d=[1,    \"2\",true,  null] %}\nMarkdoc is open-source—check out it's [source](http://github.com/markdoc/markdoc) to see how it works.\n{% /callout %}\n\n```js {% .class #id x=\"test\"   render=false %}\nCode!\n```\n\n## How is {% markdoc(\"test\", 1) %} different? {% .classname %}\n\nfoo\\\nbaz\n\nSoft \n break\nMarkdoc uses…\n",
+  "options": {}
+ },
+ {
+  "source": "---\ntitle: What is Markdoc?\n---\n\n# {% $markdoc.frontmatter.title %} {% #overview %}\n\nMarkdoc is a **Markdown**-based `syntax` and _toolchain_ for creating ~~custom~~ documentation sites. Stripe created Markdoc to power [our public docs](http://stripe.com/docs).\n\n> Blockquote {% .special %}\n\n---\n\n[Link](/href \"title\")\n![Alt](/image \"title\")\n\n{% callout\n   #id\n   .class\n   .class2\n   a=\"check\"\n   b={e: {\"with space\": 5}}\n   c=8\n   d=[1, \"2\", true, null] %}\nMarkdoc is open-source—check out it's [source](http://github.com/markdoc/markdoc) to see how it works.\n{% /callout %}\n\n```js {% .class #id x=\"test\" render=false %}\nCode!\n```\n\n## How is {% markdoc(\"test\", 1) %} different? {% .classname %}\n\nfoo\\\nbaz\n\nSoft\nbreak\nMarkdoc uses…\n",
+  "options": {}
+ },
+ {
+  "source": "<!--\n    comment -->\n\n<!-- comment\n   with more\n  than one\nline  -->\n",
+  "options": {}
+ },
+ {
+  "source": "---\ntitle: Title\nsubtitle: Subtitle\n---\n\n",
+  "options": {}
+ },
+ {
+  "source": "\nregular_word_with_underscores\n\n\\* List item\n\n\\> Blockquote\n\nText > not a blockquote\n\n\\# Heading\n\n\\### Heading\n\n#Not a heading\n\n**/docs/\\***\n\n~~**a \\_sentence\\_ with \\_underscores**~~\n\n- Item with [brackets]\n\n-not a list item\n\n```\n\\*\\_[\\[]\n```\n\n{% table %}\n- <https://autolink.com>\n- **[Link](https://example.com?q=()**\n- **[Link](https://example.com?q=\\()**\n- **[Link](https://example.com?q=\\(\\))**\n- ![Image](https://example.com?q=()\n- ![Image](https://example.com?q=\\()\n- ![Image](https://example.com?q=\\(\\))\n{% /table %}\n\nparagraph 1\n\n&nbsp;\n\nparagraph 2\n",
+  "options": {}
+ },
+ {
+  "source": "*foo* bar baz",
+  "options": {}
+ },
+ {
+  "source": "**foo** bar baz",
+  "options": {}
+ },
+ {
+  "source": "_foo_ bar baz",
+  "options": {}
+ },
+ {
+  "source": "__foo__ bar baz",
+  "options": {}
+ },
+ {
+  "source": "foo*bar*baz",
+  "options": {}
+ },
+ {
+  "source": "foo_bar_baz",
+  "options": {}
+ },
+ {
+  "source": "{% if $gates[\"<string_key>\"].test[\"@var\"] id=\"id with space\" class=\"class with space\" /%}",
+  "options": {}
+ },
+ {
+  "source": "{% key id=$user.name class=default($y, \"test\") %}Child{% /key %}",
+  "options": {}
+ },
+ {
+  "source": "\n{% key id=$user.name class=default($y, \"test\") %}Child{% /key %}\n",
+  "options": {}
+ },
+ {
+  "source": "\n{% tag \"complex primary\" /%}\n{% if $primary %}\nX\n{% /if %}\n{% $user.name %}\n{% key x=$user.name y=$flag z=$array[5] /%}\n",
+  "options": {}
+ },
+ {
+  "source": "\n{% tag \"complex primary\" /%}\n\n{% if $primary %}\nX\n{% /if %}\n\n{% $user.name %}\n\n{% key x=$user.name y=$flag z=$array[5] /%}\n",
+  "options": {}
+ },
+ {
+  "source": "\n{% markdoc(\"test\", 1) %}\n{% key x=default($x, 1) /%}\n",
+  "options": {}
+ },
+ {
+  "source": "{% markdoc(\"test\", 1) %}\n{% key x=default($x, 1) /%}\n",
+  "options": {}
+ },
+ {
+  "source": "\n{% key /%}\n\n{% a %}{% /a %}\n\n{% a %}\n{% /a %}\n\n{% a %}\n\n{% /a %}\n  \n{% checkout %}\n  {% if true %}\n  Yes!\n  {% /if %}\n{% /checkout %}\n    ",
+  "options": {}
+ },
+ {
+  "source": "\n{% key /%}\n\n{% a /%}\n\n{% a /%}\n\n{% a /%}\n\n{% checkout %}\n{% if true %}\nYes!\n{% /if %}\n{% /checkout %}\n",
+  "options": {}
+ },
+ {
+  "source": "\n{% tag a=true b=\"My very long text well over 80 characters in total\" c=123456789 d=false /%}\n    ",
+  "options": {}
+ },
+ {
+  "source": "\n{% tag\n   a=true\n   b=\"My very long text well over 80 characters in total\"\n   c=123456789\n   d=false /%}\n",
+  "options": {}
+ },
+ {
+  "source": "{% button type=\"button\" href=\"https://example.com/a-very-long-inline-tag\" %}A very long inline tag{% /button %}\n",
+  "options": {}
+ },
+ {
+  "source": "### {% image src=\"/src\" alt=\"A very long alt text to test if the tag wraps or not\" /%}\n",
+  "options": {}
+ },
+ {
+  "source": "\n{% tag a=true b=\"My very long text well over 80 characters in total\" c=123456789 d=false /%}\n",
+  "options": {
+   "maxTagOpeningWidth": 1000000000
+  }
+ },
+ {
+  "source": "\n{% checkout %}\n  {% if true %}\n  Yes!\n  {% /if %}\n{% /checkout %}\n    ",
+  "options": {
+   "allowIndentation": true
+  }
+ },
+ {
+  "source": "\n{% checkout %}\n  {% if true %}\n    Yes!\n  {% /if %}\n{% /checkout %}\n",
+  "options": {
+   "allowIndentation": true
+  }
+ },
+ {
+  "source": "\n| Syntax      | Description |\n| ------ | ---- |\n| Header      | Title  |\n| Paragraph        | Text        |\n\n{% table %}\n\n- One {% align=\"middle\" %}\n- Two\n\n\n---\n- Three\n- Four {% align=\"end\" %}\n\n---\n\n* **Five**\n*\n  A bunch of words\n  \n  And more words\n\n{% /table %}\n\n{% table %}\n---\n- H1\n- H2\n{% /table %}\n    ",
+  "options": {}
+ },
+ {
+  "source": "\n| Syntax    | Description |\n| --------- | ----------- |\n| Header    | Title       |\n| Paragraph | Text        |\n\n{% table %}\n- One {% align=\"middle\" %}\n- Two\n---\n- Three\n- Four {% align=\"end\" %}\n---\n- **Five**\n- A bunch of words\n\n  And more words\n{% /table %}\n\n{% table %}\n---\n- H1\n- H2\n{% /table %}\n",
+  "options": {}
+ },
+ {
+  "source": "\n{% table %}\n* H1\n* H2\n{% if $var %}\n---\n* H3\n* H4\n{% /if %}\n{% /table %}\n    ",
+  "options": {}
+ },
+ {
+  "source": "\n{% table %}\n- H1\n- H2\n{% if $var %}\n---\n- H3\n- H4\n{% /if %}\n{% /table %}\n",
+  "options": {}
+ },
+ {
+  "source": "\n- [Install Markdoc](/docs/getting-started)\n- [Try it out online](/sandbox)\n\n3. One {% align=\"left\" %}\n4. Two\n5. Three\n\n- A\n- B\n  - B2\n- C",
+  "options": {}
+ },
+ {
+  "source": "\n- [Install Markdoc](/docs/getting-started)\n- [Try it out online](/sandbox)\n\n3. One {% align=\"left\" %}\n1. Two\n1. Three\n\n- A\n- B\n  - B2\n- C\n",
+  "options": {}
+ },
+ {
+  "source": "\n- foo\n- bar\n* baz\n* qux\n\n\n7) foo\n1) bar\n1) baz\n3. foo\n1. bar\n1. baz\n1) foo\n4) bar\n9) baz\n",
+  "options": {}
+ },
+ {
+  "source": "\n- foo\n- bar\n\n* baz\n* qux\n\n7) foo\n1) bar\n1) baz\n\n3. foo\n1. bar\n1. baz\n\n1) foo\n1) bar\n1) baz\n",
+  "options": {}
+ },
+ {
+  "source": "\n- foo\n- bar\n* baz\n* qux\n\n\n7) foo\n1) bar\n1) baz\n3. foo\n1. bar\n1. baz\n1) foo\n4) bar\n9) baz\n",
+  "options": {
+   "orderedListMode": "increment"
+  }
+ },
+ {
+  "source": "\n- foo\n- bar\n\n* baz\n* qux\n\n7) foo\n8) bar\n9) baz\n\n3. foo\n4. bar\n5. baz\n\n1) foo\n2) bar\n3) baz\n",
+  "options": {
+   "orderedListMode": "increment"
+  }
+ },
+ {
+  "source": "\n- a\n\n- b\n\n---\n\n- One\n\n  My first paragraph\n  Test\n\n  {% tag %} \n    Indented tag\n  {% /tag %} \n\n  ```\n  {% $code %}\n  ```\n- Two\n\n  My second paragraph\n  \n  ---\n  \n  ## Indented header\n\n  > Indented blockquote",
+  "options": {}
+ },
+ {
+  "source": "\n- a\n\n- b\n\n---\n\n- One\n\n  My first paragraph\n  Test\n\n  {% tag %}\n  Indented tag\n  {% /tag %}\n\n  ```\n  {% $code %}\n  ```\n\n- Two\n\n  My second paragraph\n\n  ---\n\n  ## Indented header\n\n  > Indented blockquote\n",
+  "options": {}
+ },
+ {
+  "source": "\n- List\n  {% list %}\n  One\n  {% /list %}\n  Inline text:\n  {% list %}\n  Two\n  {% /list %}\n",
+  "options": {}
+ },
+ {
+  "source": "\n* Create your CNAME record\n\n  1. Click **Add record**.\n\n     ```json\n     {\n       \"nested\": \"code block\"\n     }\n     ```\n  \n  1. Enter these values in the form that opens:\n\n      {% table %}\n      * Field\n      * Value to enter\n      * Description\n      ---\n      * Type\n      * Select `CNAME` from the dropdown\n      * What kind of DNS record this is.\n      ---\n      * Target\n      * If your custom subdomain is checkout.powdur.me, enter `checkout`\n      * For CNAME records, this field is the first part of your subdomain (the part leading up to the first period).\n      ---\n      * Value\n      * {% code %}hosted-checkout.stripecdn.com{% /code %}\n      * This is what the new subdomain record points to-in this case, Stripe Checkout.\n      ---\n      * TTL\n      * `5 min`\n      * An expiration of 5 minutes (300 seconds) is OK.\n      ---\n      * Proxy status\n      * `Off`\n      * Set the proxy status to `off` to avoid issues during setup.\n      {% /table %}\n    1. foo\\\n       baz\n    \n       Soft \n         break\n       Markdoc uses…",
+  "options": {}
+ },
+ {
+  "source": "\n* Create your CNAME record\n\n  1. Click **Add record**.\n\n     ```json\n     {\n       \"nested\": \"code block\"\n     }\n     ```\n\n  1. Enter these values in the form that opens:\n\n     {% table %}\n     - Field\n     - Value to enter\n     - Description\n     ---\n     - Type\n     - Select `CNAME` from the dropdown\n     - What kind of DNS record this is.\n     ---\n     - Target\n     - If your custom subdomain is checkout.powdur.me, enter `checkout`\n     - For CNAME records, this field is the first part of your subdomain (the part leading up to the first period).\n     ---\n     - Value\n     - {% code %}hosted-checkout.stripecdn.com{% /code %}\n     - This is what the new subdomain record points to-in this case, Stripe Checkout.\n     ---\n     - TTL\n     - `5 min`\n     - An expiration of 5 minutes (300 seconds) is OK.\n     ---\n     - Proxy status\n     - `Off`\n     - Set the proxy status to `off` to avoid issues during setup.\n     {% /table %}\n\n  1. foo\\\n     baz\n\n     Soft\n     break\n     Markdoc uses…\n",
+  "options": {}
+ },
+ {
+  "source": "\n- attributes: An object literal with key-value pairs that describe the attributes accepted by the tag. {% #id %}\n    - localizable: A boolean value (or an array) indicating whether the attribute’s value is translatable. {% #localizable %}\n        - Defaults to `false`\n    - description: A documentation string that describes the purpose of the attribute {% align=\"center\" %}",
+  "options": {}
+ },
+ {
+  "source": "\n- attributes: An object literal with key-value pairs that describe the attributes accepted by the tag. {% #id %}\n  - localizable: A boolean value (or an array) indicating whether the attribute’s value is translatable. {% #localizable %}\n    - Defaults to `false`\n  - description: A documentation string that describes the purpose of the attribute {% align=\"center\" %}\n",
+  "options": {}
+ },
+ {
+  "source": "\n* **One {% colspan=1 %}**\n* **Two {% colspan=2 %}**\n* **Three {% colspan=3 %}**\n",
+  "options": {}
+ },
+ {
+  "source": "\n* **One**{% colspan=1 %}\n* **Two**{% colspan=2 %}\n* **Three**{% colspan=3 %}\n",
+  "options": {}
+ },
+ {
+  "source": "{% tab %}\n```json {% filename=\"package.json\" %}\n{\n  \"dependencies\": {\n    ...\n    {% highlight type=\"remove\" %}\n    \"beta\": \"1.2.3\",\n    {% /highlight %}\n    {% highlight type=\"add\" %}\n    \"main\": \"1.2.4\",\n    {% /highlight %}\n    ...\n  }\n}\n```\n{% /tab %}\n",
+  "options": {}
+ },
+ {
+  "source": "\n```{% filename=\"package.json\" %}\nPackage.json\n```\n",
+  "options": {}
+ },
+ {
+  "source": "\n````\n\n```\nFence within a fence\n```\n\n\n````\n",
+  "options": {}
+ },
+ {
+  "source": "\n> Blockquote {% .class %}\n>\n> with two paragraphs",
+  "options": {}
+ },
+ {
+  "source": "\n> Blockquote {% .class %}\n> \n> with two paragraphs\n",
+  "options": {}
+ },
+ {
+  "source": "\n> Intro:\n>\n> - One\n> - Two\n>\n> 1. First\n> 2. Second\n>\n> After",
+  "options": {}
+ },
+ {
+  "source": "\n> Intro:\n> \n> - One\n> - Two\n> \n> 1. First\n> 1. Second\n> \n> After\n",
+  "options": {}
+ },
+ {
+  "source": "\n> - One\n>   - Nested\n> - Two\n> \n> > Inner\n> > quote\n> \n> ```js\n> code();\n> ```\n",
+  "options": {}
+ },
+ {
+  "source": "\n- Item\n\n  > Quote\n  > \n  > - One\n  > - Two\n",
+  "options": {}
+ }
+]

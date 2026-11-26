@@ -1,0 +1,923 @@
+# Documents transformed and validated with a config. See scripts/configs.mjs
+# for the config format: JS config data, plus {$hook: name} for the code in
+# scripts/hooks.mjs. Optional `slots` and `file` are parser options.
+
+# Tags and attributes
+
+- name: custom tag with typed, renamed, default and hidden attributes
+  config:
+    tags:
+      callout:
+        render: aside
+        attributes:
+          type: { type: String, default: note, matches: [note, warning, caution] }
+          title: { type: String, render: data-title }
+          hidden: { type: Boolean, render: false }
+  code: |
+    {% callout type="warning" title="Careful" hidden=true %}
+    Watch **out**.
+    {% /callout %}
+
+    {% callout %}
+    Default type.
+    {% /callout %}
+
+    {% callout type="bogus" #x .a .b title=1 extra=2 %}
+    Bad type.
+    {% /callout %}
+
+- name: attribute render true and render names
+  config:
+    tags:
+      foo:
+        render: foo
+        attributes:
+          bar: { type: Number, render: true }
+          baz: { type: String, render: data-baz }
+          dataFoo: { type: String }
+  code: |
+    {% foo bar=1 baz="test" dataFoo="x" /%}
+
+- name: attribute order follows the schema, with integer-like names first
+  config:
+    tags:
+      foo:
+        render: foo
+        attributes:
+          z: {}
+          b: {}
+          "10": {}
+          "2": {}
+          a: {}
+  code: |
+    {% foo a=1 2=2 10=3 b=4 z=5 /%}
+
+- name: schema attributes override global class and id in place
+  config:
+    tags:
+      foo:
+        render: foo
+        attributes:
+          title: { type: String }
+          id: { type: String, render: data-id }
+  code: |
+    {% foo title="t" #main .a /%}
+
+- name: union attribute types
+  config:
+    tags:
+      foo:
+        render: foo
+        attributes:
+          a: { type: [String, Number] }
+  code: |
+    {% foo a="x" /%}
+    {% foo a=1 /%}
+    {% foo a=true /%}
+
+- name: object and array attribute types
+  config:
+    tags:
+      foo:
+        render: foo
+        attributes:
+          o: { type: Object }
+          l: { type: Array }
+  code: |
+    {% foo o={a: 1, "b c": [1, 2]} l=[1, "a", null, true] /%}
+    {% foo o=[1] l={a: 1} /%}
+
+- name: required attributes and missing values
+  config:
+    tags:
+      foo:
+        render: foo
+        attributes:
+          a: { type: String, required: true }
+          b: { type: String, required: true, default: dflt }
+  code: |
+    {% foo /%}
+    {% foo a="x" b="y" /%}
+
+- name: matches with many values is elided
+  config:
+    tags:
+      foo:
+        attributes:
+          jawn: { type: String, matches: [f, o, o, b, a, r, b, a, z, q, u, x] }
+  code: |
+    {% foo jawn="cat" /%}
+
+- name: matches with numbers
+  config:
+    tags:
+      foo:
+        attributes:
+          n: { type: Number, matches: [1, 2, 3] }
+  code: |
+    {% foo n=2 /%}
+    {% foo n=4 /%}
+    {% foo n="2" /%}
+
+- name: matches a regular expression with an error level
+  config:
+    tags:
+      embed:
+        render: iframe
+        selfClosing: true
+        attributes:
+          src:
+            type: String
+            required: true
+            matches: { regex: '^https://trusted\.example/' }
+            errorLevel: critical
+  code: |
+    {% embed src="javascript:alert(1)" /%}
+    {% embed src="https://trusted.example/embed" /%}
+    {% embed src=42 /%}
+    {% embed __proto__={src: "javascript:alert(1)"} /%}
+    {% embed toString="value" /%}
+
+- name: regex with a slash and flags
+  config:
+    tags:
+      foo:
+        attributes:
+          path: { type: String, matches: { regex: '^a/b$', flags: i } }
+  code: |
+    {% foo path="A/B" /%}
+    {% foo path="a/c" /%}
+
+- name: matches applies to variables too
+  config:
+    variables: { kind: note }
+    tags:
+      foo:
+        attributes:
+          kind: { matches: [note] }
+  code: |
+    {% foo kind=$kind /%}
+
+- name: attribute validate functions
+  config:
+    tags:
+      foo:
+        attributes:
+          bar: { type: Number, validate: { $hook: greaterThanTen } }
+          baz: { type: Object, validate: { $hook: bazLessThanFive } }
+  code: |
+    {% foo bar=20 /%}
+    {% foo bar=5 baz={baz: 3} /%}
+
+- name: custom attribute types that validate
+  config:
+    tags:
+      link:
+        render: a
+        attributes:
+          href: { type: { $hook: Link } }
+      foo:
+        attributes:
+          bar: { type: { $hook: BazLessThanFive } }
+          blah: { type: { $hook: BazLessThanFive } }
+  code: |
+    {% link href="/relative-link" /%}
+    {% link href="http://google.com" %}x{% /link %}
+    {% foo bar={baz: 3} /%}
+
+- name: custom attribute types that transform
+  config:
+    nodes:
+      paragraph:
+        render: p
+        attributes:
+          up: { type: { $hook: UpperCaseString } }
+          nn: { type: { $hook: NonNullString } }
+  code: |
+    Text {% up="test" %}
+
+    More {% nn="kept" %}
+
+- name: custom type transforms run for missing attributes
+  config:
+    tags:
+      foo:
+        render: foo
+        attributes:
+          bar: { type: { $hook: NonNullString } }
+  code: |
+    {% foo /%}
+
+- name: global class and id attributes
+  code: |
+    # Title {% #main .a .b %}
+
+    Para {% class="x y" %}
+
+    Bad {% #1bar %}
+
+    Hash {% id="#bar" %}
+
+    {% if true .c %}
+    In if.
+    {% /if %}
+
+- name: class objects with false values
+  config:
+    tags:
+      foo:
+        render: foo
+  code: |
+    {% foo class={a: true, b: false, c: 1, d: 0, e: "x", f: ""} /%}
+    {% foo class=[1, 2] /%}
+    {% foo class=5 /%}
+
+- name: inline and block placement
+  config:
+    tags:
+      foo: { inline: true, render: span }
+      bar: { inline: false, render: div }
+      baz: { render: em }
+  code: |
+    this is inline {% foo %}bar{% /foo %} and {% bar %}x{% /bar %} and {% baz %}y{% /baz %}
+
+    {% foo %}
+    block foo
+    {% /foo %}
+
+    {% bar %}
+    block bar
+    {% /bar %}
+
+- name: self-closing tags with children
+  config:
+    tags:
+      foo: { selfClosing: true, render: hr }
+  code: |
+    {% foo /%}
+
+    {% foo %}
+    child
+    {% /foo %}
+
+- name: allowed children
+  config:
+    tags:
+      list-only:
+        render: div
+        children: [list]
+  code: |
+    {% list-only %}
+    - a
+    - b
+
+    para
+    {% /list-only %}
+
+- name: undefined tags and nodes
+  config:
+    nodes:
+      paragraph: null
+  code: |
+    {% nope %}
+    Inside
+    {% /nope %}
+
+    Para
+
+- name: tags render from their schema, not the built-ins
+  config:
+    tags:
+      if: { render: when }
+  code: |
+    {% if false %}
+    Shown anyway.
+    {% /if %}
+
+# Node overrides
+
+- name: fence and code with a custom render
+  config:
+    nodes:
+      fence: { extends: fence, render: Code }
+      code: { extends: code, render: InlineCode }
+  code: |
+    ```ruby {% process=false .x %}
+    test
+    ```
+
+    Use `code` here.
+
+- name: fence with children from tags
+  code: |
+    ```js
+    a {% $b %} c
+    ```
+
+- name: heading level annotations
+  code: |
+    # One {% level=2 %}
+
+    ## Two {% level="1>x" %}
+
+    ### Three {% level=7 %}
+
+    #### Four {% level=1.5 %}
+
+- name: node schema with no render renders children
+  config:
+    nodes:
+      blockquote: {}
+      list: { render: section }
+  code: |
+    > quoted
+    > text
+
+    - a
+    - b
+
+- name: replacing a node schema drops its transform
+  config:
+    nodes:
+      heading:
+        render: heading
+        attributes:
+          level: { type: Number }
+  code: |
+    ## Title
+
+- name: document frontmatter attribute
+  config:
+    nodes:
+      document:
+        render: main
+        attributes:
+          frontmatter: { render: data-fm }
+  code: |
+    ---
+    title: x
+    ---
+
+    Body
+
+# Schema transforms
+
+- name: schema transform returning a tag
+  config:
+    tags:
+      section:
+        attributes:
+          title: { type: String }
+        transform: { $hook: section }
+  code: |
+    {% section title="T" .a %}
+    One
+
+    Two
+    {% /section %}
+
+- name: schema transforms returning arrays, null and undefined
+  config:
+    tags:
+      spread: { transform: { $hook: spread } }
+      nothing: { transform: { $hook: nothing } }
+      undef: { transform: { $hook: undefinedResult } }
+  code: |
+    {% spread %}
+    Middle
+    {% /spread %}
+
+    {% nothing /%}
+
+    {% undef /%}
+
+    Inline {% nothing /%} and {% undef /%} and {% spread %}x{% /spread %}.
+
+- name: schema transforms returning scalars and objects
+  config:
+    tags:
+      value: { transform: { $hook: primary } }
+      obj:
+        attributes:
+          bar: { type: String, render: true }
+          test: { type: Number, render: example }
+        transform: { $hook: attributesOnly }
+  code: |
+    {% value 1 /%} {% value "s" /%} {% value [1, 2] /%} {% value {a: 1} /%} {% value true /%} {% value null /%} {% value 0.1 /%}
+
+    {% obj bar="baz" test=100 /%}
+
+# Variables
+
+- name: variables in text and attributes
+  config:
+    variables:
+      foo: 10
+      name: World
+      nested: { a: { b: [1, { c: deep }] } }
+      list: [x, y, z]
+      flag: false
+      nothing: null
+    tags:
+      foo:
+        render: foo
+        attributes:
+          bar: { type: String }
+          n: { type: Number }
+  code: |
+    Hello {% $name %}! Count: {% $foo %}. Deep: {% $nested.a.b[1].c %}.
+
+    Second: {% $list[1] %} Missing: {% $missing %} Missing deep: {% $missing.deep %}
+
+    Flag: {% $flag %} Null: {% $nothing %} List: {% $list %} Length: {% $list.length %}
+
+    {% foo bar=$nested.a.b[1].c n=$foo /%}
+    {% foo bar=$missing /%}
+
+- name: variables with quoted path segments
+  config:
+    variables:
+      obj: { "with spaces": spaced, "0": zero }
+  code: |
+    {% $obj["with spaces"] %} and {% $obj[0] %} and {% $obj["0"] %}
+
+- name: reading a property of null is an error
+  config:
+    variables:
+      nothing: null
+  code: |
+    {% $nothing.prop %}
+
+- name: variable validation
+  config:
+    variables:
+      valid: { variable: false, list: [a] }
+    tags:
+      foo:
+        attributes:
+          bar: {}
+  code: |
+    {% $valid.variable %} {% $undefinedVariable %} {% $valid.missing %} {% $valid.list[0] %} {% $valid.list[1] %} {% $valid.list.length %}
+
+    {% foo bar=$valid.variable /%}
+    {% foo bar=$nope /%}
+
+- name: variables are only checked when the config has variables
+  code: |
+    {% $valid.variable %}
+
+- name: empty variables still check
+  config:
+    variables: {}
+  code: |
+    {% $undefinedVariable %}
+
+- name: variable defaults through the default attribute
+  config:
+    variables: { set: given }
+    tags:
+      foo:
+        render: foo
+        attributes:
+          a: { type: String, default: fallback }
+          b: { type: String, default: fallback }
+  code: |
+    {% foo a=$set b=$unset /%}
+
+- name: number formatting
+  config:
+    functions:
+      sum: { transform: { $hook: sum } }
+    variables:
+      big: 1.0e+21
+      bigger: 1.5e+300
+      small: 1.0e-7
+      smaller: 0.000001
+      negative: -2.5
+      whole: 100
+      frac: 0.1
+    tags:
+      n:
+        render: data
+        attributes:
+          v: { type: Number }
+  code: |
+    {% $big %} {% $bigger %} {% $small %} {% $smaller %} {% $negative %} {% $whole %} {% $frac %} {% sum(0.1, 0.2) %}
+
+    {% n v=$big /%}{% n v=$small /%}{% n v=$whole /%}{% n v=123456789012345680000 /%}
+
+    {% debug($big) %}
+
+# Conditionals
+
+- name: if and else chains
+  config:
+    variables: { a: false, b: true, zero: 0, empty: "" }
+  code: |
+    {% if $a %}
+    A
+    {% else $b /%}
+    B
+    {% else /%}
+    C
+    {% /if %}
+
+    {% if $missing %}
+    missing
+    {% else /%}
+    not missing
+    {% /if %}
+
+    {% if $zero %}
+    zero is true
+    {% /if %}
+
+    {% if $empty %}
+    empty is true
+    {% /if %}
+
+    {% if $b %}
+    {% if $a %}
+    nested a
+    {% else /%}
+    nested else
+    {% /if %}
+    {% /if %}
+
+    Inline {% if $b %}yes{% else /%}no{% /if %}.
+
+- name: if and else validation
+  code: |
+    {% if "string" %}
+    x
+    {% else 5 /%}
+    y
+    {% else %}
+    has children
+    {% /else %}
+    {% /if %}
+
+- name: built-in functions
+  config:
+    variables: { t: true, f: false, n: null, s: "", zero: 0, obj: { a: [1, "two", null] } }
+  code: |
+    {% if and($t, $t) %}and{% /if %} {% if and($t, $f) %}bad{% /if %} {% if or($f, $n, $s) %}or{% /if %} {% if or($f, $n) %}bad{% /if %}
+
+    {% if not($f) %}not{% /if %} {% if not($zero) %}bad{% /if %} {% if not($missing) %}not missing{% /if %}
+
+    {% if equals($t, true) %}eq{% /if %} {% if equals(1, 1, 1) %}eq3{% /if %} {% if equals(1, "1") %}bad{% /if %} {% if equals($obj, $obj) %}same{% /if %} {% if equals([1], [1]) %}bad{% /if %}
+
+    {% default($missing, "fallback") %} {% default($n, "kept null") %} {% default("first", "second") %} {% default($missing) %}
+
+    {% debug($obj) %} {% debug("s") %} {% debug($missing) %}
+
+    {% if equals() %}empty{% /if %}
+
+- name: functions without a definition or a transform
+  config:
+    functions:
+      noTransform: {}
+    tags:
+      foo:
+        render: foo
+        attributes:
+          a: {}
+          b: {}
+  code: |
+    {% foo a=undefinedFn() b=noTransform() /%}
+
+    {% undefinedFn() %} and {% noTransform() %}
+
+- name: user functions
+  config:
+    functions:
+      upper: { transform: { $hook: upper } }
+      sum: { transform: { $hook: sum } }
+      keys: { transform: { $hook: keys } }
+      echo: { transform: { $hook: echo } }
+    variables: { word: hi }
+    tags:
+      foo:
+        render: foo
+        attributes:
+          a: {}
+  code: |
+    {% upper($word) %} {% sum(1, 2, 3) %} {% keys(b=1, 1, a=2, 3) %} {% upper(upper("x")) %}
+
+    {% foo a=echo(1, x="y") /%}
+
+    {% echo(1, x="y") %}
+
+# Function validation
+
+- name: undefined functions
+  config:
+    validation: { validateFunctions: true }
+    tags:
+      foo:
+        attributes:
+          bar: { type: String }
+  code: |
+    {% foo bar=baz() /%}
+
+- name: function return types
+  config:
+    validation: { validateFunctions: true }
+    functions:
+      baz: { returns: String }
+      number: { returns: Number }
+      nested:
+        returns: String
+        parameters:
+          "0": { type: String }
+          "1": { type: Number }
+      withUnion: { returns: [String, Number], parameters: {} }
+      noReturns: {}
+    tags:
+      foo:
+        attributes:
+          bar: { type: String }
+      union-tag-1:
+        attributes:
+          foo: { type: String }
+          bar: { type: Number }
+          baz: { type: Boolean }
+          u: { type: [String, Boolean] }
+  code: |
+    {% foo bar=baz() /%}
+    {% foo bar=number() /%}
+    {% foo bar=noReturns() /%}
+    {% union-tag-1 foo=withUnion() bar=withUnion() /%}
+    {% union-tag-1 foo=withUnion() bar=withUnion() baz=withUnion() /%}
+    {% union-tag-1 u=baz() /%}
+    {% foo bar=nested(baz(), number()) /%}
+    {% foo bar=nested(number(), baz()) /%}
+
+- name: function parameters
+  config:
+    validation: { validateFunctions: true }
+    functions:
+      baz: { returns: String, parameters: {} }
+      qux:
+        returns: String
+        parameters:
+          test: { type: String }
+      noTyping: {}
+      requiredParam:
+        returns: String
+        parameters:
+          test: { type: String }
+          req: { type: String, required: true }
+      checked:
+        validate: { $hook: requireX }
+    variables: { v: 1 }
+    tags:
+      foo:
+        attributes:
+          bar: { type: String }
+  code: |
+    {% foo bar=qux() /%}
+    {% foo bar=requiredParam() /%}
+    {% foo bar=qux(test="example") /%}
+    {% foo bar=qux(test=1) /%}
+    {% foo bar=qux(test=$v) /%}
+    {% foo bar=noTyping(foo=1) /%}
+    {% foo bar=baz(foo=1) /%}
+    {% foo bar=baz(1) /%}
+    {% foo bar=baz(1, test=2) /%}
+    {% foo bar=checked() /%}
+    {% foo bar=checked(x=1) /%}
+    {% foo bar=not() /%}
+
+- name: functions are not checked without validateFunctions
+  config:
+    tags:
+      foo:
+        attributes:
+          bar: { type: Boolean }
+  code: |
+    {% foo bar=baz() /%}
+    {% foo bar=not() /%}
+
+# Schema validation
+
+- name: validate hooks see parents
+  config:
+    tags:
+      foo: {}
+      bar: { validate: { $hook: parents } }
+      baz: {}
+    nodes:
+      heading: { extends: heading, validate: { $hook: headingInFoo } }
+  code: |
+    {% foo %}
+    {% bar %}
+    {% baz %}
+    # testing
+    {% /baz %}
+    {% /bar %}
+    {% /foo %}
+
+    {% bar %}
+    # outside foo
+    {% /bar %}
+
+    {% foo %}{% bar %}this is a test{% /bar %}{% /foo %}
+
+- name: validation errors with their own locations
+  file: doc.md
+  config:
+    tags:
+      located: { validate: { $hook: located } }
+      elsewhere: { validate: { $hook: locatedInFile } }
+  code: |
+    {% located /%}
+
+    {% elsewhere /%}
+
+- name: errors keep the file from the parser
+  file: path/to/doc.md
+  code: |
+    {% if $x %}
+    unclosed
+
+    {% foo bad= %}
+
+# Partials
+
+- name: partials with variables
+  config:
+    variables: { outer: Outer }
+    partials:
+      header.md: |
+        # Header for {% $title %} in {% $$partial:filename %}
+
+        Outer is {% $outer %}.
+      nested.md: |
+        Nested start
+
+        {% partial file="header.md" variables={title: "nested"} /%}
+      inline.md: "Just *inline*"
+  code: |
+    {% partial file="header.md" variables={title: "Docs"} /%}
+
+    {% partial file="nested.md" /%}
+
+    {% partial file="inline.md" /%}
+
+    {% partial file="missing.md" /%}
+
+    {% partial file="header.md" variables={outer: "Shadowed", title: 1} /%}
+
+- name: partial validation
+  config:
+    partials:
+      a.md: A
+  code: |
+    {% partial file="a.md" /%}
+    {% partial file="non-existent.md" /%}
+    {% partial /%}
+    {% partial file="a.md" variables="no" /%}
+    Inline {% partial file="a.md" /%}
+
+    {% partial file="a.md" %}
+    child
+    {% /partial %}
+
+# Slots
+
+- name: slots rendered as attributes
+  slots: true
+  config:
+    tags:
+      card:
+        render: card
+        slots:
+          title: { render: true, required: true }
+          footer: { render: data-footer }
+          hidden: { render: false }
+  code: |
+    {% card %}
+    {% slot "title" %}
+    The **title**
+    {% /slot %}
+    {% slot "hidden" %}
+    hidden
+    {% /slot %}
+    {% slot "footer" %}
+    Foot
+    {% /slot %}
+    Body
+    {% /card %}
+
+    {% card %}
+    {% slot "unknown" %}
+    ?
+    {% /slot %}
+    No title
+    {% /card %}
+
+- name: slots without the slots option are children
+  config:
+    tags:
+      card:
+        render: card
+        slots:
+          title: { render: true }
+  code: |
+    {% card %}
+    {% slot "title" %}
+    Title
+    {% /slot %}
+    {% /card %}
+
+# Tables
+
+- name: table tags with conditional rows
+  config:
+    variables: { show: true, hide: false }
+  code: |
+    {% table %}
+    * Heading 1
+    * Heading 2
+    ---
+    * Row 1 Cell 1
+    * Row 1 Cell 2 {% colspan=2 %}
+    {% if $show %}
+    ---
+    * Shown 1
+    * Shown 2
+    {% /if %}
+    {% if $hide %}
+    ---
+    * Hidden
+    {% /if %}
+    {% /table %}
+
+- name: markdown tables with alignment
+  code: |
+    | a | b | c |
+    |:--|:-:|--:|
+    | 1 | 2 | 3 |
+    | **x** | `y` | [z](/z) |
+
+# Rendering
+
+- name: HTML escaping in text and attributes
+  config:
+    variables: { html: "<b>\"x\" & 'y'</b>" }
+    tags:
+      foo:
+        render: foo
+        attributes:
+          a: {}
+  code: |
+    {% $html %} and <i>raw</i> & "quotes"
+
+    {% foo a=$html /%}
+
+    [link](/a?b=1&c="2" "t\"itle")
+
+- name: invalid tag and attribute names render children only
+  config:
+    tags:
+      bad: { render: "h1>x", attributes: { id: { render: "a b" } } }
+      also: { render: "1a" }
+      ok:
+        render: my-element
+        attributes:
+          a: { render: "x>y" }
+          b: { render: "ok" }
+  code: |
+    {% bad #i %}
+    Bad
+    {% /bad %}
+
+    {% also %}Also{% /also %}
+
+    {% ok a=1 b=2 %}Ok{% /ok %}
+
+- name: attribute values of every type in HTML
+  config:
+    tags:
+      foo:
+        render: foo
+        attributes:
+          s: {}
+          n: {}
+          t: {}
+          f: {}
+          z: {}
+          l: {}
+          o: {}
+          nested: {}
+  code: |
+    {% foo s="x" n=1.5 t=true f=false z=null l=[1, [2, 3], null, "a"] o={a: 1} nested=[[]] /%}
+
+- name: void elements
+  config:
+    tags:
+      br: { render: br }
+      img: { render: img, attributes: { src: {} } }
+  code: |
+    {% br %}ignored child{% /br %} {% img src="/a.png" /%}
