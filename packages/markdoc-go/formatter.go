@@ -29,6 +29,9 @@ type formatOptions struct {
 	FormatOptions
 	parent *Node
 	indent int
+	// markdown selects formatMarkdown's output; singleLine and tableCell
+	// are its state.
+	markdown, singleLine, tableCell bool
 }
 
 const (
@@ -648,10 +651,19 @@ func formatValue(v any, o formatOptions) []any {
 		}
 		return out
 	case *Function:
+		if o.markdown {
+			markdownErrorf("Cannot render an unresolved Function as Markdown")
+		}
 		return formatFunction(v)
 	case *Node:
+		if o.markdown {
+			return formatMarkdownNode(v, o)
+		}
 		return formatNode(v, o)
 	case *Variable:
+		if o.markdown {
+			markdownErrorf("Cannot render an unresolved Variable as Markdown")
+		}
 		return formatVariable(v)
 	}
 	if f, ok := js.ToNumber(v); ok {

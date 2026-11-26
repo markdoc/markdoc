@@ -23,11 +23,13 @@ type Fixture struct {
 	File   string          `json:"file"`
 	// FormatOptions are the options for Format, as JSON.
 	FormatOptions json.RawMessage `json:"formatOptions"`
-	// Each output is a string, or {"error": message} where JS threw.
+	// Each output is a string, or {"error": message} where JS threw. MD is
+	// absent where @markdoc/markdoc has no Markdown renderer.
 	Transform json.RawMessage `json:"transform"`
 	HTML      json.RawMessage `json:"html"`
 	Validate  json.RawMessage `json:"validate"`
 	Format    json.RawMessage `json:"format"`
+	MD        json.RawMessage `json:"md"`
 }
 
 // Expected decodes a recorded output. ok is false if JS threw or the output

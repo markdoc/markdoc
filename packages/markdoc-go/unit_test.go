@@ -281,3 +281,71 @@ func TestFormatNodes(t *testing.T) {
 		t.Errorf("fence without an ending newline: %q", got)
 	}
 }
+
+// formatter.test.ts: Markdown output formatter
+
+func TestFormatMarkdown(t *testing.T) {
+	paragraph := func(children ...*Node) *Node {
+		return NewNode("paragraph", nil, []*Node{NewNode("inline", nil, children, "")}, "")
+	}
+	formatMD := func(v any) string {
+		t.Helper()
+		s, err := formatMarkdown(v)
+		if err != nil {
+			t.Fatal(err)
+		}
+		return s
+	}
+
+	node := paragraph(textNode("[a](b) `c` <d> | e"))
+	if got := Format(node, nil); got != "[a](b) `c` <d> | e\n" {
+		t.Errorf("Format: %q", got)
+	}
+	if got := formatMD(node); got != "\\[a\\](b) \\`c\\` \\<d> \\| e\n" {
+		t.Errorf("escapes literal text that format leaves unescaped: %q", got)
+	}
+
+	for content, want := range map[string]string{
+		"a":      "`a`\n",
+		"a`b":    "``a`b``\n",
+		"`a`` b": "``` `a`` b ```\n",
+		" a ":    "`  a  `\n",
+		"  ":     "`  `\n",
+	} {
+		if got := formatMD(paragraph(NewNode("code", attrs("content", content), nil, ""))); got != want {
+			t.Errorf("code %q: got %q, want %q", content, got, want)
+		}
+	}
+
+	cell := func(typ, content string) *Node { return NewNode(typ, nil, []*Node{inlineText(content)}, "") }
+	row := func(cells ...*Node) *Node { return NewNode("tr", nil, cells, "") }
+	table := NewNode("table", nil, []*Node{
+		NewNode("thead", nil, []*Node{row(cell("th", "Name"), cell("th", "V"))}, ""),
+		NewNode("tbody", nil, []*Node{row(cell("td", "a"), cell("td", "long value"))}, ""),
+	}, "")
+	if got := Format(table, nil); got != "| Name | V          |\n| ---- | ---------- |\n| a    | long value |\n" {
+		t.Errorf("Format table: %q", got)
+	}
+	if got := formatMD(table); got != "| Name | V |\n| --- | --- |\n| a | long value |\n" {
+		t.Errorf("emits compact tables where format pads columns: %q", got)
+	}
+
+	item := func(content string) *Node { return NewNode("item", nil, []*Node{inlineText(content)}, "") }
+	list := NewNode("list", attrs("ordered", true, "start", 2.0), []*Node{item("a"), item("b")}, "")
+	if got := Format(list, nil); got != "2. a\n1. b\n" {
+		t.Errorf("Format list: %q", got)
+	}
+	if got := formatMD(list); got != "2. a\n3. b\n" {
+		t.Errorf("increments ordered list markers: %q", got)
+	}
+
+	for _, v := range []*Node{
+		NewNode("tag", nil, nil, "callout"),
+		textNode(&Variable{Path: []any{"x"}}),
+		NewNode("comment", attrs("content", "x"), nil, ""),
+	} {
+		if _, err := formatMarkdown(v); err == nil {
+			t.Errorf("rejects Markdoc-only syntax: no error for %s", v.Type)
+		}
+	}
+}
