@@ -233,3 +233,16 @@ test('skill routes reject unknown skills and unlisted files', async () => {
     assert.equal(response.status, 404, file);
   }
 });
+
+for (const route of ['/markdoc', '/markdoc/renderers/md']) {
+  test(`${route} serves the Go module's go-import metadata`, async () => {
+    const response = await fetch(`${origin}${route}?go-get=1`);
+    assert.equal(response.status, 200);
+    const html = await response.text();
+    assert.ok(
+      html.includes(
+        '<meta name="go-import" content="markdoc.dev/markdoc git https://github.com/markdoc/markdoc packages/markdoc-go">'
+      )
+    );
+  });
+}
