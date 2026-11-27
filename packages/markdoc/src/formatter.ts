@@ -83,7 +83,7 @@ function formatAnnotationValue(a: AttributeValue): string | undefined {
 function* formatAttributes(n: Node) {
   for (const [key, value] of Object.entries(n.attributes)) {
     /**
-     * In cases where the class attribute is not a valid identifer, we treat it as a
+     * In cases where the class attribute is not a valid identifier, we treat it as a
      * regular attribute without the '.' sigil
      */
     if (key === 'class' && typeof value === 'object' && !Ast.isAst(value))

@@ -444,7 +444,7 @@ describe('transform', () => {
       expect(output.attributes.bar).toEqual(10);
     });
 
-    it('with an overriden default attribute value', () => {
+    it('with an overridden default attribute value', () => {
       const example = new Node('foo', { bar: 1 });
       const foo = {
         render: 'foo',
